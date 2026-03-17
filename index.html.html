@@ -863,110 +863,106 @@ document.getElementById('contactForm').addEventListener('submit', async function
 });
 </script>
 
+
 <script>
-(function() {
+(function(){
   const players = [
     "Zidane","Ronaldo","Mbappé","Messi","Neymar","Benzema","Ibrahimovic",
     "Henry","Bergkamp","Platini","Cantona","Trezeguet","Vieira","Barthez",
     "Thuram","Desailly","Klose","Müller","Lahm","Neuer","Ribéry","Robben",
-    "Lewandowski","Haaland","Rummenigge","Van Dijk","Gerrard","Fowler",
-    "Torres","Suarez","Salah","Firmino","Cech","Drogba","Lampard","Terry",
-    "Fabregas","Henry","Pires","Ljungberg","Bergkamp","Vieira","Adams",
-    "Inzaghi","Maldini","Baresi","Cannavaro","Del Piero","Totti","Buffon",
-    "Pirlo","Nesta","Shevchenko","Ronaldinho","Guardiola","Xavi","Iniesta",
-    "Puyol","Pique","Suarez","Villa","Etoo","Raul","Casillas","Ramos",
-    "Marcelo","Bale","Modric","Kroos","Benzema","Griezmann","Atletico",
-    "Simeone","Oblak","Suarez","Joao Felix","Forlan","Torres",
-    "Maradona","Vieri","Recoba","Zanetti","Cambiasso","Sneijder","Milito",
-    "Materazzi","Ronaldo","Adriano","Stam","Davids","Nedved",
+    "Lewandowski","Haaland","Van Dijk","Gerrard","Torres","Suarez","Salah",
+    "Drogba","Lampard","Terry","Fabregas","Pires","Maldini","Baresi",
+    "Del Piero","Totti","Buffon","Pirlo","Shevchenko","Ronaldinho","Xavi",
+    "Iniesta","Puyol","Raul","Casillas","Ramos","Modric","Kroos","Griezmann",
+    "Oblak","Zanetti","Sneijder","Milito","Nedved","Maradona","Vieri"
   ];
   const questions = [
     "Joueurs Français","Joueurs Espagnols","Joueurs Allemands",
     "Joueurs Italiens","Joueurs Anglais","Brésiliens / Argentins",
     "Joueurs Algériens","Joueurs Marocains","Gardiens de but",
-    "Recrutés libres","Prêtés puis achetés","+120 buts","Transferts >50M€",
+    "Recrutés libres","Prêtés puis achetés","+120 buts","Transferts >50M€"
+  ];
+  const POSITIONS = [
+    {x:4,  y:12, type:'p', size:8, gold:true},
+    {x:76, y:10, type:'q', size:7, gold:false},
+    {x:3,  y:25, type:'p', size:7, gold:false},
+    {x:79, y:23, type:'p', size:8, gold:true},
+    {x:5,  y:40, type:'q', size:7, gold:false},
+    {x:77, y:38, type:'p', size:8, gold:true},
+    {x:4,  y:55, type:'p', size:7, gold:false},
+    {x:78, y:55, type:'q', size:7, gold:true},
+    {x:5,  y:70, type:'p', size:8, gold:true},
+    {x:75, y:68, type:'p', size:7, gold:false},
+    {x:3,  y:82, type:'q', size:7, gold:false},
+    {x:78, y:80, type:'p', size:8, gold:true},
   ];
 
   const layer = document.getElementById('scan-words-layer');
-  const scanline = document.getElementById('scanline');
-  if (!layer || !scanline) return;
+  const scanEl = document.getElementById('scanline');
+  if(!layer || !scanEl) return;
 
-  const SCAN_DURATION = 6000; // ms — doit matcher CSS 6s
-  let words = [];
+  const hero = scanEl.closest('section');
+  let wordEls = [];
+  let lastCycle = -1;
+  const DURATION = 6000;
 
-  // Positions fixes réparties sur le hero, évitant le centre
-  const positions = [
-    { x: 4,  y: 18, size: 10, color: 'rgba(240,180,41,0.35)',   type: 'player' },
-    { x: 72, y: 15, size: 9,  color: 'rgba(200,223,200,0.25)',  type: 'player' },
-    { x: 82, y: 28, size: 9,  color: 'rgba(240,180,41,0.2)',    type: 'question' },
-    { x: 6,  y: 38, size: 8,  color: 'rgba(200,223,200,0.2)',   type: 'question' },
-    { x: 78, y: 48, size: 10, color: 'rgba(240,180,41,0.3)',    type: 'player' },
-    { x: 3,  y: 58, size: 9,  color: 'rgba(200,223,200,0.25)',  type: 'player' },
-    { x: 68, y: 62, size: 8,  color: 'rgba(240,180,41,0.2)',    type: 'question' },
-    { x: 8,  y: 72, size: 9,  color: 'rgba(200,223,200,0.2)',   type: 'player' },
-    { x: 74, y: 78, size: 10, color: 'rgba(240,180,41,0.3)',    type: 'player' },
-    { x: 5,  y: 85, size: 8,  color: 'rgba(200,223,200,0.2)',   type: 'question' },
-  ];
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-  function getRandom(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-
-  function createWords() {
+  function buildWords(){
     layer.innerHTML = '';
-    words = [];
-    positions.forEach((pos, i) => {
+    wordEls = [];
+    POSITIONS.forEach(pos => {
       const el = document.createElement('div');
       el.className = 'scan-word';
-      const text = pos.type === 'player' ? getRandom(players) : getRandom(questions);
-      el.textContent = text;
-      el.style.cssText = `
-        left: ${pos.x}%;
-        top: ${pos.y}%;
-        font-size: ${pos.size}px;
-        color: ${pos.color};
-        letter-spacing: ${pos.type === 'question' ? '4px' : '2px'};
-        font-weight: ${pos.type === 'question' ? '500' : '300'};
-      `;
+      el.textContent = pos.type === 'p' ? rand(players) : rand(questions);
+      el.style.cssText = [
+        'position:absolute',
+        'font-family:"Bebas Neue",cursive',
+        'text-transform:uppercase',
+        'white-space:nowrap',
+        'pointer-events:none',
+        'opacity:0',
+        'transition:opacity 0.25s ease',
+        'left:' + pos.x + '%',
+        'top:' + pos.y + '%',
+        'font-size:' + pos.size + 'px',
+        'letter-spacing:' + (pos.type==='q' ? '5px' : '4px'),
+        'font-weight:400',
+        'color:' + (pos.gold ? 'rgba(240,180,41,0.4)' : 'rgba(200,223,200,0.22)'),
+      ].join(';');
       layer.appendChild(el);
-      words.push({ el, pos });
+      wordEls.push({el, posY: pos.y});
     });
   }
 
-  function revealWords(scanY) {
-    // scanY est en % (0..100)
-    words.forEach(({ el, pos }) => {
-      // Révéler quand le scan passe à ±4% de la position du mot
-      if (Math.abs(scanY - pos.y) < 4 && el.style.opacity === '0' || el.style.opacity === '') {
-        el.classList.remove('revealed');
-        void el.offsetWidth; // reflow
-        el.classList.add('revealed');
+  function tick(){
+    const heroRect = hero.getBoundingClientRect();
+    const scanRect = scanEl.getBoundingClientRect();
+    // Position du scan en % de la hauteur du hero
+    const scanPct = ((scanRect.top - heroRect.top) / heroRect.height) * 100;
+
+    wordEls.forEach(({el, posY}) => {
+      const dist = scanPct - posY;
+      if(dist >= -4 && dist <= 4){
+        // Scan sur le mot — allumer
+        el.style.opacity = (1 - Math.abs(dist)/4).toFixed(2);
+      } else if(dist > 4 && dist < 40){
+        // Scan passé — fade progressif
+        el.style.opacity = Math.max(0, 1 - (dist-4)/36).toFixed(2);
+      } else {
+        el.style.opacity = '0';
       }
     });
-  }
 
-  let startTime = null;
-  let cycleCount = 0;
-
-  function tick(ts) {
-    if (!startTime) startTime = ts;
-    const elapsed = (ts - startTime) % SCAN_DURATION;
-    const progress = elapsed / SCAN_DURATION; // 0..1
-    const scanY = (progress * 120) - 10; // -10% → 110%
-
-    revealWords(scanY);
-
-    // Nouveau cycle → nouveaux mots
-    const newCycle = Math.floor((ts - startTime) / SCAN_DURATION);
-    if (newCycle > cycleCount) {
-      cycleCount = newCycle;
-      createWords();
+    const cycle = Math.floor(performance.now() / DURATION);
+    if(cycle !== lastCycle){
+      lastCycle = cycle;
+      buildWords();
     }
-
     requestAnimationFrame(tick);
   }
 
-  createWords();
+  buildWords();
   requestAnimationFrame(tick);
 })();
 </script>
