@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VAR CLUB — Le Quiz Football Ultime</title>
+<title>VAR CLUB — Le Jeu de Cartes Football</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -123,9 +123,37 @@ nav {
 /* Scanline effect */
 .hero-scanline {
   position: absolute; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.15), transparent);
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.4), transparent);
   animation: scanline 6s linear infinite;
+  pointer-events: none; z-index: 2;
+}
+
+/* Mots révélés par le scan */
+.scan-word {
+  position: absolute;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 3px;
   pointer-events: none;
+  opacity: 0;
+  white-space: nowrap;
+  z-index: 1;
+}
+.scan-word.revealed {
+  animation: wordReveal 6s ease forwards;
+}
+@keyframes wordReveal {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes wordReveal2 {
+  0%   { opacity: 0; }
+  8%   { opacity: 0.7; }
+  70%  { opacity: 0.7; }
+  100% { opacity: 0; }
 }
 
 /* Decorative lines */
@@ -496,19 +524,62 @@ footer {
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-scanline"></div>
+  <div class="hero-scanline" id="scanline"></div>
+  <!-- Mots révélés par le scan -->
+  <div id="scan-words-layer" style="position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;"></div>
   <div class="hero-line-left"></div>
   <div class="hero-line-right"></div>
+  
+  <!-- Terrain de foot SVG en fond -->
+  <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;">
+    <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice"
+         style="width:100%;height:100%;opacity:0.06;transform:translateY(-10%);">
+      <!-- Fond transparent — le vert vient du body -->
+      <!-- Bordure du terrain -->
+      <rect x="60" y="40" width="1080" height="620" fill="none" stroke="white" stroke-width="2.5"/>
+      <!-- Ligne médiane -->
+      <line x1="600" y1="40" x2="600" y2="660" stroke="white" stroke-width="2"/>
+      <!-- Rond central -->
+      <circle cx="600" cy="350" r="91" fill="none" stroke="white" stroke-width="2"/>
+      <!-- Point central -->
+      <circle cx="600" cy="350" r="4" fill="white"/>
+      <!-- Surface de réparation gauche -->
+      <rect x="60" y="215" width="165" height="270" fill="none" stroke="white" stroke-width="2"/>
+      <!-- Surface de but gauche -->
+      <rect x="60" y="290" width="55" height="120" fill="none" stroke="white" stroke-width="2"/>
+      <!-- Arc de cercle gauche -->
+      <path d="M225,270 A91,91 0 0,1 225,430" fill="none" stroke="white" stroke-width="2"/>
+      <!-- Point de penalty gauche -->
+      <circle cx="170" cy="350" r="4" fill="white"/>
+      <!-- Surface de réparation droite -->
+      <rect x="975" y="215" width="165" height="270" fill="none" stroke="white" stroke-width="2"/>
+      <!-- Surface de but droite -->
+      <rect x="1085" y="290" width="55" height="120" fill="none" stroke="white" stroke-width="2"/>
+      <!-- Arc de cercle droit -->
+      <path d="M975,270 A91,91 0 0,0 975,430" fill="none" stroke="white" stroke-width="2"/>
+      <!-- Point de penalty droit -->
+      <circle cx="1030" cy="350" r="4" fill="white"/>
+      <!-- Coins du terrain (arcs) -->
+      <path d="M60,56 A18,18 0 0,1 76,40" fill="none" stroke="white" stroke-width="2"/>
+      <path d="M1124,40 A18,18 0 0,1 1140,56" fill="none" stroke="white" stroke-width="2"/>
+      <path d="M1140,644 A18,18 0 0,1 1124,660" fill="none" stroke="white" stroke-width="2"/>
+      <path d="M76,660 A18,18 0 0,1 60,644" fill="none" stroke="white" stroke-width="2"/>
+    </svg>
+    <!-- Dégradé qui noie le terrain vers les bords -->
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 50%, transparent 30%, #0d1f0d 90%);"></div>
+    <!-- Dégradé haut/bas pour fondre -->
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0d1f0d 0%,transparent 25%,transparent 75%,#0d1f0d 100%);"></div>
+  </div>
 
-  <div class="hero-eyebrow">Le Quiz Football Ultime</div>
+  <div class="hero-eyebrow" style="position:relative;z-index:1;">Le Jeu de Cartes Football</div>
 
-  <h1 class="hero-title">
+  <h1 class="hero-title" style="position:relative;z-index:1;">
     VAR<br><span class="accent">CLUB</span>
   </h1>
 
-  <p class="hero-subtitle">
+  <p class="hero-subtitle" style="position:relative;z-index:1;">
     Défaussez vos jetons. Battez vos adversaires.<br>
-    Ici, c'est la VAR qui a le dernier mot.
+    Une base de données vivante — toujours dans l'ère du temps.
   </p>
 
   <div class="hero-cta-wrap">
@@ -573,6 +644,9 @@ footer {
       <p class="section-body reveal reveal-delay-3" style="margin-top:16px; font-size:15px;">
         Bonne analyse ? Vous défaussez vos jetons. Erreur face à la VAR ? Vous les gardez et votre tour s'arrête. Simple. Implacable.
       </p>
+      <p class="section-body reveal reveal-delay-3" style="margin-top:20px; font-size:14px; border-left: 2px solid var(--gold); padding-left: 20px; opacity: 0.85;">
+        La base de données est mise à jour régulièrement. Nouveaux transferts, nouvelles saisons — VAR Club ne vieillit jamais.
+      </p>
     </div>
     <div class="concept-visual reveal reveal-delay-2">
       <div class="concept-ring"></div>
@@ -587,8 +661,8 @@ footer {
 <!-- MODES -->
 <section class="modes" id="modes">
   <div style="max-width:1100px; margin:0 auto;">
-    <div class="section-label reveal">Les Trois Parcours</div>
-    <h2 class="section-title reveal reveal-delay-1">CHOISISSEZ<br><span>VOTRE PARCOURS</span></h2>
+    <div class="section-label reveal">Les Trois Modes de Jeu</div>
+    <h2 class="section-title reveal reveal-delay-1">CHOISISSEZ<br><span>VOTRE MODE</span></h2>
   </div>
   <div class="modes-grid">
     <div class="mode-item reveal">
@@ -615,9 +689,33 @@ footer {
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
+<!-- DIFFERENTIATEUR -->
+<section style="padding:100px 48px;background:#0f1e0f;position:relative;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-label reveal" style="justify-content:center;">Ce qui change tout</div>
+    <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">UNE BASE DE<br><span>DONNÉES VIVANTE</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;max-width:900px;margin:40px auto 0;text-align:center;">
+      <div class="reveal">
+        <div style="font-size:36px;margin-bottom:12px;">🔄</div>
+        <div class="mode-title" style="font-size:20px;">Mis à jour régulièrement</div>
+        <p class="mode-desc">Chaque transfert, chaque saison est intégrée. Le jeu reste précis et actuel, années après années.</p>
+      </div>
+      <div class="reveal">
+        <div style="font-size:36px;margin-bottom:12px;">🏟️</div>
+        <div class="mode-title" style="font-size:20px;">17 clubs majeurs</div>
+        <p class="mode-desc">Les plus grandes équipes d'Europe. Ligue 1, Liga, Premier League, Bundesliga, Serie A.</p>
+      </div>
+      <div class="reveal">
+        <div style="font-size:36px;margin-bottom:12px;">📊</div>
+        <div class="mode-title" style="font-size:20px;">Des milliers de joueurs</div>
+        <p class="mode-desc">Nationalités, gardiens, transferts, statistiques — une profondeur de données unique dans un jeu de cartes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="how">
-  <div style="max-width:1100px; margin:0 auto;">
+  <div style="max-width:1100px;margin:0 auto;">
     <div class="section-label reveal">La Règle d'or</div>
     <h2 class="section-title reveal reveal-delay-1">LA <span>VAR</span> A LE<br>DERNIER MOT</h2>
     <p class="section-body reveal reveal-delay-2" style="margin-top:16px;">L'application est votre assistant, pas votre maître. Les vrais arbitres, c'est vous. Le foot, c'est avant tout des débats passionnés autour de la table.</p>
@@ -688,7 +786,7 @@ footer {
 <!-- FOOTER -->
 <footer>
   <div class="footer-brand">VAR <span>CLUB</span></div>
-  <div class="footer-copy">© 2026 — Le Quiz Football Ultime</div>
+  <div class="footer-copy">© 2026 — Le Jeu de Cartes Football</div>
 </footer>
 
 <script>
@@ -763,6 +861,114 @@ document.getElementById('contactForm').addEventListener('submit', async function
     console.error(err);
   }
 });
+</script>
+
+<script>
+(function() {
+  const players = [
+    "Zidane","Ronaldo","Mbappé","Messi","Neymar","Benzema","Ibrahimovic",
+    "Henry","Bergkamp","Platini","Cantona","Trezeguet","Vieira","Barthez",
+    "Thuram","Desailly","Klose","Müller","Lahm","Neuer","Ribéry","Robben",
+    "Lewandowski","Haaland","Rummenigge","Van Dijk","Gerrard","Fowler",
+    "Torres","Suarez","Salah","Firmino","Cech","Drogba","Lampard","Terry",
+    "Fabregas","Henry","Pires","Ljungberg","Bergkamp","Vieira","Adams",
+    "Inzaghi","Maldini","Baresi","Cannavaro","Del Piero","Totti","Buffon",
+    "Pirlo","Nesta","Shevchenko","Ronaldinho","Guardiola","Xavi","Iniesta",
+    "Puyol","Pique","Suarez","Villa","Etoo","Raul","Casillas","Ramos",
+    "Marcelo","Bale","Modric","Kroos","Benzema","Griezmann","Atletico",
+    "Simeone","Oblak","Suarez","Joao Felix","Forlan","Torres",
+    "Maradona","Vieri","Recoba","Zanetti","Cambiasso","Sneijder","Milito",
+    "Materazzi","Ronaldo","Adriano","Stam","Davids","Nedved",
+  ];
+  const questions = [
+    "Joueurs Français","Joueurs Espagnols","Joueurs Allemands",
+    "Joueurs Italiens","Joueurs Anglais","Brésiliens / Argentins",
+    "Joueurs Algériens","Joueurs Marocains","Gardiens de but",
+    "Recrutés libres","Prêtés puis achetés","+120 buts","Transferts >50M€",
+  ];
+
+  const layer = document.getElementById('scan-words-layer');
+  const scanline = document.getElementById('scanline');
+  if (!layer || !scanline) return;
+
+  const SCAN_DURATION = 6000; // ms — doit matcher CSS 6s
+  let words = [];
+
+  // Positions fixes réparties sur le hero, évitant le centre
+  const positions = [
+    { x: 4,  y: 18, size: 10, color: 'rgba(240,180,41,0.35)',   type: 'player' },
+    { x: 72, y: 15, size: 9,  color: 'rgba(200,223,200,0.25)',  type: 'player' },
+    { x: 82, y: 28, size: 9,  color: 'rgba(240,180,41,0.2)',    type: 'question' },
+    { x: 6,  y: 38, size: 8,  color: 'rgba(200,223,200,0.2)',   type: 'question' },
+    { x: 78, y: 48, size: 10, color: 'rgba(240,180,41,0.3)',    type: 'player' },
+    { x: 3,  y: 58, size: 9,  color: 'rgba(200,223,200,0.25)',  type: 'player' },
+    { x: 68, y: 62, size: 8,  color: 'rgba(240,180,41,0.2)',    type: 'question' },
+    { x: 8,  y: 72, size: 9,  color: 'rgba(200,223,200,0.2)',   type: 'player' },
+    { x: 74, y: 78, size: 10, color: 'rgba(240,180,41,0.3)',    type: 'player' },
+    { x: 5,  y: 85, size: 8,  color: 'rgba(200,223,200,0.2)',   type: 'question' },
+  ];
+
+  function getRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function createWords() {
+    layer.innerHTML = '';
+    words = [];
+    positions.forEach((pos, i) => {
+      const el = document.createElement('div');
+      el.className = 'scan-word';
+      const text = pos.type === 'player' ? getRandom(players) : getRandom(questions);
+      el.textContent = text;
+      el.style.cssText = `
+        left: ${pos.x}%;
+        top: ${pos.y}%;
+        font-size: ${pos.size}px;
+        color: ${pos.color};
+        letter-spacing: ${pos.type === 'question' ? '4px' : '2px'};
+        font-weight: ${pos.type === 'question' ? '500' : '300'};
+      `;
+      layer.appendChild(el);
+      words.push({ el, pos });
+    });
+  }
+
+  function revealWords(scanY) {
+    // scanY est en % (0..100)
+    words.forEach(({ el, pos }) => {
+      // Révéler quand le scan passe à ±4% de la position du mot
+      if (Math.abs(scanY - pos.y) < 4 && el.style.opacity === '0' || el.style.opacity === '') {
+        el.classList.remove('revealed');
+        void el.offsetWidth; // reflow
+        el.classList.add('revealed');
+      }
+    });
+  }
+
+  let startTime = null;
+  let cycleCount = 0;
+
+  function tick(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = (ts - startTime) % SCAN_DURATION;
+    const progress = elapsed / SCAN_DURATION; // 0..1
+    const scanY = (progress * 120) - 10; // -10% → 110%
+
+    revealWords(scanY);
+
+    // Nouveau cycle → nouveaux mots
+    const newCycle = Math.floor((ts - startTime) / SCAN_DURATION);
+    if (newCycle > cycleCount) {
+      cycleCount = newCycle;
+      createWords();
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  createWords();
+  requestAnimationFrame(tick);
+})();
 </script>
 </body>
 </html>
