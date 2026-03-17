@@ -882,20 +882,31 @@ document.getElementById('contactForm').addEventListener('submit', async function
     "Joueurs Algériens","Joueurs Marocains","Gardiens de but",
     "Recrutés libres","Prêtés puis achetés","+120 buts","Transferts >50M€"
   ];
-  const POSITIONS = [
-    {x:4,  y:12, type:'p', size:8, gold:true},
-    {x:76, y:10, type:'q', size:7, gold:false},
-    {x:3,  y:25, type:'p', size:7, gold:false},
-    {x:79, y:23, type:'p', size:8, gold:true},
-    {x:5,  y:40, type:'q', size:7, gold:false},
-    {x:77, y:38, type:'p', size:8, gold:true},
-    {x:4,  y:55, type:'p', size:7, gold:false},
-    {x:78, y:55, type:'q', size:7, gold:true},
-    {x:5,  y:70, type:'p', size:8, gold:true},
-    {x:75, y:68, type:'p', size:7, gold:false},
-    {x:3,  y:82, type:'q', size:7, gold:false},
-    {x:78, y:80, type:'p', size:8, gold:true},
-  ];
+  // Positions générées aléatoirement à chaque cycle
+  // Zones autorisées : gauche (x 2-22%) et droite (x 72-92%)
+  // Y réparti sur toute la hauteur, espacé pour éviter les doublons
+  function generatePositions(){
+    const pos = [];
+    const usedY = [];
+    const COUNT = 14;
+    for(let i = 0; i < COUNT; i++){
+      let y, attempts = 0;
+      do {
+        y = 5 + Math.random() * 90;
+        attempts++;
+      } while(usedY.some(uy => Math.abs(uy - y) < 7) && attempts < 20);
+      usedY.push(y);
+      const side = Math.random() > 0.5; // gauche ou droite
+      pos.push({
+        x: side ? (2 + Math.random() * 18) : (72 + Math.random() * 18),
+        y: y,
+        type: Math.random() > 0.55 ? 'p' : 'q',
+        size: 7 + Math.round(Math.random()),
+        gold: Math.random() > 0.45,
+      });
+    }
+    return pos;
+  }
 
   const layer = document.getElementById('scan-words-layer');
   const scanEl = document.getElementById('scanline');
@@ -911,7 +922,7 @@ document.getElementById('contactForm').addEventListener('submit', async function
   function buildWords(){
     layer.innerHTML = '';
     wordEls = [];
-    POSITIONS.forEach(pos => {
+    generatePositions().forEach(pos => {
       const el = document.createElement('div');
       el.className = 'scan-word';
       el.textContent = pos.type === 'p' ? rand(players) : rand(questions);
