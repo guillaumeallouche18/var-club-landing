@@ -91,6 +91,29 @@ nav {
   font-size: 28px; letter-spacing: 6px; color: var(--white);
 }
 .nav-brand span { color: var(--gold); }
+.lang-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lang-btn {
+  background: transparent;
+  border: 1px solid rgba(240,180,41,0.25);
+  color: var(--slate);
+  padding: 3px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.lang-btn.active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.lang-btn:hover { border-color: var(--gold); color: var(--gold); }
 .nav-cta {
   background: transparent; border: 1px solid rgba(240,180,41,0.4);
   color: var(--gold); padding: 10px 24px;
@@ -519,7 +542,14 @@ footer {
 <!-- NAV -->
 <nav>
   <div class="nav-brand">VAR <span>CLUB</span></div>
-  <a href="#contact" class="nav-cta">Rejoindre</a>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
+      <span style="color:rgba(240,180,41,0.3);font-size:10px;">|</span>
+      <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+    </div>
+    <a href="#contact" class="nav-cta" data-i18n="navJoin">Rejoindre</a>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -571,20 +601,19 @@ footer {
     <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0d1f0d 0%,transparent 25%,transparent 75%,#0d1f0d 100%);"></div>
   </div>
 
-  <div class="hero-eyebrow" style="position:relative;z-index:1;">Le Jeu de Cartes Football</div>
+  <div class="hero-eyebrow" style="position:relative;z-index:1;" data-i18n="heroEyebrow">Le Jeu de Cartes Football</div>
 
   <h1 class="hero-title" style="position:relative;z-index:1;">
     VAR<br><span class="accent">CLUB</span>
   </h1>
 
   <p class="hero-subtitle" style="position:relative;z-index:1;">
-    Défaussez vos jetons. Battez vos adversaires.<br>
-    Une base de données vivante — toujours dans l'ère du temps.
+    <span data-i18n="heroSub">Défaussez vos jetons. Battez vos adversaires.<br>Une base de données vivante — toujours dans l'ère du temps.</span>
   </p>
 
   <div class="hero-cta-wrap">
-    <a href="#contact" class="btn-primary">Être notifié au lancement</a>
-    <a href="#concept" class="btn-secondary">Découvrir le jeu</a>
+    <a href="#contact" class="btn-primary" data-i18n="heroCta1">Être notifié au lancement</a>
+    <a href="#concept" class="btn-secondary" data-i18n="heroCta2">Découvrir le jeu</a>
   </div>
 
   <div class="scroll-ind">
@@ -636,16 +665,16 @@ footer {
 <section class="concept" id="concept">
   <div class="concept-grid">
     <div>
-      <div class="section-label reveal">Le Concept</div>
-      <h2 class="section-title reveal reveal-delay-1">L'OBJECTIF :<br><span>ZÉRO JETON</span></h2>
+      <div class="section-label reveal" data-i18n="conceptLabel">Le Concept</div>
+      <h2 class="section-title reveal reveal-delay-1" data-i18n="conceptTitle">L'OBJECTIF :<br><span>ZÉRO JETON</span></h2>
       <p class="section-body reveal reveal-delay-2">
-        Chaque joueur démarre avec 15 jetons. Pour gagner, vous devez tous les défausser en validant vos analyses football devant vos adversaires.
+        <span data-i18n="conceptP1">Chaque joueur démarre avec 15 jetons. Pour gagner, vous devez tous les défausser en validant vos analyses football devant vos adversaires.</span>
       </p>
       <p class="section-body reveal reveal-delay-3" style="margin-top:16px; font-size:15px;">
-        Bonne analyse ? Vous défaussez vos jetons. Erreur face à la VAR ? Vous les gardez et votre tour s'arrête. Simple. Implacable.
+        <span data-i18n="conceptP2">Bonne analyse ? Vous défaussez vos jetons. Erreur face à la VAR ? Vous les gardez et votre tour s'arrête. Simple. Implacable.</span>
       </p>
       <p class="section-body reveal reveal-delay-3" style="margin-top:20px; font-size:14px; border-left: 2px solid var(--gold); padding-left: 20px; opacity: 0.85;">
-        La base de données est mise à jour régulièrement. Nouveaux transferts, nouvelles saisons — VAR Club ne vieillit jamais.
+        <span data-i18n="conceptP3">La base de données est mise à jour régulièrement. Nouveaux transferts, nouvelles saisons — VAR Club ne vieillit jamais.</span>
       </p>
     </div>
     <div class="concept-visual reveal reveal-delay-2">
@@ -661,30 +690,30 @@ footer {
 <!-- MODES -->
 <section class="modes" id="modes">
   <div style="max-width:1100px; margin:0 auto;">
-    <div class="section-label reveal">Les Trois Modes de Jeu</div>
-    <h2 class="section-title reveal reveal-delay-1">CHOISISSEZ<br><span>VOTRE MODE</span></h2>
+    <div class="section-label reveal" data-i18n="modesLabel">Les Trois Modes de Jeu</div>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="modesTitle">CHOISISSEZ<br><span>VOTRE MODE</span></h2>
   </div>
   <div class="modes-grid">
     <div class="mode-item reveal">
       <div class="mode-num">01</div>
       <span class="mode-icon">🌟</span>
-      <div class="mode-name">L'Identité</div>
-      <p class="mode-desc">Tire une carte club. Annonce la ville, le stade, le surnom avant la révélation. Chaque bonne réponse = jetons défaussés.</p>
-      <span class="mode-tag">Le Jeune Passionné</span>
+      <div class="mode-name" data-i18n="mode1name">L'Identité</div>
+      <p class="mode-desc" data-i18n="mode1desc">Tire une carte club. Annonce la ville, le stade, le surnom avant la révélation. Chaque bonne réponse = jetons défaussés.</p>
+      <span class="mode-tag" data-i18n="mode1tag">Le Jeune Passionné</span>
     </div>
     <div class="mode-item reveal reveal-delay-1">
       <div class="mode-num">02</div>
       <span class="mode-icon">🛡️</span>
-      <div class="mode-name">Le Duel VAR</div>
-      <p class="mode-desc">Tire une carte Club + une carte Question. Fais ton annonce à voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.</p>
-      <span class="mode-tag">Confrontation directe</span>
+      <div class="mode-name" data-i18n="mode2name">Le Duel VAR</div>
+      <p class="mode-desc" data-i18n="mode2desc">Tire une carte Club + une carte Question. Fais ton annonce à voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.</p>
+      <span class="mode-tag" data-i18n="mode2tag">Confrontation directe</span>
     </div>
     <div class="mode-item reveal reveal-delay-2">
       <div class="mode-num">03</div>
       <span class="mode-icon">🔥</span>
-      <div class="mode-name">Le Mode Expert</div>
-      <p class="mode-desc">Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.</p>
-      <span class="mode-tag">Pour les amoureux de la data</span>
+      <div class="mode-name" data-i18n="mode3name">Le Mode Expert</div>
+      <p class="mode-desc" data-i18n="mode3desc">Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.</p>
+      <span class="mode-tag" data-i18n="mode3tag">Pour les amoureux de la data</span>
     </div>
   </div>
 </section>
@@ -692,23 +721,23 @@ footer {
 <!-- DIFFERENTIATEUR -->
 <section style="padding:100px 48px;background:#0f1e0f;position:relative;">
   <div style="max-width:1100px;margin:0 auto;">
-    <div class="section-label reveal" style="justify-content:center;">Ce qui change tout</div>
-    <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">UNE BASE DE<br><span>DONNÉES VIVANTE</span></h2>
+    <div class="section-label reveal" style="justify-content:center;" data-i18n="diffLabel">Ce qui change tout</div>
+    <h2 class="section-title reveal reveal-delay-1" style="text-align:center;" data-i18n="diffTitle">UNE BASE DE<br><span>DONNÉES VIVANTE</span></h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;max-width:900px;margin:40px auto 0;text-align:center;">
       <div class="reveal">
         <div style="font-size:36px;margin-bottom:12px;">🔄</div>
-        <div class="mode-title" style="font-size:20px;">Mis à jour régulièrement</div>
-        <p class="mode-desc">Chaque transfert, chaque saison est intégrée. Le jeu reste précis et actuel, années après années.</p>
+        <div class="mode-title" style="font-size:20px;" data-i18n="diff1title">Mis à jour régulièrement</div>
+        <p class="mode-desc" data-i18n="diff1desc">Chaque transfert, chaque saison est intégrée. Le jeu reste précis et actuel, années après années.</p>
       </div>
       <div class="reveal">
         <div style="font-size:36px;margin-bottom:12px;">🏟️</div>
-        <div class="mode-title" style="font-size:20px;">17 clubs majeurs</div>
-        <p class="mode-desc">Les plus grandes équipes d'Europe. Ligue 1, Liga, Premier League, Bundesliga, Serie A.</p>
+        <div class="mode-title" style="font-size:20px;" data-i18n="diff2title">17 clubs majeurs</div>
+        <p class="mode-desc" data-i18n="diff2desc">Les plus grandes équipes d'Europe. Ligue 1, Liga, Premier League, Bundesliga, Serie A.</p>
       </div>
       <div class="reveal">
         <div style="font-size:36px;margin-bottom:12px;">📊</div>
-        <div class="mode-title" style="font-size:20px;">Des milliers de joueurs</div>
-        <p class="mode-desc">Nationalités, gardiens, transferts, statistiques — une profondeur de données unique dans un jeu de cartes.</p>
+        <div class="mode-title" style="font-size:20px;" data-i18n="diff3title">Des milliers de joueurs</div>
+        <p class="mode-desc" data-i18n="diff3desc">Nationalités, gardiens, transferts, statistiques — une profondeur de données unique dans un jeu de cartes.</p>
       </div>
     </div>
   </div>
@@ -716,30 +745,30 @@ footer {
 
 <section class="how">
   <div style="max-width:1100px;margin:0 auto;">
-    <div class="section-label reveal">La Règle d'or</div>
-    <h2 class="section-title reveal reveal-delay-1">LA <span>VAR</span> A LE<br>DERNIER MOT</h2>
-    <p class="section-body reveal reveal-delay-2" style="margin-top:16px;">L'application est votre assistant, pas votre maître. Les vrais arbitres, c'est vous. Le foot, c'est avant tout des débats passionnés autour de la table.</p>
+    <div class="section-label reveal" data-i18n="ruleLabel">La Règle d'or</div>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="ruleTitle">LA <span>VAR</span> A LE<br>DERNIER MOT</h2>
+    <p class="section-body reveal reveal-delay-2" style="margin-top:16px;" data-i18n="ruleBody">L'application est votre assistant, pas votre maître. Les vrais arbitres, c'est vous. Le foot, c'est avant tout des débats passionnés autour de la table.</p>
   </div>
   <div class="steps">
     <div class="step reveal">
       <div class="step-num">I</div>
-      <div class="step-title">Débattez librement</div>
-      <p class="step-desc">L'arbitrage humain d'abord. Si tout le monde est d'accord, le point est validé sans application.</p>
+      <div class="step-title" data-i18n="step1title">Débattez librement</div>
+      <p class="step-desc" data-i18n="step1desc">L'arbitrage humain d'abord. Si tout le monde est d'accord, le point est validé sans application.</p>
     </div>
     <div class="step reveal reveal-delay-1">
       <div class="step-num">II</div>
-      <div class="step-title">Un doute ? VAR !</div>
-      <p class="step-desc">Un adversaire crie "VAR !" — on vérifie sur l'interface. Le recours à la vidéo est facultatif.</p>
+      <div class="step-title" data-i18n="step2title">Un doute ? VAR !</div>
+      <p class="step-desc" data-i18n="step2desc">Un adversaire crie "VAR !" — on vérifie sur l'interface. Le recours à la vidéo est facultatif.</p>
     </div>
     <div class="step reveal reveal-delay-2">
       <div class="step-num">III</div>
-      <div class="step-title">Verdict positif</div>
-      <p class="step-desc">La VAR confirme votre analyse. Vous défaussez vos jetons. La victoire se rapproche.</p>
+      <div class="step-title" data-i18n="step3title">Verdict positif</div>
+      <p class="step-desc" data-i18n="step3desc">La VAR confirme votre analyse. Vous défaussez vos jetons. La victoire se rapproche.</p>
     </div>
     <div class="step reveal reveal-delay-3">
       <div class="step-num">IV</div>
-      <div class="step-title">Hors-jeu</div>
-      <p class="step-desc">Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.</p>
+      <div class="step-title" data-i18n="step4title">Hors-jeu</div>
+      <p class="step-desc" data-i18n="step4desc">Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.</p>
     </div>
   </div>
 </section>
@@ -747,37 +776,36 @@ footer {
 <!-- CONTACT -->
 <section class="contact" id="contact">
   <div class="contact-wrap">
-    <div class="section-label reveal" style="justify-content:center;">Accès Anticipé</div>
-    <h2 class="section-title reveal reveal-delay-1" style="font-size:clamp(40px,7vw,80px);">REJOIGNEZ<br><span>L'ÉQUIPE</span></h2>
+    <div class="section-label reveal" style="justify-content:center;" data-i18n="contactLabel">Accès Anticipé</div>
+    <h2 class="section-title reveal reveal-delay-1" style="font-size:clamp(40px,7vw,80px);" data-i18n="contactTitle">REJOIGNEZ<br><span>L'ÉQUIPE</span></h2>
     <p class="contact-subtitle reveal reveal-delay-2">
-      Soyez parmi les premiers à accéder à VAR Club.<br>
-      Laissez vos coordonnées, on vous contacte au lancement.
+      <span data-i18n="contactSub">Soyez parmi les premiers à accéder à VAR Club.<br>Laissez vos coordonnées, on vous contacte au lancement.</span>
     </p>
 
     <div class="form-wrap reveal reveal-delay-3">
       <form id="contactForm">
         <div class="form-row">
           <div class="field-wrap">
-            <label class="field-label" for="fname">Prénom</label>
-            <input class="field-input" type="text" id="fname" name="fname" placeholder="Kylian" required>
+            <label class="field-label" for="fname" data-i18n="fieldFirst">Prénom</label>
+            <input class="field-input" type="text" id="fname" name="fname" data-i18n-attr="placeholder" data-i18n="phFirst" placeholder="Kylian" required>
           </div>
           <div class="field-wrap">
-            <label class="field-label" for="lname">Nom</label>
-            <input class="field-input" type="text" id="lname" name="lname" placeholder="Dupont" required>
+            <label class="field-label" for="lname" data-i18n="fieldLast">Nom</label>
+            <input class="field-input" type="text" id="lname" name="lname" data-i18n-attr="placeholder" data-i18n="phLast" placeholder="Dupont" required>
           </div>
         </div>
         <div class="field-wrap" style="margin-bottom:16px;">
-          <label class="field-label" for="email">Adresse email</label>
-          <input class="field-input" type="email" id="email" name="email" placeholder="vous@email.com" required>
+          <label class="field-label" for="email" data-i18n="fieldEmail">Adresse email</label>
+          <input class="field-input" type="email" id="email" name="email" data-i18n-attr="placeholder" data-i18n="phEmail" placeholder="vous@email.com" required>
         </div>
-        <button type="submit" class="form-submit">Rejoindre VAR Club →</button>
-        <p class="form-note">Aucun spam. Juste une notification au lancement.</p>
+        <button type="submit" class="form-submit" data-i18n="submitBtn">Rejoindre VAR Club →</button>
+        <p class="form-note" data-i18n="formNote">Aucun spam. Juste une notification au lancement.</p>
       </form>
 
       <div class="success-msg" id="successMsg">
         <div class="success-icon">✦</div>
-        <div class="success-title">Vous êtes dans l'équipe</div>
-        <p class="success-sub">On vous contacte dès le lancement. Merci de votre intérêt pour VAR Club.</p>
+        <div class="success-title" data-i18n="successTitle">Vous êtes dans l'équipe</div>
+        <p class="success-sub" data-i18n="successSub">On vous contacte dès le lancement. Merci de votre intérêt pour VAR Club.</p>
       </div>
     </div>
   </div>
@@ -786,10 +814,153 @@ footer {
 <!-- FOOTER -->
 <footer>
   <div class="footer-brand">VAR <span>CLUB</span></div>
-  <div class="footer-copy">© 2026 — Le Jeu de Cartes Football</div>
+  <div class="footer-copy" data-i18n="footerCopy">© 2026 — Le Jeu de Cartes Football</div>
 </footer>
 
 <script>
+
+const LANG = {
+  fr: {
+    navJoin: 'Rejoindre',
+    heroEyebrow: 'Le Jeu de Cartes Football',
+    heroSub: 'D\u00e9faussez vos jetons. Battez vos adversaires.<br>Une base de donn\u00e9es vivante \u2014 toujours dans l\u2019\u00e8re du temps.',
+    heroCta1: '\u00catre notifi\u00e9 au lancement',
+    heroCta2: 'D\u00e9couvrir le jeu',
+    conceptLabel: 'Le Concept',
+    conceptTitle: 'L\u2019OBJECTIF\u00a0:<br><span>Z\u00c9RO JETON</span>',
+    conceptP1: 'Chaque joueur d\u00e9marre avec 15 jetons. Pour gagner, vous devez tous les d\u00e9fausser en validant vos analyses football devant vos adversaires.',
+    conceptP2: 'Bonne analyse\u00a0? Vous d\u00e9faussez vos jetons. Erreur face \u00e0 la VAR\u00a0? Vous les gardez et votre tour s\u2019arr\u00eate. Simple. Implacable.',
+    conceptP3: 'La base de donn\u00e9es est mise \u00e0 jour r\u00e9guli\u00e8rement. Nouveaux transferts, nouvelles saisons \u2014 VAR Club ne vieillit jamais.',
+    modesLabel: 'Les Trois Modes de Jeu',
+    modesTitle: 'CHOISISSEZ<br><span>VOTRE MODE</span>',
+    mode1name: 'L\u2019Identit\u00e9',
+    mode1desc: 'Tire une carte club. Annonce la ville, le stade, le surnom avant la r\u00e9v\u00e9lation. Chaque bonne r\u00e9ponse = jetons d\u00e9fauss\u00e9s.',
+    mode1tag: 'Le Jeune Passionn\u00e9',
+    mode2name: 'Le Duel VAR',
+    mode2desc: 'Tire une carte Club + une carte Question. Fais ton annonce \u00e0 voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.',
+    mode2tag: 'Confrontation directe',
+    mode3name: 'Le Mode Expert',
+    mode3desc: 'Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.',
+    mode3tag: 'Pour les amoureux de la data',
+    diffLabel: 'Ce qui change tout',
+    diffTitle: 'UNE BASE DE<br><span>DONN\u00c9ES VIVANTE</span>',
+    diff1title: 'Mis \u00e0 jour r\u00e9guli\u00e8rement',
+    diff1desc: 'Chaque transfert, chaque saison est int\u00e9gr\u00e9e. Le jeu reste pr\u00e9cis et actuel, ann\u00e9es apr\u00e8s ann\u00e9es.',
+    diff2title: '17 clubs majeurs',
+    diff2desc: 'Les plus grandes \u00e9quipes d\u2019Europe. Ligue\u00a01, Liga, Premier League, Bundesliga, Serie\u00a0A.',
+    diff3title: 'Des milliers de joueurs',
+    diff3desc: 'Nationalit\u00e9s, gardiens, transferts, statistiques \u2014 une profondeur de donn\u00e9es unique dans un jeu de cartes.',
+    ruleLabel: 'La R\u00e8gle d\u2019or',
+    ruleTitle: 'LA <span>VAR</span> A LE<br>DERNIER MOT',
+    ruleBody: 'L\u2019application est votre assistant, pas votre ma\u00eetre. Les vrais arbitres, c\u2019est vous. Le foot, c\u2019est avant tout des d\u00e9bats passionn\u00e9s autour de la table.',
+    step1title: 'D\u00e9battez librement',
+    step1desc: 'L\u2019arbitrage humain d\u2019abord. Si tout le monde est d\u2019accord, le point est valid\u00e9 sans application.',
+    step2title: 'Un doute\u00a0? VAR\u00a0!',
+    step2desc: 'Un adversaire crie \u00abVAR\u00a0!\u00bb \u2014 on v\u00e9rifie sur l\u2019interface. Le recours \u00e0 la vid\u00e9o est facultatif.',
+    step3title: 'Verdict positif',
+    step3desc: 'La VAR confirme votre analyse. Vous d\u00e9faussez vos jetons. La victoire se rapproche.',
+    step4title: 'Hors-jeu',
+    step4desc: 'Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.',
+    contactLabel: 'Acc\u00e8s Anticip\u00e9',
+    contactTitle: 'REJOIGNEZ<br><span>L\u2019\u00c9QUIPE</span>',
+    contactSub: 'Soyez parmi les premiers \u00e0 acc\u00e9der \u00e0 VAR Club.<br>Laissez vos coordonn\u00e9es, on vous contacte au lancement.',
+    fieldFirst: 'Pr\u00e9nom',
+    fieldLast: 'Nom',
+    fieldEmail: 'Adresse email',
+    phFirst: 'Kylian',
+    phLast: 'Dupont',
+    phEmail: 'vous@email.com',
+    submitBtn: 'Rejoindre VAR Club \u2192',
+    formNote: 'Aucun spam. Juste une notification au lancement.',
+    successTitle: 'Vous \u00eates dans l\u2019\u00e9quipe',
+    successSub: 'On vous contacte d\u00e8s le lancement. Merci de votre int\u00e9r\u00eat pour VAR Club.',
+    footerCopy: '\u00a9 2026 \u2014 Le Jeu de Cartes Football',
+  },
+  en: {
+    navJoin: 'Join',
+    heroEyebrow: 'The Football Card Game',
+    heroSub: 'Discard your tokens. Beat your opponents.<br>A living database \u2014 always up to date.',
+    heroCta1: 'Get notified at launch',
+    heroCta2: 'Discover the game',
+    conceptLabel: 'The Concept',
+    conceptTitle: 'THE GOAL:<br><span>ZERO TOKENS</span>',
+    conceptP1: 'Each player starts with 15 tokens. To win, you must discard them all by validating your football knowledge in front of your opponents.',
+    conceptP2: 'Good answer? Discard your tokens. Wrong answer? You keep them and your turn ends. Simple. Ruthless.',
+    conceptP3: 'The database is updated regularly. New transfers, new seasons \u2014 VAR Club never gets old.',
+    modesLabel: 'Three Game Modes',
+    modesTitle: 'CHOOSE<br><span>YOUR MODE</span>',
+    mode1name: 'The Identity',
+    mode1desc: 'Draw a club card. Name the city, the stadium, the nickname before the reveal. Each right answer = discarded tokens.',
+    mode1tag: 'The Young Fan',
+    mode2name: 'VAR Duel',
+    mode2desc: 'Draw a Club card + a Question card. Make your announcement out loud. If VAR confirms, your tokens drop. Otherwise, you wait.',
+    mode2tag: 'Head-to-head clash',
+    mode3name: 'Expert Mode',
+    mode3desc: 'Raw data, transfers, sharp statistics. A final sprint to empty your token stock as fast as possible. Only the pros survive.',
+    mode3tag: 'For data lovers',
+    diffLabel: 'What changes everything',
+    diffTitle: 'A LIVING<br><span>DATABASE</span>',
+    diff1title: 'Regularly updated',
+    diff1desc: 'Every transfer, every season is integrated. The game stays accurate and current, year after year.',
+    diff2title: '17 major clubs',
+    diff2desc: "Europe's greatest teams. Ligue 1, Liga, Premier League, Bundesliga, Serie A.",
+    diff3title: 'Thousands of players',
+    diff3desc: 'Nationalities, goalkeepers, transfers, stats \u2014 a depth of data unique in a card game.',
+    ruleLabel: 'The Golden Rule',
+    ruleTitle: 'THE <span>VAR</span> HAS<br>THE LAST WORD',
+    ruleBody: 'The app is your assistant, not your master. The real referees are you. Football is first and foremost passionate debates around the table.',
+    step1title: 'Debate freely',
+    step1desc: 'Human judgement first. If everyone agrees, the point is validated without the app.',
+    step2title: 'Any doubt? VAR!',
+    step2desc: 'An opponent calls \u00abVAR!\u00bb \u2014 check on the interface. Using the app is optional.',
+    step3title: 'Positive verdict',
+    step3desc: 'VAR confirms your answer. You discard your tokens. Victory draws closer.',
+    step4title: 'Offside',
+    step4desc: 'Wrong answer. You keep your tokens and wait for the next turn. VAR is ruthless.',
+    contactLabel: 'Early Access',
+    contactTitle: 'JOIN<br><span>THE SQUAD</span>',
+    contactSub: 'Be among the first to access VAR Club.<br>Leave your details and we\'ll reach out at launch.',
+    fieldFirst: 'First name',
+    fieldLast: 'Last name',
+    fieldEmail: 'Email address',
+    phFirst: 'Kylian',
+    phLast: 'Smith',
+    phEmail: 'you@email.com',
+    submitBtn: 'Join VAR Club \u2192',
+    formNote: 'No spam. Just a notification at launch.',
+    successTitle: "You're in the squad",
+    successSub: "We'll be in touch at launch. Thank you for your interest in VAR Club.",
+    footerCopy: '\u00a9 2026 \u2014 The Football Card Game',
+  }
+};
+let currentLang = 'fr';
+
+window.t = function t(key) {
+  return LANG[currentLang][key] || LANG['fr'][key] || key;
+};
+
+window.applyLang = function() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const attr = el.getAttribute('data-i18n-attr');
+    if (attr) {
+      el.setAttribute(attr, t(key));
+    } else {
+      el.innerHTML = t(key);
+    }
+  });
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === currentLang);
+  });
+};
+
+window.switchLang = function(lang) {
+  currentLang = lang;
+  localStorage.setItem('vc_lang', lang);
+  applyLang();
+};
+
 // Custom cursor
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
@@ -976,6 +1147,10 @@ document.getElementById('contactForm').addEventListener('submit', async function
   buildWords();
   requestAnimationFrame(tick);
 })();
+
+  // Init langue
+  const savedLang = localStorage.getItem('vc_lang') || 'fr';
+  switchLang(savedLang);
 </script>
 </body>
 </html>
