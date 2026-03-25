@@ -1,40 +1,2340 @@
 <!DOCTYPE html>
+
 <html lang="fr">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>VAR CLUB — Le Jeu de Cartes Football</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
+
 <meta name="description" content="VAR CLUB — Le jeu de cartes football stratégique. Défaussez vos jetons, battez vos adversaires avec de vrais transferts. Rejoignez la communauté.">
+
 <link rel="canonical" href="https://varclub.app">
+
 <meta property="og:title" content="VAR CLUB — Le Jeu de Cartes Football">
+
 <meta property="og:description" content="Défaussez vos jetons. Battez vos adversaires. Le jeu de cartes football avec une base de données vivante.">
+
 <meta property="og:url" content="https://varclub.app">
+
 <meta property="og:type" content="website">
+
 <meta property="og:image" content="https://varclub.app/og-preview.jpg">
+
 <meta name="twitter:card" content="summary_large_image">
+
 <meta name="twitter:title" content="VAR CLUB — Le Jeu de Cartes Football">
+
 <meta name="twitter:description" content="Défaussez vos jetons. Battez vos adversaires. Le jeu de cartes football stratégique.">
+
 <script type="application/ld+json">
+
 {"@context":"https://schema.org","@type":"WebSite","name":"VAR CLUB","url":"https://varclub.app","description":"Le jeu de cartes football stratégique avec une base de données vivante de vrais transferts.","potentialAction":{"@type":"Action","name":"Rejoindre la liste d'attente"}}
+
 </script>
+
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
 <style>
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 
+
 :root {
+
   --black: #0d1f0d;
+
   --black2: #122012;
+
   --black3: #162816;
+
   --gold: #f0b429;
+
   --gold2: #f5c842;
+
   --gold3: #fde68a;
+
   --white: #f7fdf4;
+
   --white2: #c8dfc8;
+
   --slate: #7a9e7a;
+
   --r: 2px;
+
 }
+
+
+
+html { scroll-behavior: smooth; }
+
+
+
+body {
+
+  background: #0d1f0d;
+
+  color: var(--white);
+
+  font-family: 'DM Sans', sans-serif;
+
+  overflow-x: hidden;
+
+  cursor: none;
+
+}
+
+
+
+/* Custom cursor */
+
+.cursor {
+
+  position: fixed;
+
+  width: 8px; height: 8px;
+
+  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  z-index: 9999;
+
+  transition: transform 0.15s ease;
+
+  transform: translate(-50%, -50%);
+
+}
+
+.cursor-ring {
+
+  position: fixed;
+
+  width: 32px; height: 32px;
+
+  border: 1px solid rgba(240,180,41,0.4);
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  z-index: 9998;
+
+  transition: transform 0.4s ease, width 0.3s, height 0.3s, border-color 0.3s;
+
+  transform: translate(-50%, -50%);
+
+}
+
+body:hover .cursor-ring.hovering {
+
+  width: 48px; height: 48px;
+
+  border-color: var(--gold);
+
+}
+
+
+
+/* Noise overlay */
+
+body::before {
+
+  content: '';
+
+  position: fixed;
+
+  inset: 0;
+
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+
+  pointer-events: none;
+
+  z-index: 1000;
+
+  opacity: 0.4;
+
+}
+
+
+
+/* ── ANIMATIONS ── */
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+@keyframes shimmer { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+@keyframes pulse-gold { 0%,100% { box-shadow: 0 0 0 0 rgba(240,180,41,0.4); } 50% { box-shadow: 0 0 0 16px rgba(240,180,41,0); } }
+
+@keyframes scanline { 0% { top: -10%; } 100% { top: 110%; } }
+
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+
+
+/* ── NAV ── */
+
+nav {
+
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+
+  display: flex; align-items: center; justify-content: space-between;
+
+  padding: 24px 48px;
+
+  background: linear-gradient(180deg, rgba(13,31,13,0.98) 0%, transparent 100%);
+
+  animation: fadeIn 1s ease both;
+
+}
+
+.nav-brand {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: 28px; letter-spacing: 6px; color: var(--white);
+
+}
+
+.nav-brand span { color: var(--gold); }
+
+.lang-switch {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+}
+
+.lang-btn {
+
+  background: transparent;
+
+  border: 1px solid rgba(240,180,41,0.25);
+
+  color: var(--slate);
+
+  padding: 3px 10px;
+
+  font-family: 'DM Sans', sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  letter-spacing: 2px;
+
+  cursor: pointer;
+
+  border-radius: 2px;
+
+  transition: all 0.2s;
+
+}
+
+.lang-btn.active {
+
+  border-color: var(--gold);
+
+  color: var(--gold);
+
+}
+
+.lang-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.nav-cta {
+
+  background: transparent; border: 1px solid rgba(240,180,41,0.4);
+
+  color: var(--gold); padding: 10px 24px;
+
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+
+  font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+
+  cursor: none; transition: all 0.3s;
+
+  text-decoration: none;
+
+}
+
+.nav-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+
+
+/* ── HERO ── */
+
+.hero {
+
+  min-height: 100vh;
+
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+
+  position: relative; overflow: hidden; padding: 120px 48px 80px;
+
+  text-align: center;
+
+}
+
+
+
+/* Gold mesh background */
+
+.hero::after {
+
+  content: '';
+
+  position: absolute; inset: 0;
+
+  background:
+
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(240,180,41,0.12) 0%, transparent 70%),
+
+    radial-gradient(ellipse 40% 60% at 0% 100%, rgba(34,120,34,0.08) 0%, transparent 60%),
+
+    radial-gradient(ellipse 40% 40% at 100% 50%, rgba(240,180,41,0.06) 0%, transparent 60%);
+
+  pointer-events: none;
+
+}
+
+
+
+/* Scanline effect */
+
+.hero-scanline {
+
+  position: absolute; left: 0; right: 0; height: 2px;
+
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.4), transparent);
+
+  animation: scanline 6s linear infinite;
+
+  pointer-events: none; z-index: 2;
+
+}
+
+
+
+/* Mots révélés par le scan */
+
+.scan-word {
+
+  position: absolute;
+
+  font-family: 'DM Sans', sans-serif;
+
+  font-weight: 300;
+
+  text-transform: uppercase;
+
+  letter-spacing: 3px;
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  white-space: nowrap;
+
+  z-index: 1;
+
+}
+
+.scan-word.revealed {
+
+  animation: wordReveal 6s ease forwards;
+
+}
+
+@keyframes wordReveal {
+
+  0%   { opacity: 0; }
+
+  8%   { opacity: 1; }
+
+  70%  { opacity: 1; }
+
+  100% { opacity: 0; }
+
+}
+
+@keyframes wordReveal2 {
+
+  0%   { opacity: 0; }
+
+  8%   { opacity: 0.7; }
+
+  70%  { opacity: 0.7; }
+
+  100% { opacity: 0; }
+
+}
+
+
+
+/* Decorative lines */
+
+.hero-line-left, .hero-line-right {
+
+  position: absolute; top: 50%; width: 1px; height: 200px;
+
+  background: linear-gradient(180deg, transparent, var(--gold), transparent);
+
+  opacity: 0.2;
+
+}
+
+.hero-line-left { left: 48px; transform: translateY(-50%); }
+
+.hero-line-right { right: 48px; transform: translateY(-50%); }
+
+
+
+.hero-eyebrow {
+
+  font-family: 'DM Sans', sans-serif;
+
+  font-size: 10px; font-weight: 500; letter-spacing: 6px;
+
+  text-transform: uppercase; color: var(--gold);
+
+  margin-bottom: 28px;
+
+  animation: fadeUp 0.8s ease 0.2s both;
+
+  display: flex; align-items: center; gap: 16px;
+
+}
+
+.hero-eyebrow::before, .hero-eyebrow::after {
+
+  content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5;
+
+}
+
+
+
+.hero-title {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: clamp(80px, 14vw, 180px);
+
+  letter-spacing: 12px; line-height: 0.9;
+
+  color: var(--white);
+
+  animation: fadeUp 0.8s ease 0.3s both;
+
+  position: relative; z-index: 1;
+
+}
+
+.hero-title .accent { color: var(--gold); }
+
+.hero-title .outline {
+
+  -webkit-text-stroke: 1px rgba(240,180,41,0.3);
+
+  color: transparent;
+
+}
+
+
+
+.hero-subtitle {
+
+  font-family: 'Cormorant Garamond', serif;
+
+  font-size: clamp(16px, 2vw, 22px);
+
+  font-style: italic; font-weight: 300;
+
+  color: var(--white2);
+
+  max-width: 520px; line-height: 1.7;
+
+  margin: 28px auto 48px;
+
+  animation: fadeUp 0.8s ease 0.4s both;
+
+}
+
+
+
+.hero-cta-wrap {
+
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+
+  animation: fadeUp 0.8s ease 0.5s both;
+
+}
+
+.btn-primary {
+
+  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
+
+  color: var(--black);
+
+  padding: 16px 40px;
+
+  font-family: 'DM Sans', sans-serif;
+
+  font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+
+  border: none; cursor: none; transition: all 0.3s;
+
+  text-decoration: none; display: inline-block;
+
+  animation: pulse-gold 3s ease infinite;
+
+}
+
+.btn-primary:hover { background: var(--gold3); transform: translateY(-2px); }
+
+.btn-secondary {
+
+  background: transparent;
+
+  color: var(--white2);
+
+  padding: 16px 40px;
+
+  font-family: 'DM Sans', sans-serif;
+
+  font-size: 11px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase;
+
+  border: 1px solid rgba(245,240,232,0.15); cursor: none; transition: all 0.3s;
+
+  text-decoration: none; display: inline-block;
+
+}
+
+.btn-secondary:hover { border-color: var(--white2); color: var(--white); }
+
+
+
+/* Scroll indicator */
+
+.scroll-ind {
+
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+
+  animation: fadeIn 1s ease 1.2s both;
+
+}
+
+.scroll-ind-line {
+
+  width: 1px; height: 48px;
+
+  background: linear-gradient(180deg, var(--gold), transparent);
+
+  animation: shimmer 2s ease infinite;
+
+}
+
+.scroll-ind span {
+
+  font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: var(--slate);
+
+}
+
+
+
+/* ── TICKER ── */
+
+.ticker {
+
+  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
+
+  padding: 12px 0; overflow: hidden;
+
+  position: relative; z-index: 10;
+
+}
+
+.ticker-inner {
+
+  display: flex; white-space: nowrap;
+
+  animation: marquee 20s linear infinite;
+
+}
+
+.ticker-item {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: 13px; letter-spacing: 4px; color: #0d1f0d;
+
+  padding: 0 40px;
+
+  display: flex; align-items: center; gap: 20px;
+
+}
+
+.ticker-dot { width: 4px; height: 4px; background: var(--black); border-radius: 50%; opacity: 0.4; }
+
+
+
+/* ── SECTION BASE ── */
+
+section { padding: 120px 48px; position: relative; }
+
+.section-label {
+
+  font-size: 9px; font-weight: 500; letter-spacing: 6px;
+
+  text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+
+  display: flex; align-items: center; gap: 12px;
+
+}
+
+.section-label::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
+
+.section-title {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: clamp(36px, 6vw, 72px);
+
+  letter-spacing: 4px; line-height: 1; color: var(--white);
+
+  margin-bottom: 20px;
+
+}
+
+.section-title span { color: var(--gold); }
+
+.section-body {
+
+  font-family: 'Cormorant Garamond', serif;
+
+  font-size: 18px; font-weight: 300; line-height: 1.8;
+
+  color: var(--white2); max-width: 560px;
+
+}
+
+
+
+/* ── CONCEPT SECTION ── */
+
+.concept { background: #0f1e0f; }
+
+.concept-grid {
+
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+
+  align-items: center; max-width: 1100px; margin: 0 auto;
+
+}
+
+@media(max-width:768px) { .concept-grid { grid-template-columns: 1fr; gap: 48px; } }
+
+
+
+.concept-visual {
+
+  position: relative; aspect-ratio: 1;
+
+  max-width: 400px;
+
+}
+
+.concept-ring {
+
+  position: absolute; inset: 0;
+
+  border: 1px solid rgba(240,180,41,0.15);
+
+  border-radius: 50%;
+
+  animation: rotate 20s linear infinite;
+
+}
+
+.concept-ring::before {
+
+  content: ''; position: absolute;
+
+  top: -3px; left: 50%; transform: translateX(-50%);
+
+  width: 6px; height: 6px;
+
+  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429); border-radius: 50%;
+
+}
+
+.concept-ring-2 {
+
+  position: absolute; inset: 15%;
+
+  border: 1px solid rgba(240,180,41,0.1);
+
+  border-radius: 50%;
+
+  animation: rotate 12s linear infinite reverse;
+
+}
+
+.concept-center {
+
+  position: absolute; inset: 25%;
+
+  background: #162816;
+
+  border-radius: 50%;
+
+  display: flex; align-items: center; justify-content: center;
+
+  border: 1px solid rgba(240,180,41,0.2);
+
+  animation: float 4s ease-in-out infinite;
+
+}
+
+.concept-emoji { font-size: 56px; filter: grayscale(0.2); }
+
+
+
+/* ── MODES ── */
+
+.modes { background: var(--black); }
+
+.modes-grid {
+
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+
+  background: rgba(34,100,34,0.15);
+
+  max-width: 1100px; margin: 60px auto 0;
+
+  border: 1px solid rgba(34,100,34,0.2);
+
+}
+
+@media(max-width:768px) { .modes-grid { grid-template-columns: 1fr; } }
+
+
+
+.mode-item {
+
+  background: #0d1f0d;
+
+  padding: 48px 40px;
+
+  position: relative; overflow: hidden;
+
+  transition: background 0.4s;
+
+}
+
+.mode-item:hover { background: var(--black3); }
+
+.mode-item::after {
+
+  content: '';
+
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+
+  opacity: 0; transition: opacity 0.4s;
+
+}
+
+.mode-item:hover::after { opacity: 1; }
+
+.mode-num {
+
+  font-family: 'Cormorant Garamond', serif;
+
+  font-size: 11px; font-style: italic; color: var(--gold);
+
+  letter-spacing: 2px; margin-bottom: 20px; opacity: 0.7;
+
+}
+
+.mode-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+
+.mode-name {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: 28px; letter-spacing: 3px;
+
+  color: var(--white); margin-bottom: 12px;
+
+}
+
+.mode-desc {
+
+  font-size: 13px; font-weight: 300; line-height: 1.7;
+
+  color: var(--slate);
+
+}
+
+.mode-tag {
+
+  display: inline-block; margin-top: 20px;
+
+  font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
+
+  color: var(--gold); border: 1px solid rgba(240,180,41,0.3);
+
+  padding: 4px 12px;
+
+}
+
+
+
+/* ── HOW IT WORKS ── */
+
+.how { background: #0f1e0f; }
+
+.steps {
+
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 40px;
+
+  max-width: 1100px; margin: 60px auto 0;
+
+  position: relative;
+
+}
+
+@media(max-width:768px) { .steps { grid-template-columns: 1fr 1fr; } }
+
+@media(max-width:480px) { .steps { grid-template-columns: 1fr; } }
+
+
+
+.steps::before {
+
+  content: '';
+
+  position: absolute; top: 24px; left: 0; right: 0; height: 1px;
+
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.2), rgba(240,180,41,0.2), transparent);
+
+}
+
+.step { position: relative; padding-top: 8px; }
+
+.step-num {
+
+  width: 48px; height: 48px;
+
+  border: 1px solid rgba(240,180,41,0.3);
+
+  display: flex; align-items: center; justify-content: center;
+
+  font-family: 'Cormorant Garamond', serif;
+
+  font-size: 18px; font-style: italic; color: var(--gold);
+
+  margin-bottom: 24px; background: var(--black2);
+
+  position: relative; z-index: 1;
+
+}
+
+.step-title {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: 20px; letter-spacing: 2px; color: var(--white);
+
+  margin-bottom: 8px;
+
+}
+
+.step-desc { font-size: 12px; line-height: 1.7; color: var(--slate); font-weight: 300; }
+
+
+
+/* ── CLUBS SHOWCASE ── */
+
+.clubs { background: var(--black); overflow: hidden; }
+
+.clubs-logos {
+
+  display: flex; gap: 48px; align-items: center;
+
+  animation: marquee 25s linear infinite;
+
+  white-space: nowrap; margin-top: 60px;
+
+}
+
+.club-logo-item {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: 14px; letter-spacing: 4px;
+
+  color: rgba(245,240,232,0.2);
+
+  flex-shrink: 0; transition: color 0.3s;
+
+  display: flex; align-items: center; gap: 12px;
+
+}
+
+.club-logo-item:hover { color: var(--gold); }
+
+.club-logo-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(240,180,41,0.3); flex-shrink: 0; }
+
+
+
+/* ── CONTACT ── */
+
+.contact {
+
+  background: #162816;
+
+  text-align: center;
+
+}
+
+.contact-wrap { max-width: 640px; margin: 0 auto; }
+
+.contact-subtitle {
+
+  font-family: 'Cormorant Garamond', serif;
+
+  font-size: 20px; font-style: italic; font-weight: 300;
+
+  color: var(--white2); margin-bottom: 56px; line-height: 1.6;
+
+}
+
+
+
+.form-wrap { position: relative; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+@media(max-width:560px) { .form-row { grid-template-columns: 1fr; } }
+
+
+
+.field-wrap { position: relative; }
+
+.field-label {
+
+  display: block; font-size: 8px; letter-spacing: 4px;
+
+  text-transform: uppercase; color: var(--gold);
+
+  margin-bottom: 8px; opacity: 0.8;
+
+}
+
+.field-input {
+
+  width: 100%;
+
+  background: rgba(255,255,255,0.04);
+
+  border: 1px solid rgba(34,120,34,0.3);
+
+  color: var(--white);
+
+  padding: 16px 20px;
+
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 300;
+
+  outline: none; transition: all 0.3s;
+
+}
+
+.field-input::placeholder { color: rgba(245,240,232,0.2); }
+
+.field-input:focus {
+
+  border-color: var(--gold);
+
+  background: rgba(240,180,41,0.04);
+
+}
+
+
+
+.form-submit {
+
+  width: 100%; margin-top: 8px;
+
+  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429); color: var(--black);
+
+  border: none; padding: 18px;
+
+  font-family: 'DM Sans', sans-serif;
+
+  font-size: 11px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase;
+
+  cursor: none; transition: all 0.3s;
+
+}
+
+.form-submit:hover { background: var(--gold3); }
+
+.form-submit:active { transform: scale(0.99); }
+
+
+
+.form-note {
+
+  margin-top: 16px; font-size: 10px; color: var(--slate);
+
+  letter-spacing: 1px;
+
+}
+
+
+
+.success-msg {
+
+  display: none;
+
+  padding: 24px;
+
+  border: 1px solid rgba(240,180,41,0.3);
+
+  background: rgba(240,180,41,0.05);
+
+  text-align: center;
+
+}
+
+.success-msg.show { display: block; }
+
+.success-icon { font-size: 32px; margin-bottom: 12px; }
+
+.success-title {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: 24px; letter-spacing: 4px; color: var(--gold);
+
+  margin-bottom: 8px;
+
+}
+
+.success-sub { font-size: 13px; color: var(--white2); }
+
+
+
+/* ── FOOTER ── */
+
+footer {
+
+  background: #0d1f0d;
+
+  padding: 40px 48px;
+
+  display: flex; align-items: center; justify-content: space-between;
+
+  border-top: 1px solid rgba(34,120,34,0.2);
+
+}
+
+.footer-brand {
+
+  font-family: 'Bebas Neue', cursive;
+
+  font-size: 20px; letter-spacing: 4px; color: rgba(245,240,232,0.3);
+
+}
+
+.footer-brand span { color: rgba(240,180,41,0.4); }
+
+.footer-copy { font-size: 10px; letter-spacing: 2px; color: var(--slate); }
+
+
+
+/* ── REVEAL ANIMATIONS ── */
+
+.reveal {
+
+  opacity: 0; transform: translateY(24px);
+
+  transition: opacity 0.8s ease, transform 0.8s ease;
+
+}
+
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+
+.reveal-delay-2 { transition-delay: 0.2s; }
+
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<div class="cursor" id="cursor"></div>
+
+<div class="cursor-ring" id="cursorRing"></div>
+
+
+
+<!-- NAV -->
+
+<nav>
+
+  <div class="nav-brand">VAR <span>CLUB</span></div>
+
+  <div style="display:flex;align-items:center;gap:12px;">
+
+    <div class="lang-switch">
+
+      <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
+
+      <span style="color:rgba(240,180,41,0.3);font-size:10px;">|</span>
+
+      <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+
+    </div>
+
+    <a href="#contact" class="nav-cta" data-i18n="navJoin">Rejoindre</a>
+
+  </div>
+
+</nav>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+  <div class="hero-scanline" id="scanline"></div>
+
+  <!-- Mots révélés par le scan -->
+
+  <div id="scan-words-layer" style="position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;"></div>
+
+  <div class="hero-line-left"></div>
+
+  <div class="hero-line-right"></div>
+
+  
+
+  <!-- Terrain de foot SVG en fond -->
+
+  <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;">
+
+    <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice"
+
+         style="width:100%;height:100%;opacity:0.06;transform:translateY(-10%);">
+
+      <!-- Fond transparent — le vert vient du body -->
+
+      <!-- Bordure du terrain -->
+
+      <rect x="60" y="40" width="1080" height="620" fill="none" stroke="white" stroke-width="2.5"/>
+
+      <!-- Ligne médiane -->
+
+      <line x1="600" y1="40" x2="600" y2="660" stroke="white" stroke-width="2"/>
+
+      <!-- Rond central -->
+
+      <circle cx="600" cy="350" r="91" fill="none" stroke="white" stroke-width="2"/>
+
+      <!-- Point central -->
+
+      <circle cx="600" cy="350" r="4" fill="white"/>
+
+      <!-- Surface de réparation gauche -->
+
+      <rect x="60" y="215" width="165" height="270" fill="none" stroke="white" stroke-width="2"/>
+
+      <!-- Surface de but gauche -->
+
+      <rect x="60" y="290" width="55" height="120" fill="none" stroke="white" stroke-width="2"/>
+
+      <!-- Arc de cercle gauche -->
+
+      <path d="M225,270 A91,91 0 0,1 225,430" fill="none" stroke="white" stroke-width="2"/>
+
+      <!-- Point de penalty gauche -->
+
+      <circle cx="170" cy="350" r="4" fill="white"/>
+
+      <!-- Surface de réparation droite -->
+
+      <rect x="975" y="215" width="165" height="270" fill="none" stroke="white" stroke-width="2"/>
+
+      <!-- Surface de but droite -->
+
+      <rect x="1085" y="290" width="55" height="120" fill="none" stroke="white" stroke-width="2"/>
+
+      <!-- Arc de cercle droit -->
+
+      <path d="M975,270 A91,91 0 0,0 975,430" fill="none" stroke="white" stroke-width="2"/>
+
+      <!-- Point de penalty droit -->
+
+      <circle cx="1030" cy="350" r="4" fill="white"/>
+
+      <!-- Coins du terrain (arcs) -->
+
+      <path d="M60,56 A18,18 0 0,1 76,40" fill="none" stroke="white" stroke-width="2"/>
+
+      <path d="M1124,40 A18,18 0 0,1 1140,56" fill="none" stroke="white" stroke-width="2"/>
+
+      <path d="M1140,644 A18,18 0 0,1 1124,660" fill="none" stroke="white" stroke-width="2"/>
+
+      <path d="M76,660 A18,18 0 0,1 60,644" fill="none" stroke="white" stroke-width="2"/>
+
+    </svg>
+
+    <!-- Dégradé qui noie le terrain vers les bords -->
+
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 50%, transparent 30%, #0d1f0d 90%);"></div>
+
+    <!-- Dégradé haut/bas pour fondre -->
+
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0d1f0d 0%,transparent 25%,transparent 75%,#0d1f0d 100%);"></div>
+
+  </div>
+
+
+
+  <div class="hero-eyebrow" style="position:relative;z-index:1;" data-i18n="heroEyebrow">Le Jeu de Cartes Football</div>
+
+
+
+  <h1 class="hero-title" style="position:relative;z-index:1;">
+
+    VAR<br><span class="accent">CLUB</span>
+
+  </h1>
+
+
+
+  <p class="hero-subtitle" style="position:relative;z-index:1;">
+
+    <span data-i18n="heroSub">Défaussez vos jetons. Battez vos adversaires.<br>Une base de données vivante — toujours dans l'ère du temps.</span>
+
+  </p>
+
+
+
+  <div class="hero-cta-wrap">
+
+    <a href="#contact" class="btn-primary" data-i18n="heroCta1">Être notifié au lancement</a>
+
+    <a href="#concept" class="btn-secondary" data-i18n="heroCta2">Découvrir le jeu</a>
+
+  </div>
+
+
+
+  <div class="scroll-ind">
+
+    <div class="scroll-ind-line"></div>
+
+    <span>Scroll</span>
+
+  </div>
+
+</section>
+
+
+
+<!-- TICKER -->
+
+<div class="ticker">
+
+  <div class="ticker-inner">
+
+    <div class="ticker-item">PSG <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">REAL MADRID <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">FC BARCELONA <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">MANCHESTER CITY <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">LIVERPOOL <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">CHELSEA <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">BAYERN MUNICH <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">JUVENTUS <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">AC MILAN <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">INTER MILAN <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">ARSENAL <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">DORTMUND <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">ATLÉTICO <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">MARSEILLE <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">LYON <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">NAPOLI <span class="ticker-dot"></span></div>
+
+    <!-- Duplicate for seamless loop -->
+
+    <div class="ticker-item">PSG <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">REAL MADRID <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">FC BARCELONA <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">MANCHESTER CITY <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">LIVERPOOL <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">CHELSEA <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">BAYERN MUNICH <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">JUVENTUS <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">AC MILAN <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">INTER MILAN <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">ARSENAL <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">DORTMUND <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">ATLÉTICO <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">MARSEILLE <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">LYON <span class="ticker-dot"></span></div>
+
+    <div class="ticker-item">NAPOLI <span class="ticker-dot"></span></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- CONCEPT -->
+
+<section class="concept" id="concept">
+
+  <div class="concept-grid">
+
+    <div>
+
+      <div class="section-label reveal" data-i18n="conceptLabel">Le Concept</div>
+
+      <h2 class="section-title reveal reveal-delay-1" data-i18n="conceptTitle">L'OBJECTIF :<br><span>ZÉRO JETON</span></h2>
+
+      <p class="section-body reveal reveal-delay-2">
+
+        <span data-i18n="conceptP1">Chaque joueur démarre avec 15 jetons. Pour gagner, vous devez tous les défausser en validant vos analyses football devant vos adversaires.</span>
+
+      </p>
+
+      <p class="section-body reveal reveal-delay-3" style="margin-top:16px; font-size:15px;">
+
+        <span data-i18n="conceptP2">Bonne analyse ? Vous défaussez vos jetons. Erreur face à la VAR ? Vous les gardez et votre tour s'arrête. Simple. Implacable.</span>
+
+      </p>
+
+      <p class="section-body reveal reveal-delay-3" style="margin-top:20px; font-size:14px; border-left: 2px solid var(--gold); padding-left: 20px; opacity: 0.85;">
+
+        <span data-i18n="conceptP3">La base de données est mise à jour régulièrement. Nouveaux transferts, nouvelles saisons — VAR Club ne vieillit jamais.</span>
+
+      </p>
+
+    </div>
+
+    <div class="concept-visual reveal reveal-delay-2">
+
+      <div class="concept-ring"></div>
+
+      <div class="concept-ring-2"></div>
+
+      <div class="concept-center">
+
+        <span class="concept-emoji">⚽</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- MODES -->
+
+<section class="modes" id="modes">
+
+  <div style="max-width:1100px; margin:0 auto;">
+
+    <div class="section-label reveal" data-i18n="modesLabel">Les Trois Modes de Jeu</div>
+
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="modesTitle">CHOISISSEZ<br><span>VOTRE MODE</span></h2>
+
+  </div>
+
+  <div class="modes-grid">
+
+    <div class="mode-item reveal">
+
+      <div class="mode-num">01</div>
+
+      <span class="mode-icon">🌟</span>
+
+      <div class="mode-name" data-i18n="mode1name">L'Identité</div>
+
+      <p class="mode-desc" data-i18n="mode1desc">Tire une carte club. Annonce la ville, le stade, le surnom avant la révélation. Chaque bonne réponse = jetons défaussés.</p>
+
+      <span class="mode-tag" data-i18n="mode1tag">Le Jeune Passionné</span>
+
+    </div>
+
+    <div class="mode-item reveal reveal-delay-1">
+
+      <div class="mode-num">02</div>
+
+      <span class="mode-icon">🛡️</span>
+
+      <div class="mode-name" data-i18n="mode2name">Le Duel VAR</div>
+
+      <p class="mode-desc" data-i18n="mode2desc">Tire une carte Club + une carte Question. Fais ton annonce à voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.</p>
+
+      <span class="mode-tag" data-i18n="mode2tag">Confrontation directe</span>
+
+    </div>
+
+    <div class="mode-item reveal reveal-delay-2">
+
+      <div class="mode-num">03</div>
+
+      <span class="mode-icon">🔥</span>
+
+      <div class="mode-name" data-i18n="mode3name">Le Mode Expert</div>
+
+      <p class="mode-desc" data-i18n="mode3desc">Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.</p>
+
+      <span class="mode-tag" data-i18n="mode3tag">Pour les amoureux de la data</span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- DIFFERENTIATEUR -->
+
+<section style="padding:100px 48px;background:#0f1e0f;position:relative;">
+
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <div class="section-label reveal" style="justify-content:center;" data-i18n="diffLabel">Ce qui change tout</div>
+
+    <h2 class="section-title reveal reveal-delay-1" style="text-align:center;" data-i18n="diffTitle">UNE BASE DE<br><span>DONNÉES VIVANTE</span></h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;max-width:900px;margin:40px auto 0;text-align:center;">
+
+      <div class="reveal">
+
+        <div style="font-size:36px;margin-bottom:12px;">🔄</div>
+
+        <div class="mode-title" style="font-size:20px;" data-i18n="diff1title">Mis à jour régulièrement</div>
+
+        <p class="mode-desc" data-i18n="diff1desc">Chaque transfert, chaque saison est intégrée. Le jeu reste précis et actuel, années après années.</p>
+
+      </div>
+
+      <div class="reveal">
+
+        <div style="font-size:36px;margin-bottom:12px;">🏟️</div>
+
+        <div class="mode-title" style="font-size:20px;" data-i18n="diff2title">17 clubs majeurs</div>
+
+        <p class="mode-desc" data-i18n="diff2desc">Les plus grandes équipes d'Europe. Ligue 1, Liga, Premier League, Bundesliga, Serie A.</p>
+
+      </div>
+
+      <div class="reveal">
+
+        <div style="font-size:36px;margin-bottom:12px;">📊</div>
+
+        <div class="mode-title" style="font-size:20px;" data-i18n="diff3title">Des milliers de joueurs</div>
+
+        <p class="mode-desc" data-i18n="diff3desc">Nationalités, gardiens, transferts, statistiques — une profondeur de données unique dans un jeu de cartes.</p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section class="how">
+
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <div class="section-label reveal" data-i18n="ruleLabel">La Règle d'or</div>
+
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="ruleTitle">LA <span>VAR</span> A LE<br>DERNIER MOT</h2>
+
+    <p class="section-body reveal reveal-delay-2" style="margin-top:16px;" data-i18n="ruleBody">L'application est votre assistant, pas votre maître. Les vrais arbitres, c'est vous. Le foot, c'est avant tout des débats passionnés autour de la table.</p>
+
+  </div>
+
+  <div class="steps">
+
+    <div class="step reveal">
+
+      <div class="step-num">I</div>
+
+      <div class="step-title" data-i18n="step1title">Débattez librement</div>
+
+      <p class="step-desc" data-i18n="step1desc">L'arbitrage humain d'abord. Si tout le monde est d'accord, le point est validé sans application.</p>
+
+    </div>
+
+    <div class="step reveal reveal-delay-1">
+
+      <div class="step-num">II</div>
+
+      <div class="step-title" data-i18n="step2title">Un doute ? VAR !</div>
+
+      <p class="step-desc" data-i18n="step2desc">Un adversaire crie "VAR !" — on vérifie sur l'interface. Le recours à la vidéo est facultatif.</p>
+
+    </div>
+
+    <div class="step reveal reveal-delay-2">
+
+      <div class="step-num">III</div>
+
+      <div class="step-title" data-i18n="step3title">Verdict positif</div>
+
+      <p class="step-desc" data-i18n="step3desc">La VAR confirme votre analyse. Vous défaussez vos jetons. La victoire se rapproche.</p>
+
+    </div>
+
+    <div class="step reveal reveal-delay-3">
+
+      <div class="step-num">IV</div>
+
+      <div class="step-title" data-i18n="step4title">Hors-jeu</div>
+
+      <p class="step-desc" data-i18n="step4desc">Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.</p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- CONTACT -->
+
+<section class="contact" id="contact">
+
+  <div class="contact-wrap">
+
+    <div class="section-label reveal" style="justify-content:center;" data-i18n="contactLabel">Accès Anticipé</div>
+
+    <h2 class="section-title reveal reveal-delay-1" style="font-size:clamp(40px,7vw,80px);" data-i18n="contactTitle">REJOIGNEZ<br><span>L'ÉQUIPE</span></h2>
+
+    <p class="contact-subtitle reveal reveal-delay-2">
+
+      <span data-i18n="contactSub">Soyez parmi les premiers à accéder à VAR Club.<br>Laissez vos coordonnées, on vous contacte au lancement.</span>
+
+    </p>
+
+
+
+    <div class="form-wrap reveal reveal-delay-3">
+
+      <form id="contactForm">
+
+        <div class="form-row">
+
+          <div class="field-wrap">
+
+            <label class="field-label" for="fname" data-i18n="fieldFirst">Prénom</label>
+
+            <input class="field-input" type="text" id="fname" name="fname" data-i18n-attr="placeholder" data-i18n="phFirst" placeholder="Kylian" required>
+
+          </div>
+
+          <div class="field-wrap">
+
+            <label class="field-label" for="lname" data-i18n="fieldLast">Nom</label>
+
+            <input class="field-input" type="text" id="lname" name="lname" data-i18n-attr="placeholder" data-i18n="phLast" placeholder="Dupont" required>
+
+          </div>
+
+        </div>
+
+        <div class="field-wrap" style="margin-bottom:16px;">
+
+          <label class="field-label" for="email" data-i18n="fieldEmail">Adresse email</label>
+
+          <input class="field-input" type="email" id="email" name="email" data-i18n-attr="placeholder" data-i18n="phEmail" placeholder="vous@email.com" required>
+
+        </div>
+
+        <button type="submit" class="form-submit" data-i18n="submitBtn">Rejoindre VAR Club →</button>
+
+        <p class="form-note" data-i18n="formNote">Aucun spam. Juste une notification au lancement.</p>
+
+      </form>
+
+
+
+      <div class="success-msg" id="successMsg">
+
+        <div class="success-icon">✦</div>
+
+        <div class="success-title" data-i18n="successTitle">Vous êtes dans l'équipe</div>
+
+        <p class="success-sub" data-i18n="successSub">On vous contacte dès le lancement. Merci de votre intérêt pour VAR Club.</p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- FOOTER -->
+
+<footer>
+
+  <div class="footer-brand">VAR <span>CLUB</span></div>
+
+  <div class="footer-copy" data-i18n="footerCopy">© 2026 — Le Jeu de Cartes Football</div>
+
+</footer>
+
+
+
+<script>
+
+
+
+const LANG = {
+
+  fr: {
+
+    navJoin: 'Rejoindre',
+
+    heroEyebrow: 'Le Jeu de Cartes Football',
+
+    heroSub: 'D\u00e9faussez vos jetons. Battez vos adversaires.<br>Une base de donn\u00e9es vivante \u2014 toujours dans l\u2019\u00e8re du temps.',
+
+    heroCta1: '\u00catre notifi\u00e9 au lancement',
+
+    heroCta2: 'D\u00e9couvrir le jeu',
+
+    conceptLabel: 'Le Concept',
+
+    conceptTitle: 'L\u2019OBJECTIF\u00a0:<br><span>Z\u00c9RO JETON</span>',
+
+    conceptP1: 'Chaque joueur d\u00e9marre avec 15 jetons. Pour gagner, vous devez tous les d\u00e9fausser en validant vos analyses football devant vos adversaires.',
+
+    conceptP2: 'Bonne analyse\u00a0? Vous d\u00e9faussez vos jetons. Erreur face \u00e0 la VAR\u00a0? Vous les gardez et votre tour s\u2019arr\u00eate. Simple. Implacable.',
+
+    conceptP3: 'La base de donn\u00e9es est mise \u00e0 jour r\u00e9guli\u00e8rement. Nouveaux transferts, nouvelles saisons \u2014 VAR Club ne vieillit jamais.',
+
+    modesLabel: 'Les Trois Modes de Jeu',
+
+    modesTitle: 'CHOISISSEZ<br><span>VOTRE MODE</span>',
+
+    mode1name: 'L\u2019Identit\u00e9',
+
+    mode1desc: 'Tire une carte club. Annonce la ville, le stade, le surnom avant la r\u00e9v\u00e9lation. Chaque bonne r\u00e9ponse = jetons d\u00e9fauss\u00e9s.',
+
+    mode1tag: 'Le Jeune Passionn\u00e9',
+
+    mode2name: 'Le Duel VAR',
+
+    mode2desc: 'Tire une carte Club + une carte Question. Fais ton annonce \u00e0 voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.',
+
+    mode2tag: 'Confrontation directe',
+
+    mode3name: 'Le Mode Expert',
+
+    mode3desc: 'Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.',
+
+    mode3tag: 'Pour les amoureux de la data',
+
+    diffLabel: 'Ce qui change tout',
+
+    diffTitle: 'UNE BASE DE<br><span>DONN\u00c9ES VIVANTE</span>',
+
+    diff1title: 'Mis \u00e0 jour r\u00e9guli\u00e8rement',
+
+    diff1desc: 'Chaque transfert, chaque saison est int\u00e9gr\u00e9e. Le jeu reste pr\u00e9cis et actuel, ann\u00e9es apr\u00e8s ann\u00e9es.',
+
+    diff2title: '17 clubs majeurs',
+
+    diff2desc: 'Les plus grandes \u00e9quipes d\u2019Europe. Ligue\u00a01, Liga, Premier League, Bundesliga, Serie\u00a0A.',
+
+    diff3title: 'Des milliers de joueurs',
+
+    diff3desc: 'Nationalit\u00e9s, gardiens, transferts, statistiques \u2014 une profondeur de donn\u00e9es unique dans un jeu de cartes.',
+
+    ruleLabel: 'La R\u00e8gle d\u2019or',
+
+    ruleTitle: 'LA <span>VAR</span> A LE<br>DERNIER MOT',
+
+    ruleBody: 'L\u2019application est votre assistant, pas votre ma\u00eetre. Les vrais arbitres, c\u2019est vous. Le foot, c\u2019est avant tout des d\u00e9bats passionn\u00e9s autour de la table.',
+
+    step1title: 'D\u00e9battez librement',
+
+    step1desc: 'L\u2019arbitrage humain d\u2019abord. Si tout le monde est d\u2019accord, le point est valid\u00e9 sans application.',
+
+    step2title: 'Un doute\u00a0? VAR\u00a0!',
+
+    step2desc: 'Un adversaire crie \u00abVAR\u00a0!\u00bb \u2014 on v\u00e9rifie sur l\u2019interface. Le recours \u00e0 la vid\u00e9o est facultatif.',
+
+    step3title: 'Verdict positif',
+
+    step3desc: 'La VAR confirme votre analyse. Vous d\u00e9faussez vos jetons. La victoire se rapproche.',
+
+    step4title: 'Hors-jeu',
+
+    step4desc: 'Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.',
+
+    contactLabel: 'Acc\u00e8s Anticip\u00e9',
+
+    contactTitle: 'REJOIGNEZ<br><span>L\u2019\u00c9QUIPE</span>',
+
+    contactSub: 'Soyez parmi les premiers \u00e0 acc\u00e9der \u00e0 VAR Club.<br>Laissez vos coordonn\u00e9es, on vous contacte au lancement.',
+
+    fieldFirst: 'Pr\u00e9nom',
+
+    fieldLast: 'Nom',
+
+    fieldEmail: 'Adresse email',
+
+    phFirst: 'Kylian',
+
+    phLast: 'Dupont',
+
+    phEmail: 'vous@email.com',
+
+    submitBtn: 'Rejoindre VAR Club \u2192',
+
+    formNote: 'Aucun spam. Juste une notification au lancement.',
+
+    successTitle: 'Vous \u00eates dans l\u2019\u00e9quipe',
+
+    successSub: 'On vous contacte d\u00e8s le lancement. Merci de votre int\u00e9r\u00eat pour VAR Club.',
+
+    footerCopy: '\u00a9 2026 \u2014 Le Jeu de Cartes Football',
+
+  },
+
+  en: {
+
+    navJoin: 'Join',
+
+    heroEyebrow: 'The Football Card Game',
+
+    heroSub: 'Discard your tokens. Beat your opponents.<br>A living database \u2014 always up to date.',
+
+    heroCta1: 'Get notified at launch',
+
+    heroCta2: 'Discover the game',
+
+    conceptLabel: 'The Concept',
+
+    conceptTitle: 'THE GOAL:<br><span>ZERO TOKENS</span>',
+
+    conceptP1: 'Each player starts with 15 tokens. To win, you must discard them all by validating your football knowledge in front of your opponents.',
+
+    conceptP2: 'Good answer? Discard your tokens. Wrong answer? You keep them and your turn ends. Simple. Ruthless.',
+
+    conceptP3: 'The database is updated regularly. New transfers, new seasons \u2014 VAR Club never gets old.',
+
+    modesLabel: 'Three Game Modes',
+
+    modesTitle: 'CHOOSE<br><span>YOUR MODE</span>',
+
+    mode1name: 'The Identity',
+
+    mode1desc: 'Draw a club card. Name the city, the stadium, the nickname before the reveal. Each right answer = discarded tokens.',
+
+    mode1tag: 'The Young Fan',
+
+    mode2name: 'VAR Duel',
+
+    mode2desc: 'Draw a Club card + a Question card. Make your announcement out loud. If VAR confirms, your tokens drop. Otherwise, you wait.',
+
+    mode2tag: 'Head-to-head clash',
+
+    mode3name: 'Expert Mode',
+
+    mode3desc: 'Raw data, transfers, sharp statistics. A final sprint to empty your token stock as fast as possible. Only the pros survive.',
+
+    mode3tag: 'For data lovers',
+
+    diffLabel: 'What changes everything',
+
+    diffTitle: 'A LIVING<br><span>DATABASE</span>',
+
+    diff1title: 'Regularly updated',
+
+    diff1desc: 'Every transfer, every season is integrated. The game stays accurate and current, year after year.',
+
+    diff2title: '17 major clubs',
+
+    diff2desc: "Europe's greatest teams. Ligue 1, Liga, Premier League, Bundesliga, Serie A.",
+
+    diff3title: 'Thousands of players',
+
+    diff3desc: 'Nationalities, goalkeepers, transfers, stats \u2014 a depth of data unique in a card game.',
+
+    ruleLabel: 'The Golden Rule',
+
+    ruleTitle: 'THE <span>VAR</span> HAS<br>THE LAST WORD',
+
+    ruleBody: 'The app is your assistant, not your master. The real referees are you. Football is first and foremost passionate debates around the table.',
+
+    step1title: 'Debate freely',
+
+    step1desc: 'Human judgement first. If everyone agrees, the point is validated without the app.',
+
+    step2title: 'Any doubt? VAR!',
+
+    step2desc: 'An opponent calls \u00abVAR!\u00bb \u2014 check on the interface. Using the app is optional.',
+
+    step3title: 'Positive verdict',
+
+    step3desc: 'VAR confirms your answer. You discard your tokens. Victory draws closer.',
+
+    step4title: 'Offside',
+
+    step4desc: 'Wrong answer. You keep your tokens and wait for the next turn. VAR is ruthless.',
+
+    contactLabel: 'Early Access',
+
+    contactTitle: 'JOIN<br><span>THE SQUAD</span>',
+
+    contactSub: 'Be among the first to access VAR Club.<br>Leave your details and we\'ll reach out at launch.',
+
+    fieldFirst: 'First name',
+
+    fieldLast: 'Last name',
+
+    fieldEmail: 'Email address',
+
+    phFirst: 'Kylian',
+
+    phLast: 'Smith',
+
+    phEmail: 'you@email.com',
+
+    submitBtn: 'Join VAR Club \u2192',
+
+    formNote: 'No spam. Just a notification at launch.',
+
+    successTitle: "You're in the squad",
+
+    successSub: "We'll be in touch at launch. Thank you for your interest in VAR Club.",
+
+    footerCopy: '\u00a9 2026 \u2014 The Football Card Game',
+
+  }
+
+};
+
+let currentLang = 'fr';
+
+
+
+window.t = function t(key) {
+
+  return LANG[currentLang][key] || LANG['fr'][key] || key;
+
+};
+
+
+
+window.applyLang = function() {
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+
+    const key = el.getAttribute('data-i18n');
+
+    const attr = el.getAttribute('data-i18n-attr');
+
+    if (attr) {
+
+      el.setAttribute(attr, t(key));
+
+    } else {
+
+      el.innerHTML = t(key);
+
+    }
+
+  });
+
+  document.documentElement.lang = currentLang;
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+
+    btn.classList.toggle('active', btn.dataset.lang === currentLang);
+
+  });
+
+};
+
+
+
+window.switchLang = function(lang) {
+
+  currentLang = lang;
+
+  localStorage.setItem('vc_lang', lang);
+
+  applyLang();
+
+};
+
+
+
+// Custom cursor
+
+const cursor = document.getElementById('cursor');
+
+const ring = document.getElementById('cursorRing');
+
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+
+
+document.addEventListener('mousemove', e => {
+
+  mx = e.clientX; my = e.clientY;
+
+  cursor.style.left = mx + 'px';
+
+  cursor.style.top = my + 'px';
+
+});
+
+
+
+function animateRing() {
+
+  rx += (mx - rx) * 0.12;
+
+  ry += (my - ry) * 0.12;
+
+  ring.style.left = rx + 'px';
+
+  ring.style.top = ry + 'px';
+
+  requestAnimationFrame(animateRing);
+
+}
+
+animateRing();
+
+
+
+document.querySelectorAll('a, button, input').forEach(el => {
+
+  el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+
+  el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+
+});
+
+
+
+// Scroll reveal
+
+const observer = new IntersectionObserver(entries => {
+
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+
+
+// Supabase config
+
+const SUPABASE_URL = 'https://ojyobjndnkhyfqpwhemc.supabase.co';
+
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qeW9iam5kbmtoeWZxcHdoZW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTkwOTIsImV4cCI6MjA4OTA3NTA5Mn0.fKk8v2LSI1EHWAR03vfxCRE6U3zD_5HQG91CetlUzfM';
+
+
+
+// Form
+
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+
+  e.preventDefault();
+
+  const btn = this.querySelector('.form-submit');
+
+  const prenom = document.getElementById('fname').value.trim();
+
+  const nom = document.getElementById('lname').value.trim();
+
+  const email = document.getElementById('email').value.trim();
+
+
+
+  btn.textContent = 'Enregistrement…';
+
+  btn.disabled = true;
+
+
+
+  try {
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/contacts`, {
+
+      method: 'POST',
+
+      headers: {
+
+        'Content-Type': 'application/json',
+
+        'apikey': SUPABASE_KEY,
+
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+
+        'Prefer': 'return=minimal'
+
+      },
+
+      body: JSON.stringify({ prenom, nom, email })
+
+    });
+
+
+
+    if (!res.ok) throw new Error('Erreur réseau');
+
+
+
+    this.style.display = 'none';
+
+    document.getElementById('successMsg').classList.add('show');
+
+
+
+  } catch (err) {
+
+    btn.textContent = 'Réessayer →';
+
+    btn.disabled = false;
+
+    btn.style.background = '#c0392b';
+
+    btn.style.color = '#fff';
+
+    console.error(err);
+
+  }
+
+});
+
+</script>
+
+
+
+
+
+<script>
+
+(function(){
+
+  const players = [
+
+    "Zidane","Ronaldo","Mbappé","Messi","Neymar","Benzema","Ibrahimovic",
+
+    "Henry","Bergkamp","Platini","Cantona","Trezeguet","Vieira","Barthez",
+
+    "Thuram","Desailly","Klose","Müller","Lahm","Neuer","Ribéry","Robben",
+
+    "Lewandowski","Haaland","Van Dijk","Gerrard","Torres","Suarez","Salah",
+
+    "Drogba","Lampard","Terry","Fabregas","Pires","Maldini","Baresi",
+
+    "Del Piero","Totti","Buffon","Pirlo","Shevchenko","Ronaldinho","Xavi",
+
+    "Iniesta","Puyol","Raul","Casillas","Ramos","Modric","Kroos","Griezmann",
+
+    "Oblak","Zanetti","Sneijder","Milito","Nedved","Maradona","Vieri"
+
+  ];
+
+  const questions = [
+
+    "Joueurs Français","Joueurs Espagnols","Joueurs Allemands",
+
+    "Joueurs Italiens","Joueurs Anglais","Brésiliens / Argentins",
+
+    "Joueurs Algériens","Joueurs Marocains","Gardiens de but",
+
+    "Recrutés libres","Prêtés puis achetés","+120 buts","Transferts >50M€"
+
+  ];
+
+  // Positions générées aléatoirement à chaque cycle
+
+  // Zones autorisées : gauche (x 2-22%) et droite (x 72-92%)
+
+  // Y réparti sur toute la hauteur, espacé pour éviter les doublons
+
+  function generatePositions(){
+
+    const pos = [];
+
+    const usedY = [];
+
+    const COUNT = 14;
+
+    for(let i = 0; i < COUNT; i++){
+
+      let y, attempts = 0;
+
+      do {
+
+        y = 5 + Math.random() * 90;
+
+        attempts++;
+
+      } while(usedY.some(uy => Math.abs(uy - y) < 7) && attempts < 20);
+
+      usedY.push(y);
+
+      const side = Math.random() > 0.5; // gauche ou droite
+
+      pos.push({
+
+        x: side ? (2 + Math.random() * 18) : (72 + Math.random() * 18),
+
+        y: y,
+
+        type: Math.random() > 0.55 ? 'p' : 'q',
+
+        size: 7 + Math.round(Math.random()),
+
+        gold: Math.random() > 0.45,
+
+      });
+
+    }
+
+    return pos;
+
+  }
+
+
+
+  const layer = document.getElementById('scan-words-layer');
+
+  const scanEl = document.getElementById('scanline');
+
+  if(!layer || !scanEl) return;
+
+
+
+  const hero = scanEl.closest('section');
+
+  let wordEls = [];
+
+  let lastCycle = -1;
+
+  const DURATION = 6000;
+
+
+
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+
+
+  function buildWords(){
+
+    layer.innerHTML = '';
+
+    wordEls = [];
+
+    generatePositions().forEach(pos => {
+
+      const el = document.createElement('div');
+
+      el.className = 'scan-word';
+
+      el.textContent = pos.type === 'p' ? rand(players) : rand(questions);
+
+      el.style.cssText = [
+
+        'position:absolute',
+
+        'font-family:"Bebas Neue",cursive',
+
+        'text-transform:uppercase',
+
+        'white-space:nowrap',
+
+        'pointer-events:none',
+
+        'opacity:0',
+
+        'transition:opacity 0.25s ease',
+
+        'left:' + pos.x + '%',
+
+        'top:' + pos.y + '%',
+
+        'font-size:' + pos.size + 'px',
+
+        'letter-spacing:' + (pos.type==='q' ? '5px' : '4px'),
+
+        'font-weight:400',
+
+        'color:' + (pos.gold ? 'rgba(240,180,41,0.4)' : 'rgba(200,223,200,0.22)'),
+
+      ].join(';');
+
+      layer.appendChild(el);
+
+      wordEls.push({el, posY: pos.y});
+
+    });
+
+  }
+
+
+
+  function tick(){
+
+    const heroRect = hero.getBoundingClientRect();
+
+    const scanRect = scanEl.getBoundingClientRect();
+
+    // Position du scan en % de la hauteur du hero
+
+    const scanPct = ((scanRect.top - heroRect.top) / heroRect.height) * 100;
+
+
+
+    wordEls.forEach(({el, posY}) => {
+
+      const dist = scanPct - posY;
+
+      if(dist >= -4 && dist <= 4){
+
+        // Scan sur le mot — allumer
+
+        el.style.opacity = (1 - Math.abs(dist)/4).toFixed(2);
+
+      } else if(dist > 4 && dist < 40){
+
+        // Scan passé — fade progressif
+
+        el.style.opacity = Math.max(0, 1 - (dist-4)/36).toFixed(2);
+
+      } else {
+
+        el.style.opacity = '0';
+
+      }
+
+    });
+
+
+
+    const cycle = Math.floor(performance.now() / DURATION);
+
+    if(cycle !== lastCycle){
+
+      lastCycle = cycle;
+
+      buildWords();
+
+    }
+
+    requestAnimationFrame(tick);
+
+  }
+
+
+
+  buildWords();
+
+  requestAnimationFrame(tick);
+
+})();
+
+
+
+  // Init langue
+
+  const savedLang = localStorage.getItem('vc_lang') || 'fr';
+
+  switchLang(savedLang);
+
+</script>
+
+</body>
+
+</html>
 
