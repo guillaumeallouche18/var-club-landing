@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentions Légales & Confidentialité — VAR CLUB</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  :root {
+    --green-dark: #0D1F0D;
+    --green-mid: #1a3a1a;
+    --gold: #F0B429;
+    --white: #F7FDF4;
+    --grey: rgba(247,253,244,0.6);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--green-dark);
+    color: var(--white);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.7;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid rgba(240,180,41,0.15);
+  }
+  .logo { font-size: 18px; font-weight: 900; letter-spacing: 2px; }
+  .logo span { color: var(--gold); }
+  nav a {
+    color: var(--grey);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--gold); }
+  .container {
+    max-width: 780px;
+    margin: 60px auto;
+    padding: 0 30px 80px;
+  }
+  h1 {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  h1 span { color: var(--gold); }
+  .subtitle {
+    color: var(--grey);
+    font-size: 14px;
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(240,180,41,0.2);
+  }
+  .lang-switch {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .lang-btn {
+    background: transparent;
+    border: 1px solid rgba(240,180,41,0.3);
+    color: var(--grey);
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  section {
+    margin-bottom: 48px;
+  }
+  h2 {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(240,180,41,0.15);
+  }
+  p { color: var(--grey); font-size: 15px; margin-bottom: 12px; }
+  a { color: var(--gold); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--grey);
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--white); }
+  footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--grey);
+    font-size: 12px;
+    border-top: 1px solid rgba(240,180,41,0.1);
+  }
+  footer .brand { font-weight: 900; color: var(--white); }
+  footer .brand span { color: var(--gold); }
+  [data-fr], [data-en] { display: none; }
+  [data-fr].show, [data-en].show { display: block; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">VAR <span>CLUB</span></div>
+  <a href="/">← Retour au site</a>
+</nav>
+
+<div class="container">
+
+  <h1>Mentions Légales<br><span>&</span> Confidentialité</h1>
+  <p class="subtitle">Dernière mise à jour : Mars 2026 · Last updated: March 2026</p>
+
+  <div class="lang-switch">
+    <button class="lang-btn active" onclick="setLang('fr')" id="btn-fr">🇫🇷 Français</button>
+    <button class="lang-btn" onclick="setLang('en')" id="btn-en">🇬🇧 English</button>
+  </div>
+
+  <!-- ═══════════════ FRANÇAIS ═══════════════ -->
+  <div data-fr class="show">
+
+    <section>
+      <h2>01 — Mentions légales</h2>
+      <p><strong>Éditeur du site :</strong> Guillaume Allouche, particulier</p>
+      <p><strong>Site web :</strong> <a href="https://varclub.app">varclub.app</a></p>
+      <p><strong>Contact :</strong> <a href="mailto:contact@varclub.app">contact@varclub.app</a></p>
+      <p><strong>Hébergeur :</strong> Vercel Inc., 340 Pine Street Suite 701, San Francisco, CA 94104, États-Unis — <a href="https://vercel.com" target="_blank">vercel.com</a></p>
+    </section>
+
+    <section>
+      <h2>02 — Propriété intellectuelle</h2>
+      <p>© 2026 VAR CLUB — Tous droits réservés.</p>
+      <p>L'ensemble du contenu de ce site (textes, visuels, logo, structure, concept) est la propriété exclusive de VAR CLUB et est protégé par les lois françaises et internationales sur la propriété intellectuelle.</p>
+      <p>Toute reproduction, représentation, modification, publication ou transmission, totale ou partielle, du contenu de ce site, par quelque procédé que ce soit, est interdite sans autorisation écrite préalable.</p>
+    </section>
+
+    <section>
+      <h2>03 — Collecte de données personnelles</h2>
+      <p>VAR CLUB collecte les données suivantes via le formulaire d'inscription :</p>
+      <p>— Prénom, Nom, Adresse email</p>
+      <p><strong>Finalité :</strong> ces données sont utilisées uniquement pour vous informer du lancement de VAR CLUB et ne seront jamais revendues ni transmises à des tiers.</p>
+      <p><strong>Durée de conservation :</strong> vos données sont conservées jusqu'à la commercialisation du jeu, ou jusqu'à votre désinscription.</p>
+      <p><strong>Responsable du traitement :</strong> Guillaume Allouche — <a href="mailto:contact@varclub.app">contact@varclub.app</a></p>
+    </section>
+
+    <section>
+      <h2>04 — Vos droits (RGPD)</h2>
+      <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez des droits suivants :</p>
+      <p>— <strong>Droit d'accès</strong> : connaître les données que nous détenons sur vous</p>
+      <p>— <strong>Droit de rectification</strong> : corriger vos données</p>
+      <p>— <strong>Droit à l'effacement</strong> : supprimer vos données ("droit à l'oubli")</p>
+      <p>— <strong>Droit d'opposition</strong> : vous opposer au traitement de vos données</p>
+      <p>Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@varclub.app">contact@varclub.app</a></p>
+      <p>En cas de litige, vous pouvez saisir la CNIL : <a href="https://www.cnil.fr" target="_blank">cnil.fr</a></p>
+    </section>
+
+    <section>
+      <h2>05 — Cookies</h2>
+      <p>Ce site n'utilise pas de cookies publicitaires ni de traceurs tiers. Seul un cookie de préférence de langue (stockage local) peut être utilisé pour mémoriser votre choix linguistique (FR/EN).</p>
+      <p>Aucune donnée de navigation n'est transmise à des tiers.</p>
+    </section>
+
+    <section>
+      <h2>06 — Droit applicable</h2>
+      <p>Les présentes mentions légales sont soumises au droit français. En cas de litige, les tribunaux français seront seuls compétents.</p>
+    </section>
+
+  </div>
+
+  <!-- ═══════════════ ENGLISH ═══════════════ -->
+  <div data-en>
+
+    <section>
+      <h2>01 — Legal Notice</h2>
+      <p><strong>Publisher:</strong> Guillaume Allouche, individual</p>
+      <p><strong>Website:</strong> <a href="https://varclub.app">varclub.app</a></p>
+      <p><strong>Contact:</strong> <a href="mailto:contact@varclub.app">contact@varclub.app</a></p>
+      <p><strong>Hosting:</strong> Vercel Inc., 340 Pine Street Suite 701, San Francisco, CA 94104, USA — <a href="https://vercel.com" target="_blank">vercel.com</a></p>
+    </section>
+
+    <section>
+      <h2>02 — Intellectual Property</h2>
+      <p>© 2026 VAR CLUB — All rights reserved.</p>
+      <p>All content on this site (texts, visuals, logo, structure, concept) is the exclusive property of VAR CLUB and is protected by French and international intellectual property laws.</p>
+      <p>Any reproduction, representation, modification, publication or transmission, in whole or in part, of the content of this site, by any means, is prohibited without prior written authorisation.</p>
+    </section>
+
+    <section>
+      <h2>03 — Personal Data Collection</h2>
+      <p>VAR CLUB collects the following data via the registration form:</p>
+      <p>— First name, Last name, Email address</p>
+      <p><strong>Purpose:</strong> this data is used solely to notify you of the VAR CLUB launch and will never be sold or shared with third parties.</p>
+      <p><strong>Retention period:</strong> your data is kept until the game is released, or until you unsubscribe.</p>
+      <p><strong>Data controller:</strong> Guillaume Allouche — <a href="mailto:contact@varclub.app">contact@varclub.app</a></p>
+    </section>
+
+    <section>
+      <h2>04 — Your Rights (GDPR)</h2>
+      <p>In accordance with the General Data Protection Regulation (GDPR), you have the following rights:</p>
+      <p>— <strong>Right of access</strong>: know what data we hold about you</p>
+      <p>— <strong>Right of rectification</strong>: correct your data</p>
+      <p>— <strong>Right to erasure</strong>: delete your data ("right to be forgotten")</p>
+      <p>— <strong>Right to object</strong>: object to the processing of your data</p>
+      <p>To exercise these rights, contact us at: <a href="mailto:contact@varclub.app">contact@varclub.app</a></p>
+    </section>
+
+    <section>
+      <h2>05 — Cookies</h2>
+      <p>This site does not use advertising cookies or third-party trackers. Only a language preference cookie (local storage) may be used to remember your language choice (FR/EN).</p>
+      <p>No browsing data is transmitted to third parties.</p>
+    </section>
+
+    <section>
+      <h2>06 — Applicable Law</h2>
+      <p>These legal notices are governed by French law. In the event of a dispute, French courts shall have sole jurisdiction.</p>
+    </section>
+
+  </div>
+
+</div>
+
+<footer>
+  <div class="brand">VAR <span>CLUB</span></div>
+  <p style="margin-top:8px">© 2026 VAR CLUB — Tous droits réservés · All rights reserved</p>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('[data-fr], [data-en]').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('[data-' + lang + ']').forEach(el => el.classList.add('show'));
+  document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+}
+// Auto-detect depuis le site principal
+const savedLang = localStorage.getItem('vc_lang') || 'fr';
+setLang(savedLang);
+</script>
+
+</body>
+</html>
