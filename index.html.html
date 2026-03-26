@@ -3269,6 +3269,12 @@ function updateSEO(lang){
 
 
 
+        <div class="gdpr-check" style="margin:16px 0;display:flex;align-items:flex-start;gap:10px">
+          <input type="checkbox" id="gdprCheck" required style="margin-top:3px;accent-color:#F0B429;width:16px;height:16px;flex-shrink:0">
+          <label for="gdprCheck" style="font-size:12px;color:rgba(247,253,244,0.6);line-height:1.5" data-i18n="gdprLabel">
+            J'accepte que mes données soient utilisées pour être contacté(e) au lancement de VAR CLUB. Consulter notre <a href="/legal.html" style="color:#F0B429">Politique de confidentialité</a>.
+          </label>
+        </div>
         <button type="submit" class="form-submit" data-i18n="submitBtn">Rejoindre VAR Club →</button>
 
 
@@ -3326,17 +3332,11 @@ function updateSEO(lang){
 
 
 <footer>
-
-
-
   <div class="footer-brand">VAR <span>CLUB</span></div>
-
-
-
-  <div class="footer-copy" data-i18n="footerCopy">© 2026 — Le Jeu de Cartes Football</div>
-
-
-
+  <div class="footer-copy" data-i18n="footerCopy">© 2026 VAR CLUB — Tous droits réservés</div>
+  <div style="margin-top:10px;font-size:12px">
+    <a href="/legal.html" style="color:rgba(247,253,244,0.5);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#F0B429'" onmouseout="this.style.color='rgba(247,253,244,0.5)'" data-i18n="legalLink">Mentions légales &amp; Confidentialité</a>
+  </div>
 </footer>
 
 
@@ -3562,6 +3562,9 @@ const LANG = {
 
 
     formNote: 'Aucun spam. Juste une notification au lancement.',
+    gdprLabel: 'J\'accepte que mes données soient utilisées pour être contacté(e) au lancement de VAR CLUB. Consulter notre <a href="/legal.html" style="color:#F0B429">Politique de confidentialité</a>.',
+    legalLink: 'Mentions légales &amp; Confidentialité',
+    footerCopy: '© 2026 VAR CLUB — Tous droits réservés',
 
 
 
@@ -3785,7 +3788,10 @@ const LANG = {
 
 
 
-    formNote: 'No spam. Just a notification at launch.',
+    formNote: 'No spam. Just a launch notification.',
+    gdprLabel: 'I agree that my data may be used to be contacted at the launch of VAR CLUB. See our <a href="/legal.html" style="color:#F0B429">Privacy Policy</a>.',
+    legalLink: 'Legal Notice &amp; Privacy Policy',
+    footerCopy: '© 2026 VAR CLUB — All rights reserved',
 
 
 
