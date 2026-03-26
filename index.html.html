@@ -2194,6 +2194,21 @@ footer {
 
 
 
+<link rel="alternate" hreflang="fr" href="https://varclub.app/" />
+<link rel="alternate" hreflang="en" href="https://varclub.app/?lang=en" />
+<link rel="alternate" hreflang="x-default" href="https://varclub.app/" />
+<meta name="description" lang="en" content="VAR CLUB — The timeless football card game. Living database updated every transfer window: new signings, new seasons, decade after decade. Discard your tokens. The VAR has the final word.">
+<script>
+function updateSEO(lang){
+  var s=lang==='en'?
+    {t:'VAR CLUB — The Timeless Football Card Game',d:'VAR CLUB — The football card game built to last. Living database updated every transfer window: new signings, new seasons, decade after decade. Discard your tokens. The VAR has the final word.'}:
+    {t:'VAR CLUB — Le Jeu de Cartes Football Intemporel',d:'VAR CLUB — Le jeu de cartes football conçu pour durer. Base de données vivante mise à jour à chaque mercato : nouveaux transferts, nouvelles saisons, décennie après décennie.'};
+  document.title=s.t;
+  var m=document.querySelector('meta[name="description"]');if(m)m.content=s.d;
+  var o=document.querySelector('meta[property="og:title"]');if(o)o.content=s.t;
+  var od=document.querySelector('meta[property="og:description"]');if(od)od.content=s.d;
+}
+</script>
 </head>
 
 
@@ -3578,7 +3593,7 @@ const LANG = {
 
 
 
-    heroSub: 'Discard your tokens. Beat your opponents. For decades.<br>A living database \u2014 always up to date.',
+    heroSub: 'Discard your tokens. Beat your opponents. For decades.<br>A physical card game powered by a living digital database \u2014 updated every transfer window.',
 
 
 
