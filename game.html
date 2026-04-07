@@ -409,7 +409,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   <button class="var-access-btn" id="var-spectator-btn" onclick="openVarFromSpectator()" disabled>
     🔍 Accéder à la VAR
   </button>
-  <div style="font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:1px;">Accédez à la base de données VAR</div>
+  
 </div>
 
 <!-- PLAY (écran de jeu — joueur actif) -->
@@ -1205,7 +1205,7 @@ function renderMercatoSpectator(){
   renderSboard('spec-sboard');
   const btn=document.getElementById('var-spectator-btn');
   btn.disabled=false;
-  btn.onclick=openMercVarSpectator;
+  btn.onclick=function(){ openMercVarSpectator(); };
 }
 
 function changeMercCount(d){
@@ -1239,7 +1239,7 @@ function tryShowMercVerdict(){
 
 function openMercVarSpectator(){
   const m=GS.mercato;
-  if(!m?.varOpen)return;
+  if(!m)return;
   document.getElementById('var-merc-c1').textContent=m.club1.name;
   document.getElementById('var-merc-c2').textContent=m.club2.name;
   const common=m.common||[];
