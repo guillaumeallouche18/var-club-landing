@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>VAR CLUB — Multijoueur</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -577,7 +577,11 @@ function isMyTurn(){return GS && GS.players[GS.cur]?.name===ME.name;}
 // DATABASE
 // ═══════════════════════════════════════════
 async function loadDB(){
-  const urls=['https://varclub.app/database_15q.json','./database_15q.json'];
+  const urls=[
+    'https://varclub.app/database_15q.json',
+    '/database_15q.json',
+    './database_15q.json',
+  ];
   for(const url of urls){
     try{
       const r=await fetch(url);
@@ -623,11 +627,17 @@ async function joinGame(){
   ME.gameCode=code;
   await loadDB();
 
-  // Fetch existing session
+  // Fetch existing session avec retry
   console.log('Joining game:', code);
-  const {data,error}=await supa.from('game_sessions').select('state').eq('id',code).single();
-  console.log('Join result:', data, error);
-  if(error||!data){toast('Partie introuvable — vérifiez le code');return;}
+  let data=null,error=null;
+  for(let attempt=0;attempt<3;attempt++){
+    const res=await supa.from('game_sessions').select('state').eq('id',code).single();
+    data=res.data; error=res.error;
+    console.log(`Join attempt ${attempt+1}:`, data, error);
+    if(data)break;
+    await new Promise(r=>setTimeout(r,1000));
+  }
+  if(!data){toast('Partie introuvable — vérifiez le code');return;}
   GS=data.state;
 
   // Add player if not already in
@@ -1148,16 +1158,35 @@ async function startMercatoRound(){
   }
   if(!c1||!c2){toast('Plus assez de cartes clubs !');return;}
 
-  // Trouver les joueurs en commun dans la DB
-  const ans1=new Set((DB[c1.clubId]?.['15']||[]).concat(
-    DB[c1.clubId]?.['1']||[],DB[c1.clubId]?.['2']||[],
-    DB[c1.clubId]?.['6']||[],DB[c1.clubId]?.['7']||[]
-  ).map(p=>typeof p==='object'?p.name:p));
+  // Trouver les joueurs en commun
+  // Charger la base Pro Mercato si pas encore chargée
+  if(!window.DB_MERCATO){
+    try{
+      const urls=['https://varclub.app/database_promercato.json','/database_promercato.json','./database_promercato.json'];
+      for(const url of urls){
+        const r=await fetch(url);
+        if(!r.ok)continue;
+        const d=await r.json();
+        window.DB_MERCATO=d.players||{};
+        console.log('DB Mercato loaded from',url);
+        break;
+      }
+    }catch(e){console.warn('DB Mercato not loaded, using main DB');}
+    if(!window.DB_MERCATO) window.DB_MERCATO=null;
+  }
 
-  // Chercher dans toutes les questions du club2
+  // Utiliser DB_MERCATO si disponible, sinon fallback sur DB principal
+  const srcDB = window.DB_MERCATO || DB;
+
+  const ans1=new Set();
+  Object.values(srcDB[c1.clubId]||DB[c1.clubId]||{}).forEach(arr=>{
+    if(!Array.isArray(arr))return;
+    arr.forEach(p=>{const n=typeof p==='object'?p.name:p;ans1.add(n);});
+  });
+
   const common=[];
   const seen=new Set();
-  Object.values(DB[c2.clubId]||{}).forEach(arr=>{
+  Object.values(srcDB[c2.clubId]||DB[c2.clubId]||{}).forEach(arr=>{
     if(!Array.isArray(arr))return;
     arr.forEach(p=>{
       const n=typeof p==='object'?p.name:p;
