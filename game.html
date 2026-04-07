@@ -406,7 +406,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   <div class="spec-active" id="spec-active-name">JOUEUR</div>
   <div class="spec-sub" id="spec-sub">En train de jouer…</div>
   <div class="sboard spec-sboard" id="spec-sboard"></div>
-  <button class="var-access-btn" id="var-spectator-btn" onclick="openVarFromSpectator()" disabled>
+  <button class="var-access-btn" id="var-spectator-btn" disabled>
     🔍 Accéder à la VAR
   </button>
   
@@ -896,7 +896,6 @@ function renderSpectatorScreen(){
   renderSboard('spec-sboard');
   const btn=document.getElementById('var-spectator-btn');
   btn.disabled=!GS.play;
-  btn.onclick=openVarFromSpectator;
 }
 
 // ═══════════════════════════════════════════
@@ -945,17 +944,14 @@ async function beginPlay(card,idx,clubId,clubName,league){
 
 
 function openVarFromSpectator(){
-  if(!GS.varOpen||!GS.play)return;
-  renderVarScreen();
-  prevScreen='spectator';
-  show('var');
-}
-
-function openVar(){
-  if(!GS.varOpen||!GS.play)return;
-  renderVarScreen();
-  prevScreen='spectator';
-  show('var');
+  // Router selon le mode
+  if(GS.mode==='mercato'){
+    openMercVarSpectator();
+  } else {
+    if(!GS.play)return;
+    renderVarScreen();
+    show('var');
+  }
 }
 
 function renderVarScreen(){
@@ -1205,7 +1201,6 @@ function renderMercatoSpectator(){
   renderSboard('spec-sboard');
   const btn=document.getElementById('var-spectator-btn');
   btn.disabled=false;
-  btn.onclick=function(){ openMercVarSpectator(); };
 }
 
 function changeMercCount(d){
