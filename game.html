@@ -326,9 +326,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
       </div>
     </div>
 
-    <button onclick="triggerMercVar()" style="width:100%;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);color:var(--coral);padding:13px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;cursor:pointer;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;">
-      🔍 Ouvrir la VAR pour les autres
-    </button>
+
 
     <div class="box" style="margin-bottom:12px;">
       <div class="box-label">Les autres joueurs valident ?</div>
@@ -411,7 +409,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   <button class="var-access-btn" id="var-spectator-btn" onclick="openVarFromSpectator()" disabled>
     🔍 Accéder à la VAR
   </button>
-  <div style="font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:1px;">Disponible quand le joueur actif lance la VAR</div>
+  <div style="font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:1px;">Accédez à la base de données VAR</div>
 </div>
 
 <!-- PLAY (écran de jeu — joueur actif) -->
@@ -436,10 +434,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
       </div>
     </div>
 
-    <!-- VAR — actif uniquement quand le joueur l'ouvre -->
-    <button onclick="triggerVar()" style="width:100%;background:rgba(240,180,41,.07);border:1px solid rgba(240,180,41,.2);color:var(--gold);padding:13px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;cursor:pointer;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;">
-      🔍 Ouvrir la VAR pour les autres
-    </button>
+
 
     <div class="box">
       <div class="box-label">Les autres joueurs valident ?</div>
@@ -790,13 +785,6 @@ function renderCurrentScreen(){
   }
 
   // ── MODE DUEL VAR ──
-  if(GS.varOpen&&GS.play){
-    if(!isMyTurn()){
-      const btn=document.getElementById('var-spectator-btn');
-      if(btn){btn.disabled=false;btn.onclick=openVar;}
-    }
-    return;
-  }
 
   if(isMyTurn()){
     if(GS.play){renderPlayScreen();show('play');}
@@ -907,7 +895,7 @@ function renderSpectatorScreen(){
   document.getElementById('spec-sub').textContent=GS.play?'Question en cours…':'Choisit une carte…';
   renderSboard('spec-sboard');
   const btn=document.getElementById('var-spectator-btn');
-  btn.disabled=!GS.varOpen;
+  btn.disabled=!GS.play;
   btn.onclick=openVarFromSpectator;
 }
 
@@ -935,7 +923,7 @@ async function beginPlay(card,idx,clubId,clubName,league){
   myVote=null; myCount=0;
   GS.play={card,cardIdx:idx,clubId,clubName,league,qId:card.qId,qLabel:card.qLabel,
     answers:DB[clubId]?.[String(card.qId)]||[]};
-  GS.varOpen=false;
+  GS.varOpen=true;
   await saveGS(GS);
 
   document.getElementById('play-q-label').textContent=`Q${card.qId} — ${card.qLabel}`;
@@ -954,12 +942,7 @@ async function beginPlay(card,idx,clubId,clubName,league){
 // ═══════════════════════════════════════════
 // VAR
 // ═══════════════════════════════════════════
-async function triggerVar(){
-  // Joueur actif ouvre la VAR → notifie les spectateurs
-  GS.varOpen=true;
-  await saveGS(GS);
-  toast('VAR ouverte pour les autres joueurs !');
-}
+
 
 function openVarFromSpectator(){
   if(!GS.varOpen||!GS.play)return;
@@ -1191,7 +1174,7 @@ async function startMercatoRound(){
     club1:{id:c1.clubId,name:c1.clubName,league:c1.league},
     club2:{id:c2.clubId,name:c2.clubName,league:c2.league},
     common,
-    varOpen:false
+    varOpen:true
   };
   GS.play=null;
   GS.varOpen=false;
@@ -1221,7 +1204,7 @@ function renderMercatoSpectator(){
   document.getElementById('spec-sub').textContent=`${m.club1.name} × ${m.club2.name}`;
   renderSboard('spec-sboard');
   const btn=document.getElementById('var-spectator-btn');
-  btn.disabled=!m.varOpen;
+  btn.disabled=false;
   btn.onclick=openMercVarSpectator;
 }
 
@@ -1252,11 +1235,7 @@ function tryShowMercVerdict(){
   document.getElementById('merc-confirm-btn').disabled=false;
 }
 
-async function triggerMercVar(){
-  GS.mercato.varOpen=true;
-  await saveGS(GS);
-  toast('VAR ouverte pour les autres !');
-}
+
 
 function openMercVarSpectator(){
   const m=GS.mercato;
