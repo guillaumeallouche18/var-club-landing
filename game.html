@@ -482,6 +482,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 </div>
 
 <script>
+console.log('VAR CLUB game.html v3 — IDs:', Object.keys({psg:85,liverpool:40,barca:529}));
 // ═══════════════════════════════════════════
 // SUPABASE
 // ═══════════════════════════════════════════
@@ -756,8 +757,20 @@ function initGameState(playerNames){
 
 function buildDeck(){
   const d=[];
-  CLUBS.forEach(c=>{const q=rnd(QUESTIONS);d.push({type:'club',clubId:c.id,clubName:c.name,league:c.league,qId:q.id,qLabel:q.label});});
-  DOUBLE_CLUBS.forEach(dc=>{const q=rnd(QUESTIONS);d.push({type:'double',clubs:dc.clubs,label:dc.label,qId:q.id,qLabel:q.label});});
+  CLUBS.forEach(c=>{
+    const validIds=VALID_QUESTIONS[c.id]||QUESTIONS.map(q=>q.id);
+    const validQs=QUESTIONS.filter(q=>validIds.includes(q.id));
+    const q=rnd(validQs);
+    d.push({type:'club',clubId:c.id,clubName:c.name,league:c.league,qId:q.id,qLabel:q.label});
+  });
+  DOUBLE_CLUBS.forEach(dc=>{
+    // Questions valides pour les DEUX clubs
+    const v1=new Set(VALID_QUESTIONS[dc.clubs[0]]||QUESTIONS.map(q=>q.id));
+    const v2=new Set(VALID_QUESTIONS[dc.clubs[1]]||QUESTIONS.map(q=>q.id));
+    const validQs=QUESTIONS.filter(q=>v1.has(q.id)&&v2.has(q.id));
+    const q=rnd(validQs.length?validQs:QUESTIONS);
+    d.push({type:'double',clubs:dc.clubs,label:dc.label,qId:q.id,qLabel:q.label});
+  });
   ACTIONS.forEach(a=>{for(let i=0;i<a.n;i++)d.push({type:'action',actionId:a.id,name:a.name,icon:a.icon,desc:a.desc,clr:a.clr});});
   return shuffle(d);
 }
@@ -1195,6 +1208,9 @@ async function startMercatoRound(){
   try{
     const id1=EXPERT_CLUB_IDS[c1.clubId];
     const id2=EXPERT_CLUB_IDS[c2.clubId];
+    console.log('c1.clubId=',c1.clubId,'c2.clubId=',c2.clubId);
+    console.log('Lookup:',c1.clubId,'->',id1, '|', c2.clubId,'->',id2);
+    console.log('Keys disponibles:', Object.keys(EXPERT_CLUB_IDS).join(','));
     if(!id1||!id2){console.error('IDs Supabase non trouvés pour',c1.clubId,c2.clubId);
       GS.mercato={club1:{id:c1.clubId,name:c1.clubName,league:c1.league},club2:{id:c2.clubId,name:c2.clubName,league:c2.league},common:[],varOpen:true};
       GS.play=null;GS.varOpen=false;
