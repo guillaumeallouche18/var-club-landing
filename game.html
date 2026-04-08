@@ -19,19 +19,20 @@
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes tokenFly{
-  0%{transform:translateY(0) scale(1);opacity:1;}
-  50%{transform:translateY(-40px) scale(1.3);opacity:.8;}
-  100%{transform:translateY(-80px) scale(.8);opacity:0;}
+  0%{transform:translate(0,0) scale(1);opacity:1;}
+  70%{opacity:.8;}
+  100%{transform:translate(var(--dx,0),var(--dy,-80px)) scale(.6);opacity:0;}
 }
 @keyframes tokenAdd{
-  0%{transform:translateY(-60px) scale(.8);opacity:0;}
-  60%{transform:translateY(4px) scale(1.15);opacity:1;}
-  100%{transform:translateY(0) scale(1);opacity:1;}
+  0%{transform:translate(0,-60px) scale(.8);opacity:0;}
+  60%{transform:translate(0,4px) scale(1.15);opacity:1;}
+  100%{transform:translate(0,0) scale(1);opacity:1;}
 }
 @keyframes tokenNumPop{
-  0%{transform:scale(1);}
-  40%{transform:scale(1.5);}
-  100%{transform:scale(1);}
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.5);}
+  40%{opacity:1;transform:translate(-50%,-50%) scale(1.2);}
+  80%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0;transform:translate(-50%,-60%) scale(.9);}
 }
 
 html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
@@ -1245,35 +1246,50 @@ function removeCard(idx){
 // ANIMATION JETONS
 // ═══════════════════════════════════════════
 function animateTokens(count, type){
-  // Trouver la position du compteur de jetons
-  const tokenEl = document.getElementById('hand-tokens') ||
-                  document.getElementById('play-q-label');
-  if(!tokenEl) return;
-
-  const rect = tokenEl.getBoundingClientRect();
-  const n = Math.min(count, 8); // max 8 particules
+  const n = Math.min(count, 8);
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
 
   for(let i=0;i<n;i++){
     setTimeout(()=>{
       const el = document.createElement('div');
       el.className = 'token-particle' + (type==='add'?' add':'');
       el.textContent = '🪙';
-      el.style.left = (rect.left + Math.random()*40 - 20) + 'px';
-      el.style.top  = (rect.top  + Math.random()*20 - 10) + 'px';
+      // Partir en éventail depuis le centre de l'écran
+      const spread = 80;
+      el.style.position = 'fixed';
+      el.style.left = (cx + (Math.random()*spread - spread/2)) + 'px';
+      el.style.top  = (cy + (Math.random()*spread - spread/2)) + 'px';
+      el.style.fontSize = '24px';
+      el.style.zIndex = '9999';
+      el.style.pointerEvents = 'none';
+      // Direction aléatoire
+      const angle = (Math.random() * 360) * Math.PI / 180;
+      const dist = 80 + Math.random()*60;
+      el.style.setProperty('--dx', Math.cos(angle)*dist + 'px');
+      el.style.setProperty('--dy', Math.sin(angle)*dist + 'px');
       document.body.appendChild(el);
-      setTimeout(()=>el.remove(), 800);
-    }, i * 120);
+      setTimeout(()=>el.remove(), 900);
+    }, i * 100);
   }
 
-  // Pop du chiffre
-  const numEl = document.getElementById('hand-tokens');
-  if(numEl){
-    numEl.style.animation='none';
-    numEl.offsetHeight; // reflow
-    numEl.style.animation='tokenNumPop .4s ease';
-    numEl.style.color = type==='add' ? 'var(--coral)' : 'var(--muted)';
-    setTimeout(()=>{ numEl.style.color=''; }, 600);
-  }
+  // Toast avec le nombre
+  const sign = type==='remove' ? '-' : '+';
+  const color = type==='remove' ? 'var(--muted)' : 'var(--coral)';
+  const toast_el = document.createElement('div');
+  toast_el.style.cssText = `
+    position:fixed;top:50%;left:50%;
+    transform:translate(-50%,-50%) scale(1);
+    font-family:'Bebas Neue',cursive;
+    font-size:72px;letter-spacing:4px;
+    color:${color};
+    pointer-events:none;z-index:9998;
+    animation:tokenNumPop .8s ease forwards;
+    text-shadow:0 0 30px ${color};
+  `;
+  toast_el.textContent = `${sign}${count} 🪙`;
+  document.body.appendChild(toast_el);
+  setTimeout(()=>toast_el.remove(), 900);
 }
 
 // ═══════════════════════════════════════════
