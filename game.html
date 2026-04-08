@@ -801,13 +801,19 @@ function renderCurrentScreen(){
     if(!GS.mercato){
       // Joueur actif lance un round mercato
       if(isMyTurn()){
+        // Montrer écran chargement pendant la requête Supabase
+        show('spectator');
+        document.getElementById('spec-active-name').textContent='TIRAGE…';
+        document.getElementById('spec-sub').textContent='Chargement des joueurs en commun';
+        document.getElementById('var-spectator-btn').disabled=true;
         startMercatoRound();
-        show('spectator');
-        document.getElementById('spec-active-name').textContent='Tirage en cours…';
-        document.getElementById('spec-sub').textContent='';
       } else {
-        renderSpectatorScreen();
+        // Spectateurs — attendre que mercato soit chargé
         show('spectator');
+        document.getElementById('spec-active-name').textContent=GS.players[GS.cur]?.name?.toUpperCase()||'';
+        document.getElementById('spec-sub').textContent='Tirage en cours…';
+        document.getElementById('var-spectator-btn').disabled=true;
+        renderSboard('spec-sboard');
       }
       return;
     }
@@ -983,9 +989,10 @@ async function beginPlay(card,idx,clubId,clubName,league){
 function openVarFromSpectator(){
   // Router selon le mode
   if(GS.mode==='mercato'){
+    if(!GS.mercato){toast('Données en cours de chargement…');return;}
     openMercVarSpectator();
   } else {
-    if(!GS.play)return;
+    if(!GS.play){toast('Aucune question en cours');return;}
     renderVarScreen();
     show('var');
   }
@@ -1314,7 +1321,7 @@ function tryShowMercVerdict(){
 
 function openMercVarSpectator(){
   const m=GS.mercato;
-  if(!m)return;
+  if(!m){toast('Données en cours de chargement…');return;}
   document.getElementById('var-merc-c1').textContent=m.club1.name;
   document.getElementById('var-merc-c2').textContent=m.club2.name;
   const common=m.common||[];
