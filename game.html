@@ -1158,23 +1158,25 @@ async function startMercatoRound(){
   }
   if(!c1||!c2){toast('Plus assez de cartes clubs !');return;}
 
-  // Trouver les joueurs en commun depuis database_15q
-  const ans1=new Set();
-  Object.values(DB[c1.clubId]||{}).forEach(arr=>{
-    if(!Array.isArray(arr))return;
-    arr.forEach(p=>{const n=typeof p==='object'?p.name:p;ans1.add(n);});
-  });
-
-  const common=[];
-  const seen=new Set();
-  Object.values(DB[c2.clubId]||{}).forEach(arr=>{
-    if(!Array.isArray(arr))return;
-    arr.forEach(p=>{
-      const n=typeof p==='object'?p.name:p;
-      const ph=typeof p==='object'?p.photo:'';
-      if(ans1.has(n)&&!seen.has(n)){seen.add(n);common.push({name:n,photo:ph});}
+  // Appeler la même API Expert que l'app principale
+  let common=[];
+  try{
+    const r=await fetch(`https://var-club-expert.vercel.app/api/var?club1=${c1.clubId}&club2=${c2.clubId}`);
+    const d=await r.json();
+    console.log('API raw response:', JSON.stringify(d).slice(0,500));
+    console.log(`Direct: ${d.direct?.length||0}, Indirect: ${d.indirect?.length||0}`);
+    // Garder directs et indirects séparément, dédupliquer par id_joueur
+    const seen=new Set();
+    [...(d.direct||[]),...(d.indirect||[])].forEach(p=>{
+      const name=p.nom||p.name||'';
+      const photo=p.photo_url||p.photo||'';
+      const uid=p.id_joueur||name;
+      if(uid&&!seen.has(uid)){seen.add(uid);common.push({name,photo});}
     });
-  });
+    console.log(`Pro Mercato: ${common.length} joueurs en commun (${c1.clubId} × ${c2.clubId})`);
+  }catch(e){
+    console.error('API Expert failed:', e);
+  }
 
   GS.mercato={
     club1:{id:c1.clubId,name:c1.clubName,league:c1.league},
