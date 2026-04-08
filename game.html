@@ -417,9 +417,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   </div>
   <div class="sboard" id="hand-sboard"></div>
   <div class="cards-grid" id="cards-grid"></div>
-  <div class="hand-footer" style="display:flex;gap:8px;">
-    <button class="ghost-btn" onclick="passTurn()" style="flex:1;">Passer mon tour</button>
-    <button class="ghost-btn" onclick="discardHand()" style="flex:1;border-color:var(--coral);color:var(--coral);" title="Défausser toutes vos cartes et en recevoir 4 nouvelles au prochain tour">
+  <div class="hand-footer" style="display:flex;gap:8px;" id="hand-footer">
+    <button class="ghost-btn" id="btn-pass-turn" onclick="passTurn()" style="flex:1;display:none;">Passer mon tour</button>
+    <button class="ghost-btn" id="btn-discard" onclick="discardHand()" style="flex:1;display:none;border-color:var(--coral);color:var(--coral);">
       🔄 Défausser la main
     </button>
   </div>
@@ -484,7 +484,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   </div>
   <div class="play-footer" style="display:flex;gap:8px;">
     <button class="ghost-btn" id="play-pass-btn" onclick="passTurn()" style="flex:0 0 auto;padding:14px 16px;border-color:var(--border);">Passer</button>
-    <button class="confirm-btn" id="confirm-btn" onclick="confirmPlay()" disabled style="flex:1;">Confirmer le verdict</button>
+    <button class="confirm-btn" id="confirm-btn" onclick="confirmPlay()" disabled style="flex:1;font-size:13px;padding:18px;background:var(--gold);color:var(--bg);border:3px solid var(--gold2);box-shadow:0 0 20px rgba(240,180,41,.4);">Confirmer ✓</button>
   </div>
 </div>
 
@@ -797,6 +797,7 @@ async function subscribeToGame(code){
 
 function onRemoteUpdate(newState){
   GS=newState;
+  console.log('onRemoteUpdate — play.judge:', GS.play?.judge, 'ME:', ME.name, 'isMyTurn:', isMyTurn());
   renderCurrentScreen();
 }
 
@@ -1012,6 +1013,9 @@ function renderCards(hand){
     wrap.onclick=()=>{
       if(wrap.classList.contains('flipped'))return;
       wrap.classList.add('flipped');
+      // Afficher les boutons pass/discard après le premier flip
+      document.getElementById('btn-pass-turn').style.display='block';
+      document.getElementById('btn-discard').style.display='block';
     };
     grid.appendChild(wrap);
   });
@@ -1120,11 +1124,12 @@ async function beginPlay(card,idx,clubId,clubName,league){
     card,cardIdx:idx,clubId,clubName,league,
     qId:card.qId,qLabel:card.qLabel,
     answers:DB[clubId]?.[String(card.qId)]||[],
-    judge:GS.varJudge,  // arbitre désigné
-    judgeCount:null,    // rempli par l'arbitre
-    judgeVerdict:null,  // 'accept'|'reject'
+    judge:GS.varJudge,
+    judgeCount:null,
+    judgeVerdict:null,
   };
   GS.varOpen=true;
+  console.log('beginPlay — judge:', GS.varJudge, 'play.judge:', GS.play.judge);
   await saveGS(GS);
   show('play');
 }
@@ -1354,12 +1359,14 @@ function changeCount(d){
 }
 
 async function judgeConfirm(){
-  if(judgeCount===0)return;
+  if(judgeCount===0){toast('Entrez un nombre > 0');return;}
   GS.play.judgeCount=judgeCount;
   GS.play.judgeVerdict='accept';
+  const saved=judgeCount;
   judgeCount=0;
   await saveGS(GS);
-  toast(`✓ Verdict soumis : ${GS.play.judgeCount} jeton${GS.play.judgeCount>1?'s':''}`);
+  toast(`✓ Verdict soumis : ${saved} jeton${saved>1?'s':''}`);
+  renderJudgeScreen();
 }
 
 async function judgeReject(){
@@ -1368,6 +1375,7 @@ async function judgeReject(){
   judgeCount=0;
   await saveGS(GS);
   toast('✗ Réponse refusée');
+  renderJudgeScreen();
 }
 
 // ═══════════════════════════════════════════
