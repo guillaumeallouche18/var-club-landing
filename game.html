@@ -340,9 +340,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
       <div class="count-wrap">
         <div class="count-label">Nombre annoncé</div>
         <div class="count-controls">
-          <button class="cnt-btn" onclick="changeMercCount(-1)">−</button>
+          <button class="cnt-btn" onclick="changeCount(-1)">−</button>
           <div class="cnt-val" id="merc-cnt">0</div>
-          <button class="cnt-btn" onclick="changeMercCount(1)">+</button>
+          <button class="cnt-btn" onclick="changeCount(1)">+</button>
         </div>
       </div>
     </div>
@@ -1175,9 +1175,32 @@ function closeVar(){
 // VOTE & COUNT
 // ═══════════════════════════════════════════
 function changeCount(d){
-  myCount=Math.max(0,myCount+d);
-  document.getElementById('cnt-val').textContent=myCount;
-  tryShowVerdict();
+  // Router selon l'écran actif
+  const judgeScreen = document.getElementById('screen-judge');
+  const mercScreen  = document.getElementById('screen-mercato');
+
+  if(judgeScreen && judgeScreen.classList.contains('active')){
+    // Arbitre VAR — met à jour son compteur
+    judgeCount=Math.max(0,judgeCount+d);
+    const el=document.getElementById('cnt-val-judge');
+    if(el) el.textContent=judgeCount;
+    const btn=document.getElementById('judge-confirm-btn');
+    if(btn) btn.disabled=(judgeCount===0);
+
+  } else if(mercScreen && mercScreen.classList.contains('active')){
+    // Pro Mercato
+    mercCount=Math.max(0,mercCount+d);
+    const el=document.getElementById('merc-cnt');
+    if(el) el.textContent=mercCount;
+    tryShowMercVerdict();
+
+  } else {
+    // Duel VAR — joueur actif
+    myCount=Math.max(0,myCount+d);
+    const el=document.getElementById('cnt-val');
+    if(el) el.textContent=myCount;
+    tryShowVerdict();
+  }
 }
 
 function vote(v){
@@ -1344,19 +1367,7 @@ function renderJudgeScreen(){
   }
 }
 
-// Synchroniser cnt-val-judge avec changeCount
-const _origChangeCount=changeCount;
-function changeCount(d){
-  // Mettre à jour le bon compteur selon l'écran actif
-  if(document.getElementById('screen-judge').classList.contains('active')){
-    judgeCount=Math.max(0,judgeCount+d);
-    document.getElementById('cnt-val-judge').textContent=judgeCount;
-    document.getElementById('judge-confirm-btn').disabled=(judgeCount===0);
-  } else {
-    myCount=Math.max(0,myCount+d);
-    document.getElementById('cnt-val').textContent=myCount;
-  }
-}
+
 
 async function judgeConfirm(){
   if(judgeCount===0){toast('Entrez un nombre > 0');return;}
@@ -1633,11 +1644,7 @@ function renderMercatoSpectator(){
   btn.disabled=false;
 }
 
-function changeMercCount(d){
-  mercCount=Math.max(0,mercCount+d);
-  document.getElementById('merc-cnt').textContent=mercCount;
-  tryShowMercVerdict();
-}
+
 
 function mercVote(v){
   mercVoteVal=v;
