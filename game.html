@@ -606,17 +606,19 @@ async function loadDB(){
     }catch(e){console.warn('DB failed:',url,e);}
   }
 
-  // Charger les IDs Expert
+  // Charger les IDs clubs depuis Supabase directement
   try{
-    const r=await fetch('https://var-club-expert.vercel.app/api/clubs');
-    const d=await r.json();
-    (d.clubs||[]).forEach(c=>{
-      const varId=EXPERT_NAME_TO_ID[c.name];
-      if(varId) EXPERT_CLUB_IDS[varId]=c.id;
+    const r=await fetch(`${SUPA_URL}/rest/v1/clubs?select=id_club,nom&limit=500`,{
+      headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}
     });
-    console.log('Expert club IDs loaded:', EXPERT_CLUB_IDS);
+    const clubs=await r.json();
+    (clubs||[]).forEach(c=>{
+      const varId=EXPERT_NAME_TO_ID[c.nom];
+      if(varId) EXPERT_CLUB_IDS[varId]=c.id_club;
+    });
+    console.log('Club IDs from Supabase:', EXPERT_CLUB_IDS);
   }catch(e){
-    console.warn('Expert clubs API failed:', e);
+    console.warn('Supabase clubs load failed:', e);
   }
 }
 
@@ -1183,27 +1185,65 @@ async function startMercatoRound(){
   }
   if(!c1||!c2){toast('Plus assez de cartes clubs !');return;}
 
-  // Appeler la même API Expert que l'app principale
+  // Requête directe Supabase — même logique que l'API Expert
   let common=[];
   try{
-    const id1=EXPERT_CLUB_IDS[c1.clubId]||c1.clubId;
-    const id2=EXPERT_CLUB_IDS[c2.clubId]||c2.clubId;
-    console.log(`Calling Expert API with ids: ${id1} × ${id2} (from ${c1.clubId} × ${c2.clubId})`);
-    const r=await fetch(`https://var-club-expert.vercel.app/api/var?club1=${id1}&club2=${id2}`);
-    const d=await r.json();
-    console.log('API raw response:', JSON.stringify(d).slice(0,500));
-    console.log(`Direct: ${d.direct?.length||0}, Indirect: ${d.indirect?.length||0}`);
-    // Garder directs et indirects séparément, dédupliquer par id_joueur
+    const id1=EXPERT_CLUB_IDS[c1.clubId];
+    const id2=EXPERT_CLUB_IDS[c2.clubId];
+    if(!id1||!id2){console.error('IDs Expert non trouvés pour',c1.clubId,c2.clubId);return;}
+    console.log(`Supabase query: ${id1} × ${id2}`);
+
+    const headers={
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json'
+    };
+    const BASE = SUPA_URL + '/rest/v1';
+
+    // 1. Passages indirects club1 et club2
+    const [r1, r2] = await Promise.all([
+      fetch(`${BASE}/passages_indirects?select=id_joueur&id_club=eq.${id1}&limit=5000`, {headers}),
+      fetch(`${BASE}/passages_indirects?select=id_joueur&id_club=eq.${id2}&limit=5000`, {headers}),
+    ]);
+    const [p1, p2] = await Promise.all([r1.json(), r2.json()]);
+    const ids1 = new Set(p1.map(p=>p.id_joueur));
+    const ids2 = new Set(p2.map(p=>p.id_joueur));
+    const commonIds = [...ids1].filter(id=>ids2.has(id));
+    console.log(`Passages communs: ${commonIds.length}`);
+    if(!commonIds.length) return;
+
+    // 2. Transferts directs
+    const rDir = await fetch(
+      `${BASE}/transferts_directs?select=id_joueur,annee,type_transfert&or=(and(id_club_depart.eq.${id1},id_club_arrivee.eq.${id2}),and(id_club_depart.eq.${id2},id_club_arrivee.eq.${id1}))&limit=1000`,
+      {headers}
+    );
+    const directs = await rDir.json();
+    const directIds = new Set((directs||[]).map(d=>d.id_joueur));
+
+    // 3. Infos joueurs
+    const rJoueurs = await fetch(
+      `${BASE}/joueurs?select=id_joueur,nom,photo_url&id_joueur=in.(${commonIds.join(',')})&limit=5000`,
+      {headers}
+    );
+    const joueurs = await rJoueurs.json();
+    const joueurMap = {};
+    (joueurs||[]).forEach(j=>{joueurMap[j.id_joueur]=j;});
+
+    // 4. Construire direct + indirect
     const seen=new Set();
-    [...(d.direct||[]),...(d.indirect||[])].forEach(p=>{
-      const name=p.nom||p.name||'';
-      const photo=p.photo_url||p.photo||'';
-      const uid=p.id_joueur||name;
-      if(uid&&!seen.has(uid)){seen.add(uid);common.push({name,photo});}
+    // Directs d'abord
+    commonIds.filter(id=>directIds.has(id)).forEach(id=>{
+      const j=joueurMap[id];
+      if(j?.nom&&!seen.has(id)){seen.add(id);common.push({name:j.nom,photo:j.photo_url||''});}
     });
-    console.log(`Pro Mercato: ${common.length} joueurs en commun (${c1.clubId} × ${c2.clubId})`);
+    // Indirects ensuite
+    commonIds.filter(id=>!directIds.has(id)).forEach(id=>{
+      const j=joueurMap[id];
+      if(j?.nom&&!seen.has(id)){seen.add(id);common.push({name:j.nom,photo:j.photo_url||''});}
+    });
+    console.log(`Pro Mercato Supabase: ${common.length} joueurs (${commonIds.length} communs)`);
   }catch(e){
-    console.error('API Expert failed:', e);
+    console.error('Supabase Pro Mercato failed:', e);
   }
 
   GS.mercato={
