@@ -35,8 +35,9 @@
   100%{opacity:0;transform:translate(-50%,-60%) scale(.9);}
 }
 
-html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;height:100%;overflow:hidden;}
-.screen{display:none;height:100%;flex-direction:column;animation:fadeIn .25s ease;overflow:hidden;position:absolute;top:0;left:0;right:0;bottom:0;}
+html{height:100%;overflow:hidden;}
+body{height:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;}
+.screen{display:none;position:absolute;inset:0;flex-direction:column;animation:fadeIn .25s ease;}
 .screen.active{display:flex;}
 
 /* ══ LOBBY ══ */
