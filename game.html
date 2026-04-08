@@ -1012,23 +1012,31 @@ async function playCard(idx){
   const card=me.hand[idx];
   if(card.type==='action'){await handleAction(card,idx);return;}
 
-  // Si 3+ joueurs, choisir l'arbitre VAR avant de jouer
-  if(GS.players.length>=3&&card.type!=='action'){
+  // Désigner l'arbitre VAR
+  if(card.type!=='action'){
     const others=GS.players.filter(p=>p.name!==ME.name);
-    showModal({
-      icon:'🏁',
-      title:'Arbitre VAR',
-      desc:'Désignez le joueur qui validera votre réponse',
-      list:others.map(p=>({
-        name:p.name,
-        info:`${p.tokens}🪙`,
-        cb:()=>{
-          GS.varJudge=p.name;
-          doPlayCard(idx,card);
-        }
-      }))
-    });
-    return;
+    if(GS.players.length===2){
+      // À 2 joueurs — l'autre joueur est automatiquement arbitre
+      GS.varJudge=others[0].name;
+      doPlayCard(idx,card);
+      return;
+    } else {
+      // À 3+ joueurs — choisir l'arbitre
+      showModal({
+        icon:'🏁',
+        title:'Arbitre VAR',
+        desc:'Désignez le joueur qui validera votre réponse',
+        list:others.map(p=>({
+          name:p.name,
+          info:`${p.tokens}🪙`,
+          cb:()=>{
+            GS.varJudge=p.name;
+            doPlayCard(idx,card);
+          }
+        }))
+      });
+      return;
+    }
   }
 
   doPlayCard(idx,card);
