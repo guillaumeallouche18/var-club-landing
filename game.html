@@ -35,8 +35,8 @@
   100%{opacity:0;transform:translate(-50%,-60%) scale(.9);}
 }
 
-html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
-.screen{display:none;height:100svh;flex-direction:column;animation:fadeIn .25s ease;overflow:hidden;}
+html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;height:100%;overflow:hidden;}
+.screen{display:none;height:100%;flex-direction:column;animation:fadeIn .25s ease;overflow:hidden;position:absolute;top:0;left:0;right:0;bottom:0;}
 .screen.active{display:flex;}
 
 /* ══ LOBBY ══ */
@@ -193,7 +193,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .play-hdr-q{font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
 .play-hdr-club{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;color:var(--white);line-height:1;}
 .play-hdr-league{font-size:9px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:2px;}
-.play-body{flex:1;overflow-y:auto;padding:14px 16px;min-height:0;-webkit-overflow-scrolling:touch;}
+.play-body{flex:1;overflow-y:auto;padding:14px 16px;min-height:0;}
 
 .box{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;}
 .box-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
@@ -352,7 +352,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
       </div>
     </div>
   </div>
-  <div style="flex:1;overflow-y:auto;padding:14px 16px;min-height:0;-webkit-overflow-scrolling:touch;">
+  <div style="flex:1;overflow-y:auto;padding:14px 16px 80px;min-height:0;">
     <div class="box" style="margin-bottom:12px;">
       <div class="box-label">Joueur annoncé par <span id="merc-announce-by" style="color:var(--gold);"></span></div>
       <div style="font-size:13px;color:rgba(255,255,255,.5);font-style:italic;line-height:1.5;min-height:32px;">Annoncez un joueur ayant porté les deux maillots…</div>
@@ -514,7 +514,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
     <div class="play-hdr-club" id="judge-club-name">PSG</div>
     <div class="play-hdr-league" id="judge-q-label">Q1 — Joueurs Français</div>
   </div>
-  <div style="flex:1;overflow-y:auto;padding:14px 16px;min-height:0;-webkit-overflow-scrolling:touch;">
+  <div style="flex:1;overflow-y:auto;padding:14px 16px 80px;min-height:0;">
 
     <div class="box" style="margin-bottom:12px;">
       <div class="box-label">🎤 <span id="judge-active-name" style="color:var(--gold);"></span> annonce ses joueurs</div>
