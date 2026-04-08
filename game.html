@@ -585,7 +585,7 @@ const EXPERT_NAME_TO_ID = {
   "Bayern Munich":"bayern","Borussia Dortmund":"dortmund","AC Milan":"milan",
   "Inter Milan":"inter","Juventus FC":"juve","SSC Napoli":"napoli",
 };
-// Mapping ID VAR local → ID Expert (rempli dynamiquement)
+// Mapping ID VAR local → ID Supabase (chargé dynamiquement, fallback vide)
 let EXPERT_CLUB_IDS = {};
 
 async function loadDB(){
@@ -606,19 +606,24 @@ async function loadDB(){
     }catch(e){console.warn('DB failed:',url,e);}
   }
 
-  // Charger les IDs clubs depuis Supabase directement
+  // Charger les IDs clubs depuis Supabase
   try{
     const r=await fetch(`${SUPA_URL}/rest/v1/clubs?select=id_club,nom&limit=500`,{
       headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}
     });
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
     const clubs=await r.json();
+    console.log('Clubs from Supabase:', clubs?.length, clubs?.[0]);
     (clubs||[]).forEach(c=>{
       const varId=EXPERT_NAME_TO_ID[c.nom];
       if(varId) EXPERT_CLUB_IDS[varId]=c.id_club;
     });
-    console.log('Club IDs from Supabase:', EXPERT_CLUB_IDS);
+    console.log('Club IDs mapped:', EXPERT_CLUB_IDS);
+    if(Object.keys(EXPERT_CLUB_IDS).length===0){
+      console.warn('No IDs mapped — checking raw data:', JSON.stringify(clubs?.slice(0,3)));
+    }
   }catch(e){
-    console.warn('Supabase clubs load failed:', e);
+    console.error('Supabase clubs load failed:', e);
   }
 }
 
@@ -806,7 +811,11 @@ function renderCurrentScreen(){
         document.getElementById('spec-active-name').textContent='TIRAGE…';
         document.getElementById('spec-sub').textContent='Chargement des joueurs en commun';
         document.getElementById('var-spectator-btn').disabled=true;
-        startMercatoRound();
+        // Éviter appels multiples
+        if(!window._mercatoLoading){
+          window._mercatoLoading=true;
+          startMercatoRound().finally(()=>{window._mercatoLoading=false;});
+        }
       } else {
         // Spectateurs — attendre que mercato soit chargé
         show('spectator');
@@ -1180,6 +1189,7 @@ let mercCount=0;
 let mercVoteVal=null;
 
 async function startMercatoRound(){
+  console.log('startMercatoRound — EXPERT_CLUB_IDS:', EXPERT_CLUB_IDS);
   // Tirer 2 cartes clubs au hasard du deck
   let c1=null,c2=null;
   let tries=0;
@@ -1197,7 +1207,11 @@ async function startMercatoRound(){
   try{
     const id1=EXPERT_CLUB_IDS[c1.clubId];
     const id2=EXPERT_CLUB_IDS[c2.clubId];
-    if(!id1||!id2){console.error('IDs Expert non trouvés pour',c1.clubId,c2.clubId);return;}
+    if(!id1||!id2){console.error('IDs Supabase non trouvés pour',c1.clubId,c2.clubId);
+      GS.mercato={club1:{id:c1.clubId,name:c1.clubName,league:c1.league},club2:{id:c2.clubId,name:c2.clubName,league:c2.league},common:[],varOpen:true};
+      GS.play=null;GS.varOpen=false;
+      await saveGS(GS);return;
+    }
     console.log(`Supabase query: ${id1} × ${id2}`);
 
     const headers={
@@ -1217,7 +1231,12 @@ async function startMercatoRound(){
     const ids2 = new Set(p2.map(p=>p.id_joueur));
     const commonIds = [...ids1].filter(id=>ids2.has(id));
     console.log(`Passages communs: ${commonIds.length}`);
-    if(!commonIds.length) return;
+    if(!commonIds.length){
+      // Pas de joueurs communs — sauvegarder quand même pour débloquer
+      GS.mercato={club1:{id:c1.clubId,name:c1.clubName,league:c1.league},club2:{id:c2.clubId,name:c2.clubName,league:c2.league},common:[],varOpen:true};
+      GS.play=null;GS.varOpen=false;
+      await saveGS(GS);return;
+    }
 
     // 2. Transferts directs
     const rDir = await fetch(
