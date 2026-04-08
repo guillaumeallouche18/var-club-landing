@@ -447,35 +447,88 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   </div>
   <div class="play-body">
 
-    <div class="box">
-      <div class="box-label">Joueurs annoncés par <span id="announce-by"></span></div>
-      <div class="announce-text">Annoncez vos joueurs à voix haute…</div>
+    <!-- Vue joueur actif : annonce à voix haute, attend le verdict de l'arbitre -->
+    <div id="play-active-view">
+      <div class="box">
+        <div class="box-label">Tu joues — <span id="announce-by" style="color:var(--gold);"></span></div>
+        <div class="announce-text">Annonce tes joueurs à voix haute…</div>
+      </div>
+      <div class="box" style="text-align:center;padding:24px;">
+        <div style="font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">En attente de l'arbitre</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold);" id="play-judge-waiting">🏁 <span id="play-judge-name"></span></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px;">valide le nombre de jetons</div>
+      </div>
+      <div id="verdict-wrap"></div>
+    </div>
+
+    <!-- Vue arbitre VAR : compte les jetons et confirme -->
+    <div id="play-judge-view" style="display:none;">
+      <div class="box">
+        <div class="box-label">Tu es l'arbitre VAR pour <span id="judge-for-player" style="color:var(--gold);"></span></div>
+        <div class="announce-text" id="judge-announce-text">Le joueur annonce ses réponses à voix haute…</div>
+      </div>
+      <div class="box">
+        <div class="box-label">🔍 Consulte la VAR puis saisis le nombre validé</div>
+        <div class="count-wrap">
+          <div class="count-label">Joueurs validés</div>
+          <div class="count-controls">
+            <button class="cnt-btn" onclick="changeCount(-1)">−</button>
+            <div class="cnt-val" id="cnt-val">0</div>
+            <button class="cnt-btn" onclick="changeCount(1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div id="verdict-wrap-judge"></div>
+    </div>
+
+  </div>
+  <div class="play-footer" style="display:flex;gap:8px;">
+    <button class="ghost-btn" id="play-pass-btn" onclick="passTurn()" style="flex:0 0 auto;padding:14px 16px;border-color:var(--border);">Passer</button>
+    <button class="confirm-btn" id="confirm-btn" onclick="confirmPlay()" disabled style="flex:1;">Confirmer le verdict</button>
+  </div>
+</div>
+
+<!-- ARBITRE VAR (écran de l'arbitre spectateur) -->
+<div id="screen-judge" class="screen">
+  <div class="play-hdr">
+    <div style="font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;">🏁 TU ES L'ARBITRE VAR</div>
+    <div class="play-hdr-club" id="judge-club-name">PSG</div>
+    <div class="play-hdr-league" id="judge-q-label">Q1 — Joueurs Français</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;">
+
+    <div class="box" style="margin-bottom:12px;">
+      <div class="box-label">🎤 <span id="judge-active-name" style="color:var(--gold);"></span> annonce ses joueurs</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);font-style:italic;">Écoute attentivement, consulte la VAR et saisis le nombre de joueurs corrects.</div>
+    </div>
+
+    <!-- Accès VAR intégré -->
+    <div class="var-section" id="judge-var-section" style="margin-bottom:12px;">
+      <div class="var-section-hdr">
+        <span class="var-section-title">Réponses de référence</span>
+        <span class="var-section-count" id="judge-var-count">0</span>
+      </div>
+      <div class="var-players" id="judge-var-players"></div>
+    </div>
+
+    <div class="box" style="margin-bottom:12px;">
+      <div class="box-label">Nombre de joueurs corrects</div>
       <div class="count-wrap">
-        <div class="count-label">Nombre annoncé</div>
+        <div class="count-label">Joueurs validés</div>
         <div class="count-controls">
           <button class="cnt-btn" onclick="changeCount(-1)">−</button>
-          <div class="cnt-val" id="cnt-val">0</div>
+          <div class="cnt-val" id="cnt-val-judge">0</div>
           <button class="cnt-btn" onclick="changeCount(1)">+</button>
         </div>
       </div>
     </div>
 
+    <div id="judge-verdict-wrap"></div>
 
-
-    <div class="box">
-      <div class="box-label">Les autres joueurs valident ?</div>
-      <div class="vote-btns">
-        <button class="v-btn v-yes" id="v-yes" onclick="vote('yes')">✓ Validé</button>
-        <button class="v-btn v-no" id="v-no" onclick="vote('no')">✗ Refusé</button>
-      </div>
-      <div class="vote-status" id="vote-status"></div>
-    </div>
-
-    <div id="verdict-wrap"></div>
   </div>
-  <div class="play-footer" style="display:flex;gap:8px;">
-    <button class="ghost-btn" onclick="passTurn()" style="flex:0 0 auto;padding:14px 16px;border-color:var(--border);">Passer</button>
-    <button class="confirm-btn" id="confirm-btn" onclick="confirmPlay()" disabled style="flex:1;">Confirmer le verdict</button>
+  <div style="padding:12px 16px;flex-shrink:0;display:flex;gap:8px;">
+    <button class="ghost-btn" onclick="judgeReject()" style="flex:0 0 auto;padding:14px 16px;border-color:var(--coral);color:var(--coral);">✗ Refuser</button>
+    <button class="confirm-btn" id="judge-confirm-btn" onclick="judgeConfirm()" disabled style="flex:1;">✓ Valider le verdict</button>
   </div>
 </div>
 
@@ -890,6 +943,10 @@ function renderCurrentScreen(){
   if(isMyTurn()){
     if(GS.play){renderPlayScreen();show('play');}
     else{renderHandScreen();show('hand');}
+  } else if(GS.play&&GS.play.judge===ME.name){
+    // Je suis l'arbitre VAR
+    renderJudgeScreen();
+    show('judge');
   } else {
     renderSpectatorScreen();
     show('spectator');
@@ -1058,22 +1115,17 @@ async function doPlayCard(idx,card){
 }
 
 async function beginPlay(card,idx,clubId,clubName,league){
-  myVote=null; myCount=0;
-  GS.play={card,cardIdx:idx,clubId,clubName,league,qId:card.qId,qLabel:card.qLabel,
-    answers:DB[clubId]?.[String(card.qId)]||[]};
+  myCount=0;
+  GS.play={
+    card,cardIdx:idx,clubId,clubName,league,
+    qId:card.qId,qLabel:card.qLabel,
+    answers:DB[clubId]?.[String(card.qId)]||[],
+    judge:GS.varJudge,  // arbitre désigné
+    judgeCount:null,    // rempli par l'arbitre
+    judgeVerdict:null,  // 'accept'|'reject'
+  };
   GS.varOpen=true;
   await saveGS(GS);
-
-  document.getElementById('play-q-label').textContent=`Q${card.qId} — ${card.qLabel}`;
-  document.getElementById('play-club').textContent=clubName.toUpperCase();
-  document.getElementById('play-league').textContent=league;
-  document.getElementById('announce-by').textContent=ME.name;
-  document.getElementById('cnt-val').textContent='0';
-  document.getElementById('v-yes').classList.remove('on');
-  document.getElementById('v-no').classList.remove('on');
-  document.getElementById('vote-status').textContent='';
-  document.getElementById('verdict-wrap').innerHTML='';
-  document.getElementById('confirm-btn').disabled=true;
   show('play');
 }
 
@@ -1146,17 +1198,20 @@ function tryShowVerdict(){
 
 async function confirmPlay(){
   const me=GS.players[myIdx()];
-  const won=myVote==='yes';
+  const ps=GS.play;
+  const won=ps?.judgeVerdict==='accept';
+  const count=ps?.judgeCount||myCount;
   if(won){
     const oldTokens=me.tokens;
-    me.tokens=Math.max(0,me.tokens-myCount);
+    me.tokens=Math.max(0,me.tokens-count);
+    myCount=count;
     // Animation jetons qui s'envolent
-    animateTokens(myCount, 'remove');
+    animateTokens(count, 'remove');
     me.hand.splice(GS.play.cardIdx,1);
     if(GS.deck.length>0)me.hand.push(GS.deck.pop());
-    if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.play=null;GS.varOpen=false;await saveGS(GS);return;}
+    if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.play=null;GS.varOpen=false;GS.varJudge=null;await saveGS(GS);return;}
   }
-  GS.play=null;GS.varOpen=false;
+  GS.play=null;GS.varOpen=false;GS.varJudge=null;
   await nextTurn();
 }
 
@@ -1240,6 +1295,79 @@ function removeCard(idx){
   const me=GS.players[myIdx()];
   me.hand.splice(idx,1);
   if(GS.deck.length>0)me.hand.push(GS.deck.pop());
+}
+
+// ═══════════════════════════════════════════
+// ARBITRE VAR
+// ═══════════════════════════════════════════
+let judgeCount=0;
+
+function renderJudgeScreen(){
+  const ps=GS.play;
+  if(!ps)return;
+
+  document.getElementById('judge-club-name').textContent=ps.clubName.toUpperCase();
+  document.getElementById('judge-q-label').textContent=`Q${ps.qId} — ${ps.qLabel}`;
+  document.getElementById('judge-active-name').textContent=
+    GS.players[GS.cur]?.name||'';
+
+  // Afficher les réponses VAR directement
+  const ans=ps.answers||[];
+  document.getElementById('judge-var-count').textContent=ans.length;
+  const cont=document.getElementById('judge-var-players');
+  if(!ans.length){
+    cont.innerHTML='<span class="var-none">Aucun joueur répertorié</span>';
+  } else {
+    cont.innerHTML=ans.map(p=>{
+      const n=typeof p==='object'?p.name:p;
+      const ph=typeof p==='object'?p.photo:'';
+      return `<span class="var-tag">${ph?`<img src="${ph}" onerror="this.style.display='none'">`:''}${n}</span>`;
+    }).join('');
+  }
+
+  // Verdict déjà soumis ?
+  if(ps.judgeVerdict){
+    document.getElementById('judge-confirm-btn').disabled=true;
+    document.getElementById('judge-verdict-wrap').innerHTML=
+      ps.judgeVerdict==='accept'
+        ?`<div class="verdict win"><div class="verdict-title">Verdict soumis ✓</div><div class="verdict-sub">${ps.judgeCount} jeton${ps.judgeCount>1?'s':''} validés</div></div>`
+        :`<div class="verdict lose"><div class="verdict-title">Refus soumis ✗</div></div>`;
+  } else {
+    document.getElementById('judge-confirm-btn').disabled=(judgeCount===0);
+    document.getElementById('judge-verdict-wrap').innerHTML='';
+    document.getElementById('cnt-val-judge').textContent=judgeCount;
+  }
+}
+
+// Synchroniser cnt-val-judge avec changeCount
+const _origChangeCount=changeCount;
+function changeCount(d){
+  // Mettre à jour le bon compteur selon l'écran actif
+  if(document.getElementById('screen-judge').classList.contains('active')){
+    judgeCount=Math.max(0,judgeCount+d);
+    document.getElementById('cnt-val-judge').textContent=judgeCount;
+    document.getElementById('judge-confirm-btn').disabled=(judgeCount===0);
+  } else {
+    myCount=Math.max(0,myCount+d);
+    document.getElementById('cnt-val').textContent=myCount;
+  }
+}
+
+async function judgeConfirm(){
+  if(judgeCount===0)return;
+  GS.play.judgeCount=judgeCount;
+  GS.play.judgeVerdict='accept';
+  judgeCount=0;
+  await saveGS(GS);
+  toast(`✓ Verdict soumis : ${GS.play.judgeCount} jeton${GS.play.judgeCount>1?'s':''}`);
+}
+
+async function judgeReject(){
+  GS.play.judgeVerdict='reject';
+  GS.play.judgeCount=0;
+  judgeCount=0;
+  await saveGS(GS);
+  toast('✗ Réponse refusée');
 }
 
 // ═══════════════════════════════════════════
@@ -1328,11 +1456,34 @@ function renderPlayScreen(){
   document.getElementById('play-q-label').textContent=`Q${ps.qId} — ${ps.qLabel}`;
   document.getElementById('play-club').textContent=ps.clubName.toUpperCase();
   document.getElementById('play-league').textContent=ps.league;
-  document.getElementById('announce-by').textContent=ME.name;
-  // Afficher l'arbitre VAR si désigné
+
   const judgeEl=document.getElementById('var-judge-label');
-  if(judgeEl){
-    judgeEl.textContent=GS.varJudge?`Arbitre VAR : ${GS.varJudge}`:'';
+  if(judgeEl) judgeEl.textContent=ps.judge?`Arbitre : ${ps.judge}`:'';
+
+  // Joueur actif — attend le verdict de l'arbitre
+  document.getElementById('announce-by').textContent=ME.name;
+  document.getElementById('play-judge-name').textContent=ps.judge||'Les autres joueurs';
+
+  // Si l'arbitre a déjà soumis son verdict
+  if(ps.judgeVerdict==='accept'&&ps.judgeCount!==null){
+    myCount=ps.judgeCount;
+    document.getElementById('cnt-val').textContent=myCount;
+    document.getElementById('verdict-wrap').innerHTML=`
+      <div class="verdict win">
+        <div class="verdict-title">VAR CONFIRMÉ ✓</div>
+        <div class="verdict-sub">Défausse ${myCount} jeton${myCount>1?'s':''}</div>
+      </div>`;
+    document.getElementById('confirm-btn').disabled=false;
+  } else if(ps.judgeVerdict==='reject'){
+    document.getElementById('verdict-wrap').innerHTML=`
+      <div class="verdict lose">
+        <div class="verdict-title">HORS-JEU ✗</div>
+        <div class="verdict-sub">Réponse refusée par l'arbitre</div>
+      </div>`;
+    document.getElementById('confirm-btn').disabled=false;
+  } else {
+    document.getElementById('verdict-wrap').innerHTML='';
+    document.getElementById('confirm-btn').disabled=true;
   }
 }
 
