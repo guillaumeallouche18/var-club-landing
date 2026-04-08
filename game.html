@@ -576,7 +576,20 @@ function isMyTurn(){return GS && GS.players[GS.cur]?.name===ME.name;}
 // ═══════════════════════════════════════════
 // DATABASE
 // ═══════════════════════════════════════════
+// Mapping nom Expert → ID VAR local
+const EXPERT_NAME_TO_ID = {
+  "Paris Saint-Germain":"psg","Olympique de Marseille":"marseille",
+  "Olympique Lyonnais":"lyon","Real Madrid":"real","FC Barcelona":"barca",
+  "Atletico de Madrid":"atleti","Liverpool FC":"liverpool","Arsenal FC":"arsenal",
+  "Chelsea FC":"chelsea","Manchester United":"manutd","Manchester City":"mancity",
+  "Bayern Munich":"bayern","Borussia Dortmund":"dortmund","AC Milan":"milan",
+  "Inter Milan":"inter","Juventus FC":"juve","SSC Napoli":"napoli",
+};
+// Mapping ID VAR local → ID Expert (rempli dynamiquement)
+let EXPERT_CLUB_IDS = {};
+
 async function loadDB(){
+  // Charger la DB 15q
   const urls=[
     'https://varclub.app/database_15q.json',
     '/database_15q.json',
@@ -589,10 +602,22 @@ async function loadDB(){
       const d=await r.json();
       DB=d.answers||{};
       console.log('DB loaded from',url,'clubs:',Object.keys(DB).length);
-      return;
+      break;
     }catch(e){console.warn('DB failed:',url,e);}
   }
-  console.error('DB not loaded');
+
+  // Charger les IDs Expert
+  try{
+    const r=await fetch('https://var-club-expert.vercel.app/api/clubs');
+    const d=await r.json();
+    (d.clubs||[]).forEach(c=>{
+      const varId=EXPERT_NAME_TO_ID[c.name];
+      if(varId) EXPERT_CLUB_IDS[varId]=c.id;
+    });
+    console.log('Expert club IDs loaded:', EXPERT_CLUB_IDS);
+  }catch(e){
+    console.warn('Expert clubs API failed:', e);
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1161,7 +1186,10 @@ async function startMercatoRound(){
   // Appeler la même API Expert que l'app principale
   let common=[];
   try{
-    const r=await fetch(`https://var-club-expert.vercel.app/api/var?club1=${c1.clubId}&club2=${c2.clubId}`);
+    const id1=EXPERT_CLUB_IDS[c1.clubId]||c1.clubId;
+    const id2=EXPERT_CLUB_IDS[c2.clubId]||c2.clubId;
+    console.log(`Calling Expert API with ids: ${id1} × ${id2} (from ${c1.clubId} × ${c2.clubId})`);
+    const r=await fetch(`https://var-club-expert.vercel.app/api/var?club1=${id1}&club2=${id2}`);
     const d=await r.json();
     console.log('API raw response:', JSON.stringify(d).slice(0,500));
     console.log(`Direct: ${d.direct?.length||0}, Indirect: ${d.indirect?.length||0}`);
