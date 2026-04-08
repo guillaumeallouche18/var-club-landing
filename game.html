@@ -516,7 +516,7 @@ const CLUBS=[
   {id:'bayern',name:'Bayern Munich',league:'Bundesliga'},
   {id:'dortmund',name:'Borussia Dortmund',league:'Bundesliga'},
   {id:'milan',name:'AC Milan',league:'Serie A'},
-  {id:'inter',name:'Inter Milan',league:'Serie A'},
+
   {id:'juve',name:'Juventus FC',league:'Serie A'},
   {id:'napoli',name:'SSC Napoli',league:'Serie A'},
 ];
@@ -528,7 +528,7 @@ const DOUBLE_CLUBS=[
   {id:'d5',clubs:['arsenal','dortmund'],label:'Arsenal / Dortmund'},
   {id:'d6',clubs:['chelsea','juve'],label:'Chelsea / Juventus'},
   {id:'d7',clubs:['manutd','milan'],label:'Man Utd / AC Milan'},
-  {id:'d8',clubs:['mancity','inter'],label:'Man City / Inter'},
+
 ];
 const ACTIONS=[
   {id:'red_card',name:'Carton Rouge',icon:'🟥',desc:'Bloque un adversaire',clr:'red',n:2},
@@ -585,9 +585,13 @@ const EXPERT_NAME_TO_ID = {
   "Bayern Munich":"bayern","Borussia Dortmund":"dortmund","AC Milan":"milan",
   "Inter Milan":"inter","Juventus FC":"juve","SSC Napoli":"napoli",
 };
-// IDs partiellement connus — sera complété au chargement
-let EXPERT_CLUB_IDS = {
-  manutd:33, mancity:50, dortmund:165, milan:489, real:541
+// IDs Supabase hardcodés
+const EXPERT_CLUB_IDS = {
+  psg:85, marseille:81, lyon:80, real:541, barca:529,
+  atleti:530, liverpool:40, arsenal:42, chelsea:49,
+  manutd:33, mancity:50, bayern:1860, dortmund:165,
+  milan:489, juve:496, napoli:492,
+  // inter: non disponible dans la base
 };
 
 async function loadDB(){
@@ -608,23 +612,7 @@ async function loadDB(){
     }catch(e){console.warn('DB failed:',url,e);}
   }
 
-  // Charger les IDs clubs depuis Supabase
-  try{
-    const r=await fetch(`${SUPA_URL}/rest/v1/clubs?select=id_club,nom&limit=500`,{
-      headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}
-    });
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
-    const clubs=await r.json();
-    // Logger tous les noms pour voir la correspondance exacte
-    console.log('Tous les noms Supabase:', clubs.map(c=>c.nom+':'+c.id_club).join(', '));
-    (clubs||[]).forEach(c=>{
-      const varId=EXPERT_NAME_TO_ID[c.nom];
-      if(varId) EXPERT_CLUB_IDS[varId]=c.id_club;
-    });
-    console.log('Club IDs final:', EXPERT_CLUB_IDS);
-  }catch(e){
-    console.error('Supabase clubs load failed:', e);
-  }
+  // IDs clubs hardcodés — pas besoin de chargement dynamique
 }
 
 // ═══════════════════════════════════════════
