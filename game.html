@@ -1158,35 +1158,16 @@ async function startMercatoRound(){
   }
   if(!c1||!c2){toast('Plus assez de cartes clubs !');return;}
 
-  // Trouver les joueurs en commun
-  // Charger la base Pro Mercato si pas encore chargée
-  if(!window.DB_MERCATO){
-    try{
-      const urls=['https://varclub.app/database_promercato.json','/database_promercato.json','./database_promercato.json'];
-      for(const url of urls){
-        const r=await fetch(url);
-        if(!r.ok)continue;
-        const d=await r.json();
-        window.DB_MERCATO=d.players||{};
-        console.log('DB Mercato loaded from',url);
-        break;
-      }
-    }catch(e){console.warn('DB Mercato not loaded, using main DB');}
-    if(!window.DB_MERCATO) window.DB_MERCATO=null;
-  }
-
-  // Utiliser DB_MERCATO si disponible, sinon fallback sur DB principal
-  const srcDB = window.DB_MERCATO || DB;
-
+  // Trouver les joueurs en commun depuis database_15q
   const ans1=new Set();
-  Object.values(srcDB[c1.clubId]||DB[c1.clubId]||{}).forEach(arr=>{
+  Object.values(DB[c1.clubId]||{}).forEach(arr=>{
     if(!Array.isArray(arr))return;
     arr.forEach(p=>{const n=typeof p==='object'?p.name:p;ans1.add(n);});
   });
 
   const common=[];
   const seen=new Set();
-  Object.values(srcDB[c2.clubId]||DB[c2.clubId]||{}).forEach(arr=>{
+  Object.values(DB[c2.clubId]||{}).forEach(arr=>{
     if(!Array.isArray(arr))return;
     arr.forEach(p=>{
       const n=typeof p==='object'?p.name:p;
