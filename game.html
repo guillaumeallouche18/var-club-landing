@@ -585,8 +585,10 @@ const EXPERT_NAME_TO_ID = {
   "Bayern Munich":"bayern","Borussia Dortmund":"dortmund","AC Milan":"milan",
   "Inter Milan":"inter","Juventus FC":"juve","SSC Napoli":"napoli",
 };
-// Mapping ID VAR local → ID Supabase (chargé dynamiquement, fallback vide)
-let EXPERT_CLUB_IDS = {};
+// IDs partiellement connus — sera complété au chargement
+let EXPERT_CLUB_IDS = {
+  manutd:33, mancity:50, dortmund:165, milan:489, real:541
+};
 
 async function loadDB(){
   // Charger la DB 15q
@@ -613,15 +615,13 @@ async function loadDB(){
     });
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     const clubs=await r.json();
-    console.log('Clubs from Supabase:', clubs?.length, clubs?.[0]);
+    // Logger tous les noms pour voir la correspondance exacte
+    console.log('Tous les noms Supabase:', clubs.map(c=>c.nom+':'+c.id_club).join(', '));
     (clubs||[]).forEach(c=>{
       const varId=EXPERT_NAME_TO_ID[c.nom];
       if(varId) EXPERT_CLUB_IDS[varId]=c.id_club;
     });
-    console.log('Club IDs mapped:', EXPERT_CLUB_IDS);
-    if(Object.keys(EXPERT_CLUB_IDS).length===0){
-      console.warn('No IDs mapped — checking raw data:', JSON.stringify(clubs?.slice(0,3)));
-    }
+    console.log('Club IDs final:', EXPERT_CLUB_IDS);
   }catch(e){
     console.error('Supabase clubs load failed:', e);
   }
