@@ -1186,7 +1186,8 @@ function renderSplitCards(clubCards, questionCards){
   });
 
   // ── CLUB/ACTION CARDS (right) ──
-  const blockedClubs=selQ?( NATIONALITY_BLOCKS[selQ.qId]||[]):[];
+  const blockedClubs=selQ?(NATIONALITY_BLOCKS[selQ.qId]||[]):[];
+  const noQuestionYet=!selQ;
 
   clubCards.forEach((card,cIdx)=>{
 
