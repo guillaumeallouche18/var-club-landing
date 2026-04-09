@@ -1620,8 +1620,6 @@ async function confirmPlay(){
     myCount=count;
     // Stocker l'animation dans GS pour que tous la voient
     GS.lastAnim={count, type:'remove', player:ME.name, ts:Date.now()};
-    if(me.clubHand)me.clubHand.splice(GS.play.cardIdx,1);
-    if(!me.clubHand)me.clubHand=[];if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
     if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.play=null;GS.varOpen=false;GS.varJudge=null;await saveGS(GS);return;}
   }
   GS.play=null;GS.varOpen=false;GS.varJudge=null;
