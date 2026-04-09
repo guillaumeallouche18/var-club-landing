@@ -905,10 +905,24 @@ function migrateGS(gs){
   return gs;
 }
 
+let _lastStateHash='';
 function onRemoteUpdate(newState){
+  // Éviter re-render si l'état n'a pas changé
+  const hash=JSON.stringify({
+    phase:newState.phase,
+    cur:newState.cur,
+    play:newState.play,
+    varJudge:newState.varJudge,
+    selectedQuestion:newState.selectedQuestion,
+    tokens:newState.players?.map(p=>p.tokens),
+    mercato:newState.mercato?.club1?.id,
+    judgeVerdict:newState.play?.judgeVerdict,
+  });
   checkTokenChanges_pre(newState);
   GS=migrateGS(newState);
   GS.players?.forEach(p=>{ _prevTokens[p.name]=p.tokens; });
+  if(hash===_lastStateHash) return; // rien de changé
+  _lastStateHash=hash;
   renderCurrentScreen();
 }
 
@@ -1232,15 +1246,15 @@ function renderSplitCards(clubCards, questionCards){
         return;
       }
       // Already flipped — play
-      if(card.type==='action'){handleAction(card,globalIdx);return;}
+      if(card.type==='action'){handleAction(card,cIdx);return;}
       if(!GS.selectedQuestion){toast("Choisis une question !");return;}
       playCardWithQuestion(cIdx,GS.selectedQuestion);
     });
 
     playBtn.addEventListener('click',function(e){
       e.stopPropagation();
-      if(isBlocked){toast('❌ Ce club est bloqué par la question !');return;}
-      if(card.type==='action'){handleAction(card,globalIdx);return;}
+      if(isBlocked){toast('Ce club est bloque !');return;}
+      if(card.type==='action'){handleAction(card,cIdx);return;}
       if(!GS.selectedQuestion){toast("Choisis une question !");return;}
       playCardWithQuestion(cIdx,GS.selectedQuestion);
     });
