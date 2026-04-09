@@ -855,6 +855,7 @@ async function subscribeToGame(code){
 }
 
 let lastAnimTs=0;
+let _prevTokens={};
 function migrateGS(gs){
   if(!gs) return gs;
   // Garantir clubDeck et qDeck existent toujours
