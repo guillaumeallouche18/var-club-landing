@@ -1939,7 +1939,17 @@ function renderPlayScreen(){
 // MODE SELECTION
 // ═══════════════════════════════════════════
 async function selectMode(mode){
+  if(!ME.isHost)return;
+  GS=migrateGS(GS);
   GS.mode=mode;
+  GS.phase='playing';
+  // S'assurer que les joueurs ont leurs cartes
+  GS.players.forEach(p=>{
+    if(!p.clubHand) p.clubHand=[];
+    if(!p.qHand) p.qHand=[];
+    while(p.clubHand.length<4&&GS.clubDeck&&GS.clubDeck.length>0) p.clubHand.push(GS.clubDeck.pop());
+    while(p.qHand.length<2&&GS.qDeck&&GS.qDeck.length>0) p.qHand.push(GS.qDeck.pop());
+  });
   await saveGS(GS);
 }
 
