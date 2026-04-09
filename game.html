@@ -917,27 +917,15 @@ async function leaveGame(){
 // ═══════════════════════════════════════════
 function initGameState(playerNames){
   const allCards=buildDeck();
-  // Split into club/action pile and question pile
-  const clubPile=shuffle(allCards.filter(c=>c.type!=='question'));
-  const qPile=shuffle(allCards.filter(c=>c.type==='question'));
-  // Merge back: club pile first, question pile at the end
-  // so pop() gives clubs first
-  const deck=[...qPile,...clubPile];
+  const clubDeck=shuffle(allCards.filter(c=>c.type!=='question'));
+  const qDeck=shuffle(allCards.filter(c=>c.type==='question'));
   const players=playerNames.map(n=>{
-    const hand=[];
-    // Deal 4 club/action cards
-    let clubs=0;
-    for(let i=deck.length-1;i>=0&&clubs<4;i--){
-      if(deck[i].type!=='question'){hand.push(deck.splice(i,1)[0]);clubs++;}
-    }
-    // Deal 2 question cards
-    let qs=0;
-    for(let i=deck.length-1;i>=0&&qs<2;i--){
-      if(deck[i].type==='question'){hand.push(deck.splice(i,1)[0]);qs++;}
-    }
-    return{name:n,tokens:15,hand,blocked:false};
+    const clubHand=[], qHand=[];
+    for(let i=0;i<4&&clubDeck.length>0;i++) clubHand.push(clubDeck.pop());
+    for(let i=0;i<2&&qDeck.length>0;i++) qHand.push(qDeck.pop());
+    return{name:n,tokens:15,clubHand,qHand,blocked:false};
   });
-  return{phase:'waiting',players,deck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null,selectedQuestion:null,flippedCards:[]};
+  return{phase:'waiting',players,clubDeck,qDeck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null,selectedQuestion:null,flippedQs:[]};
 }
 
 function buildDeck(){
@@ -1042,37 +1030,35 @@ function renderCurrentScreen(){
 function renderHandScreen(){
   const me=GS.players[myIdx()];
   if(!me)return;
-  // If hand is empty, draw new cards
-  if(me.needsDraw||me.hand.length===0){
+  // Init hands if missing (compat)
+  if(!me.clubHand) me.clubHand=me.hand||[];
+  if(!me.qHand) me.qHand=[];
+  if(!GS.clubDeck) GS.clubDeck=[];
+  if(!GS.qDeck) GS.qDeck=[];
+  // Draw if needed
+  if(me.needsDraw||(me.clubHand.length===0&&me.qHand.length===0)){
     me.needsDraw=false;
-    // Draw 4 club/action cards
-    let clubs=0;
-    for(let i=GS.deck.length-1;i>=0&&clubs<4;i--){
-      if(GS.deck[i].type!=='question'){me.hand.push(GS.deck.splice(i,1)[0]);clubs++;}
-    }
-    // Draw 2 question cards
-    let qs=0;
-    for(let i=GS.deck.length-1;i>=0&&qs<2;i--){
-      if(GS.deck[i].type==='question'){me.hand.push(GS.deck.splice(i,1)[0]);qs++;}
-    }
+    while(me.clubHand.length<4&&GS.clubDeck.length>0) me.clubHand.push(GS.clubDeck.pop());
+    while(me.qHand.length<2&&GS.qDeck.length>0) me.qHand.push(GS.qDeck.pop());
     GS.selectedQuestion=null;
+    GS.flippedQs=[];
     saveGS(GS);
   }
   document.getElementById('hand-name').textContent=me.name.toUpperCase();
   document.getElementById('hand-tokens').textContent=me.tokens;
   renderSboard('hand-sboard');
-  renderSplitCards(me.hand);
+  renderSplitCards(me.clubHand, me.qHand);
 }
 
-function renderSplitCards(hand){
+function renderSplitCards(clubCards, questionCards){
   const clubsGrid=document.getElementById('clubs-grid');
   const questionsGrid=document.getElementById('questions-grid');
   if(!clubsGrid||!questionsGrid)return;
   clubsGrid.innerHTML='';
   questionsGrid.innerHTML='';
 
-  const clubCards=hand.filter(c=>c.type==='club'||c.type==='double'||c.type==='action');
-  const questionCards=hand.filter(c=>c.type==='question');
+  clubCards=clubCards||[];
+  questionCards=questionCards||[];
   const selQ=GS.selectedQuestion;
 
   // Step label
@@ -1080,12 +1066,11 @@ function renderSplitCards(hand){
   if(step2) step2.style.opacity=selQ?'1':'0.35';
 
   // ── QUESTION CARDS (left) ──
-  questionCards.forEach((card)=>{
-    const globalIdx=hand.indexOf(card);
-    const isSelected=selQ&&selQ.cardIdx===globalIdx;
+  questionCards.forEach((card,qIdx)=>{
+    const isSelected=selQ&&selQ.qIdx===qIdx;
+    const wasFlipped=GS.flippedQs&&GS.flippedQs.includes(qIdx);
 
     const wrap=document.createElement('div');
-    const wasFlipped=GS.flippedCards&&GS.flippedCards.includes(globalIdx);
     wrap.className='card-wrap'+((isSelected||wasFlipped)?' flipped':'');
     wrap.style.cursor='pointer';
     if(isSelected){
@@ -1112,14 +1097,14 @@ function renderSplitCards(hand){
       // Flip — mémoriser dans GS
       if(!wrap.classList.contains('flipped')){
         wrap.classList.add('flipped');
-        if(!GS.flippedCards) GS.flippedCards=[];
-        if(!GS.flippedCards.includes(globalIdx)) GS.flippedCards.push(globalIdx);
+        if(!GS.flippedQs) GS.flippedQs=[];
+        if(!GS.flippedQs.includes(qIdx)) GS.flippedQs.push(qIdx);
       }
       // Select this question
-      GS.selectedQuestion={qId:card.qId,qLabel:card.qLabel,cardIdx:globalIdx};
+      GS.selectedQuestion={qId:card.qId,qLabel:card.qLabel,qIdx:qIdx};
       // Update highlights only (sans re-render pour garder l'état flipped)
       document.querySelectorAll('[id^="cw-q-"]').forEach(w=>{
-        const isThis=w.id===`cw-q-${globalIdx}`;
+        const isThis=w.id===`cw-q-${qIdx}`;
         w.style.outline=isThis?'3px solid var(--gold)':'none';
         w.style.borderRadius=isThis?'14px':'';
       });
@@ -1144,8 +1129,7 @@ function renderSplitCards(hand){
   // ── CLUB/ACTION CARDS (right) ──
   const blockedClubs=selQ?( NATIONALITY_BLOCKS[selQ.qId]||[]):[];
 
-  clubCards.forEach((card)=>{
-    const globalIdx=hand.indexOf(card);
+  clubCards.forEach((card,cIdx)=>{
 
     // Check if this club is blocked by selected question
     const isBlocked=card.type==='club'&&blockedClubs.includes(card.clubId)
@@ -1190,7 +1174,7 @@ function renderSplitCards(hand){
       // Already flipped — play
       if(card.type==='action'){handleAction(card,globalIdx);return;}
       if(!GS.selectedQuestion){toast("Choisis une question !");return;}
-      playCardWithQuestion(globalIdx,GS.selectedQuestion);
+      playCardWithQuestion(cIdx,GS.selectedQuestion);
     });
 
     playBtn.addEventListener('click',function(e){
@@ -1198,7 +1182,7 @@ function renderSplitCards(hand){
       if(isBlocked){toast('❌ Ce club est bloqué par la question !');return;}
       if(card.type==='action'){handleAction(card,globalIdx);return;}
       if(!GS.selectedQuestion){toast("Choisis une question !");return;}
-      playCardWithQuestion(globalIdx,GS.selectedQuestion);
+      playCardWithQuestion(cIdx,GS.selectedQuestion);
     });
 
     clubsGrid.appendChild(wrap);
@@ -1271,7 +1255,8 @@ function checkTokenChanges(){
 function renderCards(hand){
   // Use split layout if on hand screen
   if(document.getElementById('clubs-grid')){
-    renderSplitCards(hand);return;
+    const me=GS.players[myIdx()];
+    renderSplitCards(me?.clubHand||[], me?.qHand||[]);return;
   }
   const grid=document.getElementById('cards-grid');
   if(!grid)return;
@@ -1588,11 +1573,18 @@ async function passTurnMercato(){
 
 async function discardHand(){
   const me=GS.players[myIdx()];
-  GS.deck.unshift(...me.hand);
-  me.hand=[];
+  if(!me.clubHand) me.clubHand=[];
+  if(!me.qHand) me.qHand=[];
+  if(!GS.clubDeck) GS.clubDeck=[];
+  if(!GS.qDeck) GS.qDeck=[];
+  GS.clubDeck.unshift(...me.clubHand);
+  GS.qDeck.unshift(...me.qHand);
+  me.clubHand=[];
+  me.qHand=[];
   me.needsDraw=true;
   GS.selectedQuestion=null;
-  toast('Hand discarded — new cards next turn');
+  GS.flippedQs=[];
+  toast('Main defaussee — nouvelles cartes au prochain tour');
   await nextTurn();
 }
 
@@ -1604,6 +1596,7 @@ async function nextTurn(){
   }
   GS.cur=next;
   GS.selectedQuestion=null;
+  GS.flippedQs=[];
   await saveGS(GS);
 }
 
