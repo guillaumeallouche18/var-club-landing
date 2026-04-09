@@ -922,9 +922,13 @@ function renderWaiting(){
 
 async function startGame(){
   if(!ME.isHost)return;
-  // Redistribute cards to all players (they may not have cards yet if host started alone)
+  GS=migrateGS(GS);
+  // S'assurer que chaque joueur a ses cartes
   GS.players.forEach(p=>{
-    while(p.hand.length<4&&GS.deck.length>0)p.hand.push(GS.deck.pop());
+    if(!p.clubHand) p.clubHand=[];
+    if(!p.qHand) p.qHand=[];
+    while(p.clubHand.length<4&&GS.clubDeck.length>0) p.clubHand.push(GS.clubDeck.pop());
+    while(p.qHand.length<2&&GS.qDeck.length>0) p.qHand.push(GS.qDeck.pop());
   });
   GS.phase='playing';
   await saveGS(GS);
@@ -1432,12 +1436,8 @@ async function doBeginPlay(card,clubIdx,selectedQ,clubId,clubName,league){
   idxToRemove.forEach(i=>me.hand.splice(i,1));
   // Draw replacements
   let clubs=0,qs=0;
-  for(let i=GS.deck.length-1;i>=0&&clubs<1;i--){
-    if(GS.deck[i].type!=='question'){me.hand.push(GS.deck.splice(i,1)[0]);clubs++;}
-  }
-  for(let i=GS.deck.length-1;i>=0&&qs<1;i--){
-    if(GS.deck[i].type==='question'){me.hand.push(GS.deck.splice(i,1)[0]);qs++;}
-  }
+  if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
+  if(GS.qDeck&&GS.qDeck.length>0)me.qHand.push(GS.qDeck.pop());
   GS.selectedQuestion=null;
   await beginPlay(card,0,clubId,clubName,league,selectedQ.qId,selectedQ.qLabel);
 }
@@ -1576,7 +1576,7 @@ async function confirmPlay(){
     // Stocker l'animation dans GS pour que tous la voient
     GS.lastAnim={count, type:'remove', player:ME.name, ts:Date.now()};
     me.hand.splice(GS.play.cardIdx,1);
-    if(GS.deck.length>0)me.hand.push(GS.deck.pop());
+    if(!me.clubHand)me.clubHand=[];if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
     if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.play=null;GS.varOpen=false;GS.varJudge=null;await saveGS(GS);return;}
   }
   GS.play=null;GS.varOpen=false;GS.varJudge=null;
@@ -1633,7 +1633,7 @@ async function handleAction(card,idx){
       list:others.map(({p,i})=>({name:p.name,info:`${p.tokens}🪙`,cb:async()=>{
         const me=GS.players[myIdx()];
         me.hand.splice(idx,1);
-        if(GS.deck.length>0)me.hand.push(GS.deck.pop());
+        if(!me.clubHand)me.clubHand=[];if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
         const tmp=me.hand;me.hand=GS.players[i].hand;GS.players[i].hand=tmp;
         await nextTurn();
       }}))});
@@ -1654,7 +1654,7 @@ async function handleAction(card,idx){
       }}))});
   } else if(card.actionId==='mercato'){
     const drawn=[];
-    for(let i=0;i<3;i++)if(GS.deck.length>0)drawn.push(GS.deck.pop());
+    for(let i=0;i<3;i++)if(GS.clubDeck&&GS.clubDeck.length>0)drawn.push(GS.clubDeck.pop());
     showModal({icon:'📋',title:'Mercato',desc:'Choisissez une carte à garder',
       list:drawn.map((c,i)=>({
         name:c.type==='action'?`${c.icon} ${c.name}`:(c.clubName||c.label||'Carte'),
@@ -1670,7 +1670,7 @@ async function handleAction(card,idx){
 function removeCard(idx){
   const me=GS.players[myIdx()];
   me.hand.splice(idx,1);
-  if(GS.deck.length>0)me.hand.push(GS.deck.pop());
+  if(!me.clubHand)me.clubHand=[];if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
 }
 
 // ═══════════════════════════════════════════
@@ -1904,11 +1904,13 @@ async function startMercatoRound(){
   // Tirer 2 cartes clubs au hasard du deck
   let c1=null,c2=null;
   let tries=0;
-  while((!c1||!c2)&&GS.deck.length>0&&tries<50){
-    const card=GS.deck.pop();
+  if(!GS.clubDeck)GS.clubDeck=[];
+  while((!c1||!c2)&&GS.clubDeck.length>0&&tries<50){
+    const card=GS.clubDeck.pop();
+    if(!card)break;
     if(card.type==='club'&&!c1)c1=card;
     else if(card.type==='club'&&c1&&card.clubId!==c1.clubId)c2=card;
-    else GS.deck.unshift(card); // remettre au fond
+    else GS.clubDeck.unshift(card);
     tries++;
   }
   if(!c1||!c2){toast('Plus assez de cartes clubs !');return;}
