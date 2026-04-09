@@ -853,23 +853,55 @@ async function subscribeToGame(code){
 
 let lastAnimTs=0;
 function migrateGS(gs){
-  // Migration ancien format deck -> clubDeck/qDeck
-  if(!gs.clubDeck && gs.deck){
-    gs.clubDeck=(gs.deck||[]).filter(c=>c.type!=='question');
-    gs.qDeck=(gs.deck||[]).filter(c=>c.type==='question');
+  if(!gs) return gs;
+  // Garantir clubDeck et qDeck existent toujours
+  const rawDeck = gs.deck||[];
+  if(!gs.clubDeck){
+    gs.clubDeck = rawDeck.filter(c=>c&&c.type!=='question');
   }
-  if(!gs.clubDeck) gs.clubDeck=[];
-  if(!gs.qDeck) gs.qDeck=[];
-  if(!gs.flippedQs) gs.flippedQs=[];
-  // Migration joueurs : hand -> clubHand + qHand
-  gs.players?.forEach(p=>{
-    if(!p.clubHand && p.hand){
-      p.clubHand=(p.hand||[]).filter(c=>c.type!=='question');
-      p.qHand=(p.hand||[]).filter(c=>c.type==='question');
+  if(!gs.qDeck){
+    // Si pas de qDeck, reconstruire depuis QUESTIONS
+    const existing = rawDeck.filter(c=>c&&c.type==='question');
+    if(existing.length>0){
+      gs.qDeck=existing;
+    } else {
+      // Reconstruire un qDeck complet depuis QUESTIONS
+      gs.qDeck=[];
+      if(typeof QUESTIONS!=='undefined'){
+        QUESTIONS.forEach(q=>{
+          gs.qDeck.push({type:'question',qId:q.id,qLabel:q.label});
+          gs.qDeck.push({type:'question',qId:q.id,qLabel:q.label});
+        });
+        // Shuffle simple
+        for(let i=gs.qDeck.length-1;i>0;i--){
+          const j=Math.floor(Math.random()*(i+1));
+          [gs.qDeck[i],gs.qDeck[j]]=[gs.qDeck[j],gs.qDeck[i]];
+        }
+      }
     }
-    if(!p.clubHand) p.clubHand=[];
-    if(!p.qHand) p.qHand=[];
-  });
+  }
+  if(!gs.flippedQs) gs.flippedQs=[];
+  if(!gs.selectedQuestion) gs.selectedQuestion=null;
+  // Migrer joueurs
+  if(gs.players){
+    gs.players.forEach(p=>{
+      if(!p.clubHand){
+        p.clubHand=(p.hand||[]).filter(c=>c&&c.type!=='question');
+      }
+      if(!p.qHand){
+        const fromHand=(p.hand||[]).filter(c=>c&&c.type==='question');
+        if(fromHand.length>0){
+          p.qHand=fromHand;
+        } else {
+          // Piocher 2 questions depuis qDeck
+          p.qHand=[];
+          for(let i=0;i<2&&gs.qDeck.length>0;i++) p.qHand.push(gs.qDeck.pop());
+        }
+      }
+      if(!p.clubHand) p.clubHand=[];
+      if(!p.qHand) p.qHand=[];
+    });
+  }
   return gs;
 }
 
