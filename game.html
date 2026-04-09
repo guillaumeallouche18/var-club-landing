@@ -1690,12 +1690,22 @@ async function handleAction(card,idx){
   } else if(card.actionId==='plus5'){
     showModal({icon:'💰',title:'+5 Jetons',desc:'Donnez 5 jetons à un adversaire',
       list:others.map(({p,i})=>({name:p.name,info:`${p.tokens}🪙`,cb:async()=>{
-        GS.players[i].tokens+=5;removeCard(idx);await nextTurn();
+        closeAllModals();
+        GS.players[i].tokens+=5;
+        animateTokens(5,'add',p.name);
+        removeCard(idx);
+        await saveGS(GS);
+        await nextTurn();
       }}))});
   } else if(card.actionId==='plus3'){
     showModal({icon:'💵',title:'+3 Jetons',desc:'Donnez 3 jetons à un adversaire',
       list:others.map(({p,i})=>({name:p.name,info:`${p.tokens}🪙`,cb:async()=>{
-        GS.players[i].tokens+=3;removeCard(idx);await nextTurn();
+        closeAllModals();
+        GS.players[i].tokens+=3;
+        animateTokens(3,'add',p.name);
+        removeCard(idx);
+        await saveGS(GS);
+        await nextTurn();
       }}))});
   } else if(card.actionId==='mercato'){
     const drawn=[];
@@ -1717,6 +1727,39 @@ function removeCard(idx){
   if(!me.clubHand)me.clubHand=[];me.clubHand.splice(idx,1);
   if(!me.clubHand)me.clubHand=[];if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
 }
+
+function renderSpectatorScreen(){
+  if(!GS||!GS.players)return;
+  const active=GS.players[GS.cur];
+
+  // Scoreboard
+  renderSboard('spec-sboard');
+
+  // Nom du joueur actif
+  const nameEl=document.getElementById('spec-active-name');
+  const subEl=document.getElementById('spec-sub');
+  const varBtn=document.getElementById('var-spectator-btn');
+
+  if(GS.mode==='mercato'){
+    if(nameEl) nameEl.textContent=active?.name?.toUpperCase()||'';
+    if(subEl) subEl.textContent='Annonce un joueur en commun…';
+    if(varBtn){
+      varBtn.disabled=!GS.mercato;
+      varBtn.textContent='🔍 Accéder à la VAR';
+    }
+  } else {
+    if(GS.play){
+      if(nameEl) nameEl.textContent=active?.name?.toUpperCase()||'';
+      if(subEl) subEl.textContent=`Q${GS.play.qId} — ${GS.play.clubName}`;
+      if(varBtn) varBtn.disabled=false;
+    } else {
+      if(nameEl) nameEl.textContent=active?.name?.toUpperCase()||'';
+      if(subEl) subEl.textContent='Choisit une carte…';
+      if(varBtn) varBtn.disabled=true;
+    }
+  }
+}
+
 
 // ═══════════════════════════════════════════
 // ARBITRE VAR
