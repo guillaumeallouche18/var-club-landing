@@ -1727,7 +1727,7 @@ async function handleAction(card,idx){
 function removeCard(cardIdx){
   const me=GS.players[myIdx()];
   if(!me.clubHand)me.clubHand=[];
-  if(idx!==undefined && idx>=0) me.clubHand.splice(idx,1);
+  if(cardIdx!==undefined && cardIdx>=0) me.clubHand.splice(cardIdx,1);
 }
 
 function renderSpectatorScreen(){
