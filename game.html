@@ -1027,7 +1027,14 @@ function initGameState(playerNames){
   const players=playerNames.map(n=>{
     const clubHand=[], qHand=[];
     for(let i=0;i<4&&clubDeck.length>0;i++) clubHand.push(clubDeck.pop());
-    for(let i=0;i<2&&qDeck.length>0;i++) qHand.push(qDeck.pop());
+    let _qa=0, _qtmp=[];
+    while(qHand.length<2&&qDeck.length>0&&_qa<30){
+      _qa++;
+      const _qc=qDeck.pop();
+      if(!qHand.some(q=>q.qId===_qc.qId)) qHand.push(_qc);
+      else _qtmp.push(_qc);
+    }
+    qDeck.unshift(..._qtmp);
     return{name:n,tokens:15,clubHand,qHand,blocked:false};
   });
   return{phase:'waiting',players,clubDeck,qDeck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null,selectedQuestion:null,flippedQs:[]};
@@ -1042,9 +1049,10 @@ function buildDeck(){
   DOUBLE_CLUBS.forEach(dc=>{
     d.push({type:'double',clubs:dc.clubs,label:dc.label});
   });
-  // Question cards (separate deck)
+  // Question cards — 3 copies pour avoir assez de cartes
+  // mais enforceHandSize évite les doublons dans la même main
   QUESTIONS.forEach(q=>{
-    // Add 2 copies of each question for variety
+    d.push({type:'question',qId:q.id,qLabel:q.label});
     d.push({type:'question',qId:q.id,qLabel:q.label});
     d.push({type:'question',qId:q.id,qLabel:q.label});
   });
@@ -1468,17 +1476,27 @@ function enforceHandSize(me){
   if(!GS.clubDeck) GS.clubDeck=[];
   if(!GS.qDeck) GS.qDeck=[];
   let changed=false;
+
+  // Clubs
   while(me.clubHand.length<4 && GS.clubDeck.length>0){
     me.clubHand.push(GS.clubDeck.pop()); changed=true;
   }
-  let attempts=0;
+
+  // Questions — sans doublon de qId
   const tmp=[];
-  while(me.qHand.length<2 && GS.qDeck.length>0 && attempts<30){
+  let attempts=0;
+  while(me.qHand.length<2 && GS.qDeck.length>0 && attempts<GS.qDeck.length+5){
     attempts++;
     const c=GS.qDeck.pop();
-    if(!me.qHand.some(q=>q.qId===c.qId)){ me.qHand.push(c); changed=true; }
-    else tmp.push(c);
+    // Vérifier que ce qId n'est pas déjà dans qHand (incluant ce qu'on vient d'ajouter)
+    if(!me.qHand.some(q=>q.qId===c.qId)){
+      me.qHand.push(c);
+      changed=true;
+    } else {
+      tmp.push(c); // remettre, on cherche une autre
+    }
   }
+  // Remettre les refusés dans le deck
   GS.qDeck.unshift(...tmp);
   return changed;
 }
@@ -2037,7 +2055,15 @@ async function selectMode(mode){
     if(!p.clubHand) p.clubHand=[];
     if(!p.qHand) p.qHand=[];
     while(p.clubHand.length<4&&GS.clubDeck&&GS.clubDeck.length>0) p.clubHand.push(GS.clubDeck.pop());
-    while(p.qHand.length<2&&GS.qDeck&&GS.qDeck.length>0) p.qHand.push(GS.qDeck.pop());
+    // Distribuer 2 questions sans doublon
+    let attempts=0; const tmp=[];
+    while(p.qHand.length<2&&GS.qDeck&&GS.qDeck.length>0&&attempts<30){
+      attempts++;
+      const c=GS.qDeck.pop();
+      if(!p.qHand.some(q=>q.qId===c.qId)) p.qHand.push(c);
+      else tmp.push(c);
+    }
+    GS.qDeck.unshift(...tmp);
   });
   await saveGS(GS);
   renderCurrentScreen();
