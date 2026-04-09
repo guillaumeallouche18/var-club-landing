@@ -856,6 +856,30 @@ async function subscribeToGame(code){
 
 let lastAnimTs=0;
 let _prevTokens={};
+
+function renderSboard(elId){
+  const el=document.getElementById(elId);
+  if(!el||!GS)return;
+  el.innerHTML=GS.players.map(p=>`
+    <div class="sboard-row ${p.name===ME.name?'me':''}">
+      <div class="sb-av">${p.name[0].toUpperCase()}</div>
+      <div class="sb-name">${p.name}${p.blocked?' 🟥':''}</div>
+      <div class="sb-tokens ${p.tokens<=3?'low':''}">${p.tokens}</div>
+    </div>`).join('');
+}
+
+function checkTokenChanges(){
+  if(!GS||!GS.players)return;
+  GS.players.forEach(p=>{
+    const prev=_prevTokens[p.name];
+    if(prev!==undefined&&prev!==p.tokens){
+      const diff=prev-p.tokens;
+      if(diff>0) animateTokens(diff,'remove',p.name);
+      else animateTokens(Math.abs(diff),'add',p.name);
+    }
+    _prevTokens[p.name]=p.tokens;
+  });
+}
 function migrateGS(gs){
   if(!gs) return gs;
   // Garantir clubDeck et qDeck existent toujours
