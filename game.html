@@ -1458,11 +1458,14 @@ async function doBeginPlay(card,clubIdx,selectedQ,clubId,clubName,league){
   if(!me.qHand) me.qHand=[];
 
   // Retirer la carte CLUB jouée de clubHand
+  console.log('AVANT retrait - clubHand:', me.clubHand.length, 'qHand:', me.qHand.length, 'clubIdx:', clubIdx);
   me.clubHand.splice(clubIdx, 1);
+  console.log('APRES retrait club - clubHand:', me.clubHand.length);
 
   // Retirer la carte QUESTION jouée de qHand (par qIdx)
   const qIdx = selectedQ.qIdx !== undefined ? selectedQ.qIdx : 0;
   me.qHand.splice(qIdx, 1);
+  console.log('APRES retrait question - qHand:', me.qHand.length);
 
   // Piocher 1 remplacement club
   let attempts=0, tmpDiscard=[];
@@ -1482,6 +1485,7 @@ async function doBeginPlay(card,clubIdx,selectedQ,clubId,clubName,league){
   }
   GS.qDeck.unshift(...tmpDiscard);
 
+  console.log('APRES pioche - clubHand:', me.clubHand.length, 'qHand:', me.qHand.length);
   GS.selectedQuestion=null;
   GS.flippedQs=[];
   await beginPlay(card,0,clubId,clubName,league,selectedQ.qId,selectedQ.qLabel);
