@@ -1367,13 +1367,13 @@ function renderSplitCards(clubCards, questionCards){
         toast('👆 Choisis une question en premier !');return;
       }
       if(!wrap.classList.contains('flipped')){
+        // Premier clic — juste retourner la carte
         wrap.classList.add('flipped');
         document.getElementById('btn-pass-turn').style.display='block';
         document.getElementById('btn-discard').style.display='block';
-        if(card.type==='action') return;
-        if(GS.selectedQuestion) tryPlay();
         return;
       }
+      // Deuxième clic sur carte déjà retournée — jouer
       tryPlay();
     });
 
