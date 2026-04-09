@@ -1061,63 +1061,106 @@ function renderSplitCards(hand){
   clubsGrid.innerHTML='';
   questionsGrid.innerHTML='';
 
-  const selectedQ=GS.selectedQuestion;
-
-  // Separate cards
   const clubCards=hand.filter(c=>c.type==='club'||c.type==='double'||c.type==='action');
   const questionCards=hand.filter(c=>c.type==='question');
 
-  // Step labels
+  // Step label
   const step2=document.getElementById('step2-label');
-  if(step2) step2.style.opacity=selectedQ?'1':'0.35';
+  if(step2) step2.style.opacity=GS.selectedQuestion?'1':'0.35';
 
-  // Render question cards (right side) — flip first
-  questionCards.forEach((card,idx)=>{
+  // Question cards — left
+  questionCards.forEach((card)=>{
     const globalIdx=hand.indexOf(card);
-    const wrap=makeCardWrap(card,globalIdx,hand,'question');
-    // On flip: select this question
-    wrap.dataset.isQuestion='1';
-    wrap.addEventListener('click',()=>{
-      if(wrap.classList.contains('flipped')){
-        // Select this question
-        GS.selectedQuestion={qId:card.qId,qLabel:card.qLabel,cardIdx:globalIdx};
-        // Highlight selected
-        document.querySelectorAll('.card-wrap[data-is-question]').forEach(w=>{
-          w.style.outline=w===wrap?'3px solid var(--gold)':'none';
-          w.style.borderRadius=w===wrap?'14px':'';
-        });
-        // Show pass/discard buttons
-        document.getElementById('btn-pass-turn').style.display='block';
-        document.getElementById('btn-discard').style.display='block';
+    const wrap=document.createElement('div');
+    wrap.className='card-wrap';
+    wrap.id=`cw-q-${globalIdx}`;
+
+    const inner=document.createElement('div');
+    inner.className='card-inner';
+    const back=document.createElement('div');
+    back.className='card-back question-back';
+    back.innerHTML='<span style="font-family:Bebas Neue,cursive;font-size:10px;letter-spacing:3px;color:rgba(13,31,13,.5);">VAR CLUB</span>';
+    const front=document.createElement('div');
+    front.className='card-front';
+    front.appendChild(buildCardFront(card));
+    inner.appendChild(back);
+    inner.appendChild(front);
+    wrap.appendChild(inner);
+
+    // Highlight if selected
+    if(GS.selectedQuestion&&GS.selectedQuestion.cardIdx===globalIdx){
+      wrap.style.outline='3px solid var(--gold)';
+      wrap.style.borderRadius='14px';
+    }
+
+    wrap.onclick=()=>{
+      if(!wrap.classList.contains('flipped')){
+        wrap.classList.add('flipped');
       }
-    },true); // capture to override default
+      // Always select on click (flipped or not after flip)
+      GS.selectedQuestion={qId:card.qId,qLabel:card.qLabel,cardIdx:globalIdx};
+      // Update highlights
+      document.querySelectorAll('[id^="cw-q-"]').forEach(w=>{
+        w.style.outline=w===wrap?'3px solid var(--gold)':'none';
+        w.style.borderRadius=w===wrap?'14px':'';
+      });
+      // Show footer buttons
+      document.getElementById('btn-pass-turn').style.display='block';
+      document.getElementById('btn-discard').style.display='block';
+      // Update step label
+      const s2=document.getElementById('step2-label');
+      if(s2) s2.style.opacity='1';
+    };
     questionsGrid.appendChild(wrap);
   });
 
-  // Render club/action cards (left side)
-  clubCards.forEach((card,idx)=>{
+  // Club/action cards — right
+  clubCards.forEach((card)=>{
     const globalIdx=hand.indexOf(card);
-    const wrap=makeCardWrap(card,globalIdx,hand,'club');
-    // On flip + selectedQ: trigger play
-    wrap.addEventListener('click',()=>{
-      if(wrap.classList.contains('flipped')&&selectedQ){
-        playCardWithQuestion(globalIdx,selectedQ);
-      } else if(wrap.classList.contains('flipped')&&!selectedQ){
-        // Show hint
-        showFlipHint();
+    const wrap=document.createElement('div');
+    wrap.className='card-wrap';
+    wrap.id=`cw-c-${globalIdx}`;
+
+    const inner=document.createElement('div');
+    inner.className='card-inner';
+    const back=document.createElement('div');
+    back.className='card-back';
+    back.innerHTML='<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIyMiIgaGVpZ2h0PSI4MDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+" style="height:16px;width:auto;opacity:.35;">';
+    const front=document.createElement('div');
+    front.className='card-front';
+    front.appendChild(buildCardFront(card));
+
+    const playBtn=document.createElement('button');
+    playBtn.className='card-play-btn';
+    playBtn.textContent='Jouer';
+    playBtn.onclick=(e)=>{
+      e.stopPropagation();
+      if(card.type==='action') handleAction(card,globalIdx);
+      else if(GS.selectedQuestion) playCardWithQuestion(globalIdx,GS.selectedQuestion);
+      else toast('👉 Choisis d'abord une question !');
+    };
+
+    inner.appendChild(back);
+    inner.appendChild(front);
+    wrap.appendChild(inner);
+    wrap.appendChild(playBtn);
+
+    wrap.onclick=()=>{
+      if(!wrap.classList.contains('flipped')){
+        wrap.classList.add('flipped');
+        document.getElementById('btn-pass-turn').style.display='block';
+        document.getElementById('btn-discard').style.display='block';
+      } else {
+        // Already flipped — play if question selected
+        if(card.type==='action') handleAction(card,globalIdx);
+        else if(GS.selectedQuestion) playCardWithQuestion(globalIdx,GS.selectedQuestion);
+        else toast('👉 Choisis d'abord une question !');
       }
-    },true);
+    };
     clubsGrid.appendChild(wrap);
   });
 }
 
-function showFlipHint(){
-  const t=document.createElement('div');
-  t.className='toast';
-  t.textContent='👉 Pick a question first!';
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),2000);
-}
 
 function makeCardWrap(card,globalIdx,hand,role){
   const wrap=document.createElement('div');
