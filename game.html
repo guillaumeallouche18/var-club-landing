@@ -812,13 +812,17 @@ async function joinGame(){
     await new Promise(r=>setTimeout(r,1000));
   }
   if(!data){toast('Partie introuvable — vérifiez le code');return;}
-  GS=data.state;
+  GS=migrateGS(data.state);
 
   // Add player if not already in
   if(!GS.players.find(p=>p.name===name)){
-    GS.players.push({name,tokens:15,hand:[],blocked:false});
-    const p=GS.players[GS.players.length-1];
-    for(let i=0;i<4;i++)if(GS.deck.length>0)p.hand.push(GS.deck.pop());
+    // Compat ancien format
+    if(!GS.clubDeck) GS.clubDeck = (GS.deck||[]).filter(c=>c.type!=='question');
+    if(!GS.qDeck) GS.qDeck = (GS.deck||[]).filter(c=>c.type==='question');
+    const clubHand=[], qHand=[];
+    for(let i=0;i<4&&GS.clubDeck.length>0;i++) clubHand.push(GS.clubDeck.pop());
+    for(let i=0;i<2&&GS.qDeck.length>0;i++) qHand.push(GS.qDeck.pop());
+    GS.players.push({name,tokens:15,clubHand,qHand,blocked:false});
     await saveGS(GS);
   }
 
@@ -848,11 +852,30 @@ async function subscribeToGame(code){
 }
 
 let lastAnimTs=0;
+function migrateGS(gs){
+  // Migration ancien format deck -> clubDeck/qDeck
+  if(!gs.clubDeck && gs.deck){
+    gs.clubDeck=(gs.deck||[]).filter(c=>c.type!=='question');
+    gs.qDeck=(gs.deck||[]).filter(c=>c.type==='question');
+  }
+  if(!gs.clubDeck) gs.clubDeck=[];
+  if(!gs.qDeck) gs.qDeck=[];
+  if(!gs.flippedQs) gs.flippedQs=[];
+  // Migration joueurs : hand -> clubHand + qHand
+  gs.players?.forEach(p=>{
+    if(!p.clubHand && p.hand){
+      p.clubHand=(p.hand||[]).filter(c=>c.type!=='question');
+      p.qHand=(p.hand||[]).filter(c=>c.type==='question');
+    }
+    if(!p.clubHand) p.clubHand=[];
+    if(!p.qHand) p.qHand=[];
+  });
+  return gs;
+}
+
 function onRemoteUpdate(newState){
-  // Détecter changements de jetons AVANT d'écraser GS
   checkTokenChanges_pre(newState);
-  GS=newState;
-  // Sync tokens pour prochaine comparaison
+  GS=migrateGS(newState);
   GS.players?.forEach(p=>{ _prevTokens[p.name]=p.tokens; });
   renderCurrentScreen();
 }
