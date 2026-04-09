@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>VAR CLUB — Multijoueur</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -1172,7 +1172,7 @@ function renderSplitCards(hand){
       }
       // Already flipped — play
       if(card.type==='action'){handleAction(card,globalIdx);return;}
-      if(!GS.selectedQuestion){toast('👉 Retourne d'abord une question !');return;}
+      if(!GS.selectedQuestion){toast("Choisis une question !");return;}
       playCardWithQuestion(globalIdx,GS.selectedQuestion);
     });
 
@@ -1180,7 +1180,7 @@ function renderSplitCards(hand){
       e.stopPropagation();
       if(isBlocked){toast('❌ Ce club est bloqué par la question !');return;}
       if(card.type==='action'){handleAction(card,globalIdx);return;}
-      if(!GS.selectedQuestion){toast('👉 Retourne d'abord une question !');return;}
+      if(!GS.selectedQuestion){toast("Choisis une question !");return;}
       playCardWithQuestion(globalIdx,GS.selectedQuestion);
     });
 
