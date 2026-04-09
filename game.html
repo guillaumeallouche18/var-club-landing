@@ -1164,6 +1164,84 @@ function renderHandScreen(){
   renderSplitCards(me.clubHand, me.qHand);
 }
 
+function buildCardFront(card){
+  const el=document.createElement('div');
+  el.style.width='100%';
+  el.style.height='100%';
+
+  if(card.type==='question'){
+    el.className='cf-action clr-gold';
+    el.innerHTML=`<div class="cf-action-body" style="gap:8px;">
+      <div style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:rgba(13,31,13,.6);">Q${card.qId}</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:clamp(14px,3.5vw,18px);letter-spacing:1px;color:#0D1F0D;text-align:center;line-height:1.2;">${card.qLabel}</div>
+    </div><div class="cf-footer-action"><span style="font-family:'Bebas Neue',cursive;font-size:8px;letter-spacing:2px;color:rgba(13,31,13,.3);">VAR CLUB</span></div>`;
+
+  } else if(card.type==='club'){
+    el.className='cf-club';
+    el.innerHTML=`<div class="cf-club-body">
+      <div class="cf-club-name">${card.clubName||''}</div>
+    </div><div class="cf-footer"><span style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:rgba(13,31,13,.3);">VAR CLUB</span></div>`;
+
+  } else if(card.type==='double'){
+    const c1=CLUBS.find(c=>c.id===card.clubs?.[0]);
+    const c2=CLUBS.find(c=>c.id===card.clubs?.[1]);
+    el.className='cf-club';
+    el.innerHTML=`<div class="cf-club-body" style="justify-content:center;gap:6px;text-align:center;">
+      <div class="cf-club-name" style="font-size:clamp(10px,2.5vw,14px);">${c1?.name||''}</div>
+      <div style="font-size:8px;color:rgba(13,31,13,.4);letter-spacing:2px;">OU</div>
+      <div class="cf-club-name" style="font-size:clamp(10px,2.5vw,14px);">${c2?.name||''}</div>
+    </div><div class="cf-footer"><span style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:rgba(13,31,13,.3);">VAR CLUB</span></div>`;
+
+  } else if(card.type==='action'){
+    el.className=`cf-action clr-${card.clr||'orange'}`;
+    el.innerHTML=`<div class="cf-action-body">
+      <div class="cf-action-icon">${card.icon||''}</div>
+      <div class="cf-action-name">${card.name||''}</div>
+      <div class="cf-action-desc">${card.desc||''}</div>
+    </div><div class="cf-footer-action"><span style="font-family:'Bebas Neue',cursive;font-size:8px;letter-spacing:2px;color:rgba(13,31,13,.25);">VAR CLUB</span></div>`;
+  }
+  return el;
+}
+
+function renderCards(hand){
+  if(document.getElementById('clubs-grid')){
+    const me=GS.players[myIdx()];
+    renderSplitCards(me?.clubHand||[], me?.qHand||[]);
+    return;
+  }
+  const grid=document.getElementById('cards-grid');
+  if(!grid)return;
+  grid.innerHTML='';
+  hand.forEach((card,idx)=>{
+    const wrap=document.createElement('div');
+    wrap.className='card-wrap';
+    wrap.id=`cw-${idx}`;
+    const inner=document.createElement('div');
+    inner.className='card-inner';
+    const back=document.createElement('div');
+    back.className='card-back';
+    const front=document.createElement('div');
+    front.className='card-front';
+    front.appendChild(buildCardFront(card));
+    const playBtn=document.createElement('button');
+    playBtn.className='card-play-btn';
+    playBtn.textContent='Jouer';
+    playBtn.onclick=(e)=>{e.stopPropagation();playCard(idx);};
+    inner.appendChild(back);
+    inner.appendChild(front);
+    wrap.appendChild(inner);
+    wrap.appendChild(playBtn);
+    wrap.onclick=()=>{
+      if(!wrap.classList.contains('flipped')){
+        wrap.classList.add('flipped');
+        document.getElementById('btn-pass-turn').style.display='block';
+        document.getElementById('btn-discard').style.display='block';
+      }
+    };
+    grid.appendChild(wrap);
+  });
+}
+
 function renderSplitCards(clubCards, questionCards){
   const clubsGrid=document.getElementById('clubs-grid');
   const questionsGrid=document.getElementById('questions-grid');
