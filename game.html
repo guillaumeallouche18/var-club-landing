@@ -130,6 +130,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
 .card-back,.card-front{position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r);overflow:hidden;}
 .card-back{background-image:repeating-linear-gradient(180deg,#0D1F0D 0px,#0D1F0D 20px,#1C3A22 20px,#1C3A22 40px);border:3px solid rgba(240,180,41,.4);display:flex;align-items:center;justify-content:center;}
+.card-back.question-back{background-image:repeating-linear-gradient(180deg,#F0B429 0px,#F0B429 20px,#F5C842 20px,#F5C842 40px);border:3px solid rgba(13,31,13,.3);}
 .card-back-logo{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:rgba(240,180,41,.35);}
 .card-front{transform:rotateY(180deg);}
 .cf-club{width:100%;height:100%;background-image:repeating-linear-gradient(180deg,#ffffff 0px,#ffffff 22px,#f0f5f0 22px,#f0f5f0 44px);border:3px solid #ffffff;outline:2px solid #2a4230;display:flex;flex-direction:column;border-radius:var(--r);}
@@ -438,7 +439,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   <div class="hand-hdr">
     <div class="hand-hdr-left">
       <div class="name" id="hand-name">MOI</div>
-      <div class="sub">Retourne une carte pour jouer</div>
+      <div class="sub" id="hand-sub">1. Flip a question  →  2. Flip a club</div>
     </div>
     <div class="hand-hdr-right">
       <div class="num" id="hand-tokens">15</div>
@@ -446,7 +447,18 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
     </div>
   </div>
   <div class="sboard" id="hand-sboard"></div>
-  <div class="cards-grid" id="cards-grid"></div>
+  <div style="padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);">1. Retourne une question</div>
+    <div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);" id="step2-label" style="opacity:0.3;">2. Puis choisis un club</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;padding:0 16px 14px;">
+    <!-- Club cards — left -->
+    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-right:10px;"></div>
+    <!-- Divider -->
+    <div style="background:var(--border);margin:0 4px;"></div>
+    <!-- Question cards — right -->
+    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-left:10px;"></div>
+  </div>
   <div class="hand-footer" style="display:flex;gap:8px;" id="hand-footer">
     <button class="ghost-btn" id="btn-pass-turn" onclick="passTurn()" style="flex:1;display:none;">Passer mon tour</button>
     <button class="ghost-btn" id="btn-discard" onclick="discardHand()" style="flex:1;display:none;border-color:var(--coral);color:var(--coral);">
@@ -894,30 +906,44 @@ async function leaveGame(){
 // GAME STATE INIT
 // ═══════════════════════════════════════════
 function initGameState(playerNames){
-  const deck=buildDeck();
+  const allCards=buildDeck();
+  // Split into club/action pile and question pile
+  const clubPile=shuffle(allCards.filter(c=>c.type!=='question'));
+  const qPile=shuffle(allCards.filter(c=>c.type==='question'));
+  // Merge back: club pile first, question pile at the end
+  // so pop() gives clubs first
+  const deck=[...qPile,...clubPile];
   const players=playerNames.map(n=>{
     const hand=[];
-    for(let i=0;i<4;i++)if(deck.length>0)hand.push(deck.pop());
+    // Deal 4 club/action cards
+    let clubs=0;
+    for(let i=deck.length-1;i>=0&&clubs<4;i--){
+      if(deck[i].type!=='question'){hand.push(deck.splice(i,1)[0]);clubs++;}
+    }
+    // Deal 2 question cards
+    let qs=0;
+    for(let i=deck.length-1;i>=0&&qs<2;i--){
+      if(deck[i].type==='question'){hand.push(deck.splice(i,1)[0]);qs++;}
+    }
     return{name:n,tokens:15,hand,blocked:false};
   });
-  return{phase:'waiting',players,deck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null};
+  return{phase:'waiting',players,deck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null,selectedQuestion:null};
 }
 
 function buildDeck(){
   const d=[];
+  // Club cards (no question attached)
   CLUBS.forEach(c=>{
-    const validIds=VALID_QUESTIONS[c.id]||QUESTIONS.map(q=>q.id);
-    const validQs=QUESTIONS.filter(q=>validIds.includes(q.id));
-    const q=rnd(validQs);
-    d.push({type:'club',clubId:c.id,clubName:c.name,league:c.league,qId:q.id,qLabel:q.label});
+    d.push({type:'club',clubId:c.id,clubName:c.name,league:c.league});
   });
   DOUBLE_CLUBS.forEach(dc=>{
-    // Questions valides pour les DEUX clubs
-    const v1=new Set(VALID_QUESTIONS[dc.clubs[0]]||QUESTIONS.map(q=>q.id));
-    const v2=new Set(VALID_QUESTIONS[dc.clubs[1]]||QUESTIONS.map(q=>q.id));
-    const validQs=QUESTIONS.filter(q=>v1.has(q.id)&&v2.has(q.id));
-    const q=rnd(validQs.length?validQs:QUESTIONS);
-    d.push({type:'double',clubs:dc.clubs,label:dc.label,qId:q.id,qLabel:q.label});
+    d.push({type:'double',clubs:dc.clubs,label:dc.label});
+  });
+  // Question cards (separate deck)
+  QUESTIONS.forEach(q=>{
+    // Add 2 copies of each question for variety
+    d.push({type:'question',qId:q.id,qLabel:q.label});
+    d.push({type:'question',qId:q.id,qLabel:q.label});
   });
   ACTIONS.forEach(a=>{for(let i=0;i<a.n;i++)d.push({type:'action',actionId:a.id,name:a.name,icon:a.icon,desc:a.desc,clr:a.clr});});
   return shuffle(d);
@@ -1006,16 +1032,130 @@ function renderCurrentScreen(){
 function renderHandScreen(){
   const me=GS.players[myIdx()];
   if(!me)return;
-  // Si la main est vide (après défausse), piocher 4 cartes
+  // If hand is empty, draw new cards
   if(me.needsDraw||me.hand.length===0){
     me.needsDraw=false;
-    for(let i=0;i<4;i++) if(GS.deck.length>0) me.hand.push(GS.deck.pop());
-    saveGS(GS); // sauvegarder la nouvelle main
+    // Draw 4 club/action cards
+    let clubs=0;
+    for(let i=GS.deck.length-1;i>=0&&clubs<4;i--){
+      if(GS.deck[i].type!=='question'){me.hand.push(GS.deck.splice(i,1)[0]);clubs++;}
+    }
+    // Draw 2 question cards
+    let qs=0;
+    for(let i=GS.deck.length-1;i>=0&&qs<2;i--){
+      if(GS.deck[i].type==='question'){me.hand.push(GS.deck.splice(i,1)[0]);qs++;}
+    }
+    GS.selectedQuestion=null;
+    saveGS(GS);
   }
   document.getElementById('hand-name').textContent=me.name.toUpperCase();
   document.getElementById('hand-tokens').textContent=me.tokens;
   renderSboard('hand-sboard');
-  renderCards(me.hand);
+  renderSplitCards(me.hand);
+}
+
+function renderSplitCards(hand){
+  const clubsGrid=document.getElementById('clubs-grid');
+  const questionsGrid=document.getElementById('questions-grid');
+  if(!clubsGrid||!questionsGrid)return;
+  clubsGrid.innerHTML='';
+  questionsGrid.innerHTML='';
+
+  const selectedQ=GS.selectedQuestion;
+
+  // Separate cards
+  const clubCards=hand.filter(c=>c.type==='club'||c.type==='double'||c.type==='action');
+  const questionCards=hand.filter(c=>c.type==='question');
+
+  // Step labels
+  const step2=document.getElementById('step2-label');
+  if(step2) step2.style.opacity=selectedQ?'1':'0.35';
+
+  // Render question cards (right side) — flip first
+  questionCards.forEach((card,idx)=>{
+    const globalIdx=hand.indexOf(card);
+    const wrap=makeCardWrap(card,globalIdx,hand,'question');
+    // On flip: select this question
+    wrap.dataset.isQuestion='1';
+    wrap.addEventListener('click',()=>{
+      if(wrap.classList.contains('flipped')){
+        // Select this question
+        GS.selectedQuestion={qId:card.qId,qLabel:card.qLabel,cardIdx:globalIdx};
+        // Highlight selected
+        document.querySelectorAll('.card-wrap[data-is-question]').forEach(w=>{
+          w.style.outline=w===wrap?'3px solid var(--gold)':'none';
+          w.style.borderRadius=w===wrap?'14px':'';
+        });
+        // Show pass/discard buttons
+        document.getElementById('btn-pass-turn').style.display='block';
+        document.getElementById('btn-discard').style.display='block';
+      }
+    },true); // capture to override default
+    questionsGrid.appendChild(wrap);
+  });
+
+  // Render club/action cards (left side)
+  clubCards.forEach((card,idx)=>{
+    const globalIdx=hand.indexOf(card);
+    const wrap=makeCardWrap(card,globalIdx,hand,'club');
+    // On flip + selectedQ: trigger play
+    wrap.addEventListener('click',()=>{
+      if(wrap.classList.contains('flipped')&&selectedQ){
+        playCardWithQuestion(globalIdx,selectedQ);
+      } else if(wrap.classList.contains('flipped')&&!selectedQ){
+        // Show hint
+        showFlipHint();
+      }
+    },true);
+    clubsGrid.appendChild(wrap);
+  });
+}
+
+function showFlipHint(){
+  const t=document.createElement('div');
+  t.className='toast';
+  t.textContent='👉 Pick a question first!';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2000);
+}
+
+function makeCardWrap(card,globalIdx,hand,role){
+  const wrap=document.createElement('div');
+  wrap.className='card-wrap';
+  wrap.id=`cw-${globalIdx}`;
+
+  const inner=document.createElement('div');
+  inner.className='card-inner';
+
+  const back=document.createElement('div');
+  back.className='card-back'+(role==='question'?' question-back':'');
+  back.innerHTML='<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIyMiIgaGVpZ2h0PSI4MDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjE1ODkiIHk9IjgzMyIgd2lkdGg9IjEyMjIiIGhlaWdodD0iODA5Ii8+PC9jbGlwUGF0aD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwKSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE1ODkgLTgzMykiPjxwYXRoIGQ9Ik0xNzE0LjMgMTIxOCAxODAxLjcgMTIxOEMxODA1LjE3IDEyMTggMTgwOC4yNCAxMjE1Ljc1IDE4MDkuMjggMTIxMi40NUwxOTI2LjgxIDgzOS4zMDNDMTkyNy42NCA4MzYuNjc1IDE5MjUuNjcgODM0IDE5MjIuOTEgODM0TDE4MzIuNDYgODM0QzE4MzAuNjMgODM0IDE4MjkuMDMgODM1LjIxMiAxODI4LjUzIDgzNi45NjdMMTc1OS4xIDEwODEuMTlDMTc1OC43OCAxMDgyLjI5IDE3NTcuMjIgMTA4Mi4yOSAxNzU2LjkxIDEwODEuMTlMMTY4Ny40NyA4MzYuOTY3QzE2ODYuOTggODM1LjIxMiAxNjg1LjM3IDgzNCAxNjgzLjU0IDgzNEwxNTkzLjEgODM0QzE1OTAuMzMgODM0IDE1ODguMzYgODM2LjY3NSAxNTg5LjE5IDgzOS4zMDNMMTcwNi43MiAxMjEyLjQ1QzE3MDcuNzYgMTIxNS43NSAxNzEwLjgzIDEyMTggMTcxNC4zIDEyMThaIiBmaWxsPSIjRjdGREY0IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNMjA3My41NCA4MzkuNTQ5QzIwNzIuNDggODM2LjI0NyAyMDY5LjM3IDgzNCAyMDY1Ljg0IDgzNEwxOTc3LjE2IDgzNEMxOTczLjYzIDgzNCAxOTcwLjUyIDgzNi4yNDcgMTk2OS40NiA4MzkuNTQ5TDE4NTAuMTkgMTIxMi43QzE4NDkuMzUgMTIxNS4zMyAxODUxLjM1IDEyMTggMTg1NC4xNSAxMjE4TDE5NDMuODcgMTIxOEMxOTQ1LjczIDEyMTggMTk0Ny4zNiAxMjE2Ljc5IDE5NDcuODcgMTIxNS4wM0wxOTY3LjM5IDExNDcuMDggMjA3NS42MSAxMTQ3LjA4IDIwOTUuMTMgMTIxNS4wM0MyMDk1LjY0IDEyMTYuNzkgMjA5Ny4yNyAxMjE4IDIwOTkuMTMgMTIxOEwyMTg4Ljg1IDEyMThDMjE5MS42NSAxMjE4IDIxOTMuNjUgMTIxNS4zMyAyMTkyLjgxIDEyMTIuN0wyMDczLjU0IDgzOS41NDlaTTE5ODguNTIgMTA3My41MiAyMDIwLjM5IDk2NC42MzlDMjAyMC43MSA5NjMuNTM4IDIwMjIuMjkgOTYzLjUzOCAyMDIyLjYxIDk2NC42MzlMMjA1NC40OCAxMDczLjUyIDE5ODguNTIgMTA3My41MloiIGZpbGw9IiNGN0ZERjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=" style="height:16px;width:auto;opacity:${role==="question"?".5":".35"};${role==="question"?"filter:brightness(0)":""}">'; 
+
+  const front=document.createElement('div');
+  front.className='card-front';
+  front.appendChild(buildCardFront(card));
+
+  const playBtn=document.createElement('button');
+  playBtn.className='card-play-btn';
+  playBtn.textContent=role==='question'?'Choisir':'Jouer';
+  playBtn.onclick=(e)=>{e.stopPropagation();};
+
+  inner.appendChild(back);
+  inner.appendChild(front);
+  wrap.appendChild(inner);
+  wrap.appendChild(playBtn);
+
+  // Basic flip on click
+  wrap.onclick=()=>{
+    if(!wrap.classList.contains('flipped')){
+      wrap.classList.add('flipped');
+      // Show pass/discard after first flip
+      document.getElementById('btn-pass-turn').style.display='block';
+      document.getElementById('btn-discard').style.display='block';
+    }
+  };
+
+  return wrap;
 }
 
 let _prevTokens={};
@@ -1042,7 +1182,12 @@ function checkTokenChanges(){
 }
 
 function renderCards(hand){
+  // Use split layout if on hand screen
+  if(document.getElementById('clubs-grid')){
+    renderSplitCards(hand);return;
+  }
   const grid=document.getElementById('cards-grid');
+  if(!grid)return;
   grid.innerHTML='';
   hand.forEach((card,idx)=>{
     const wrap=document.createElement('div');
@@ -1063,7 +1208,12 @@ function renderCards(hand){
     const playBtn=document.createElement('button');
     playBtn.className='card-play-btn';
     playBtn.textContent='Jouer';
-    playBtn.onclick=(e)=>{e.stopPropagation();playCard(idx);};
+    playBtn.onclick=(e)=>{
+      e.stopPropagation();
+      if(card.type==='action') playCard(idx);
+      else if(GS.selectedQuestion) playCardWithQuestion(idx,GS.selectedQuestion);
+      else toast('👉 Pick a question first!');
+    };
 
     inner.appendChild(back);
     inner.appendChild(front);
@@ -1130,38 +1280,69 @@ function renderSpectatorScreen(){
 // PLAY CARD
 // ═══════════════════════════════════════════
 async function playCard(idx){
+  // Legacy fallback — not used in new flow
   const me=GS.players[myIdx()];
   const card=me.hand[idx];
   if(card.type==='action'){await handleAction(card,idx);return;}
+  if(!GS.selectedQuestion){toast('Pick a question first!');return;}
+  await playCardWithQuestion(idx, GS.selectedQuestion);
+}
 
-  // Désigner l'arbitre VAR
-  if(card.type!=='action'){
-    const others=GS.players.filter(p=>p.name!==ME.name);
+async function playCardWithQuestion(clubIdx, selectedQ){
+  const me=GS.players[myIdx()];
+  const card=me.hand[clubIdx];
+  if(!card)return;
+  if(card.type==='action'){await handleAction(card,clubIdx);return;}
+
+  // Assign VAR judge
+  const others=GS.players.filter(p=>p.name!==ME.name);
+  const assignJudge=(cb)=>{
     if(GS.players.length===2){
-      // À 2 joueurs — l'autre joueur est automatiquement arbitre
-      GS.varJudge=others[0].name;
-      doPlayCard(idx,card);
-      return;
+      GS.varJudge=others[0].name; cb();
     } else {
-      // À 3+ joueurs — choisir l'arbitre
-      showModal({
-        icon:'🏁',
-        title:'Arbitre VAR',
-        desc:'Désignez le joueur qui validera votre réponse',
-        list:others.map(p=>({
-          name:p.name,
-          info:`${p.tokens}🪙`,
-          cb:()=>{
-            GS.varJudge=p.name;
-            doPlayCard(idx,card);
-          }
-        }))
-      });
-      return;
+      showModal({icon:'🏁',title:'Arbitre VAR',desc:'Désignez le joueur qui validera votre réponse',
+        list:others.map(p=>({name:p.name,info:`${p.tokens}🪙`,cb:()=>{GS.varJudge=p.name;cb();}}))});
     }
-  }
+  };
 
-  doPlayCard(idx,card);
+  assignJudge(async()=>{
+    if(card.type==='double'){
+      const c1=CLUBS.find(c=>c.id===card.clubs[0]);
+      const c2=CLUBS.find(c=>c.id===card.clubs[1]);
+      showModal({icon:'⚽',title:'Choose a club',desc:'Which club are you answering for?',
+        list:[
+          {name:c1.name,info:c1.league,cb:()=>doBeginPlay(card,clubIdx,selectedQ,c1.id,c1.name,c1.league)},
+          {name:c2.name,info:c2.league,cb:()=>doBeginPlay(card,clubIdx,selectedQ,c2.id,c2.name,c2.league)},
+        ]});
+    } else {
+      await doBeginPlay(card,clubIdx,selectedQ,card.clubId,card.clubName,card.league);
+    }
+  });
+}
+
+async function doBeginPlay(card,clubIdx,selectedQ,clubId,clubName,league){
+  // Validate the question is valid for this club
+  const validIds=VALID_QUESTIONS[clubId]||QUESTIONS.map(q=>q.id);
+  if(!validIds.includes(selectedQ.qId)){
+    toast(`❌ Q${selectedQ.qId} not available for ${clubName}`);
+    return;
+  }
+  // Remove BOTH the club card and the question card from hand
+  const me=GS.players[myIdx()];
+  // Remove club card first (higher idx first to preserve indices)
+  const qIdx=selectedQ.cardIdx;
+  const idxToRemove=[clubIdx,qIdx].sort((a,b)=>b-a);
+  idxToRemove.forEach(i=>me.hand.splice(i,1));
+  // Draw replacements
+  let clubs=0,qs=0;
+  for(let i=GS.deck.length-1;i>=0&&clubs<1;i--){
+    if(GS.deck[i].type!=='question'){me.hand.push(GS.deck.splice(i,1)[0]);clubs++;}
+  }
+  for(let i=GS.deck.length-1;i>=0&&qs<1;i--){
+    if(GS.deck[i].type==='question'){me.hand.push(GS.deck.splice(i,1)[0]);qs++;}
+  }
+  GS.selectedQuestion=null;
+  await beginPlay(card,0,clubId,clubName,league,selectedQ.qId,selectedQ.qLabel);
 }
 
 async function doPlayCard(idx,card){
@@ -1178,12 +1359,14 @@ async function doPlayCard(idx,card){
   await beginPlay(card,idx,card.clubId,card.clubName,card.league);
 }
 
-async function beginPlay(card,idx,clubId,clubName,league){
+async function beginPlay(card,idx,clubId,clubName,league,qId,qLabel){
   myCount=0;
+  const resolvedQId=qId||card.qId;
+  const resolvedQLabel=qLabel||card.qLabel;
   GS.play={
     card,cardIdx:idx,clubId,clubName,league,
-    qId:card.qId,qLabel:card.qLabel,
-    answers:DB[clubId]?.[String(card.qId)]||[],
+    qId:resolvedQId,qLabel:resolvedQLabel,
+    answers:DB[clubId]?.[String(resolvedQId)]||[],
     judge:GS.varJudge,
     judgeCount:null,
     judgeVerdict:null,
@@ -1316,12 +1499,11 @@ async function passTurnMercato(){
 
 async function discardHand(){
   const me=GS.players[myIdx()];
-  // Remettre les cartes dans le deck
   GS.deck.unshift(...me.hand);
-  // Vider la main — flag needsDraw pour le prochain tour
   me.hand=[];
   me.needsDraw=true;
-  toast('Main défaussée — 4 nouvelles cartes au prochain tour');
+  GS.selectedQuestion=null;
+  toast('Hand discarded — new cards next turn');
   await nextTurn();
 }
 
@@ -1332,6 +1514,7 @@ async function nextTurn(){
     GS.players[next].blocked=false;next=(next+1)%GS.players.length;tries++;
   }
   GS.cur=next;
+  GS.selectedQuestion=null;
   await saveGS(GS);
 }
 
