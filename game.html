@@ -1135,6 +1135,7 @@ function renderHandScreen(){
   if(!GS.clubDeck) GS.clubDeck=[];
   if(!GS.qDeck) GS.qDeck=[];
   // Piocher uniquement si explicitement demandé (needsDraw) ou main totalement vide
+  // Ne piocher que si vraiment nécessaire (après défausse ou 1er tour)
   const totallyEmpty = me.clubHand.length===0 && me.qHand.length===0;
   if(me.needsDraw || totallyEmpty){
     me.needsDraw=false;
@@ -1265,7 +1266,7 @@ function renderSplitCards(clubCards, questionCards){
     const wrap=document.createElement('div');
     wrap.className='card-wrap'+((isSelected||wasFlipped)?' flipped':'');
     if(isSelected){
-      wrap.style.outline='3px solid var(--gold)';
+      wrap.style.outline='4px solid #0D1F0D';wrap.style.boxShadow='0 0 0 2px var(--gold)';
       wrap.style.borderRadius='14px';
     }
 
@@ -1292,7 +1293,7 @@ function renderSplitCards(clubCards, questionCards){
       // Mettre à jour highlights
       document.querySelectorAll('[id^="cw-q-"]').forEach(w=>{
         const isThis = w.id===`cw-q-${qIdx}`;
-        w.style.outline = isThis?'3px solid var(--gold)':'none';
+        w.style.outline = isThis?'4px solid #0D1F0D':'none';
         w.style.borderRadius = isThis?'14px':'';
       });
       // Griser clubs bloqués
@@ -1452,24 +1453,37 @@ async function playCardWithQuestion(clubIdx, selectedQ){
 }
 
 async function doBeginPlay(card,clubIdx,selectedQ,clubId,clubName,league){
-  // Validate the question is valid for this club
-  const validIds=VALID_QUESTIONS[clubId]||QUESTIONS.map(q=>q.id);
-  if(!validIds.includes(selectedQ.qId)){
-    toast(`❌ Q${selectedQ.qId} not available for ${clubName}`);
-    return;
-  }
-  // Remove BOTH the club card and the question card from hand
   const me=GS.players[myIdx()];
-  // Remove club card first (higher idx first to preserve indices)
-  const qIdx=selectedQ.cardIdx;
-  const idxToRemove=[clubIdx,qIdx].sort((a,b)=>b-a);
-  if(!me.clubHand)me.clubHand=[];
-  idxToRemove.forEach(i=>me.clubHand.splice(i,1));
-  // Draw replacements
-  let clubs=0,qs=0;
-  if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
-  if(GS.qDeck&&GS.qDeck.length>0)me.qHand.push(GS.qDeck.pop());
+  if(!me.clubHand) me.clubHand=[];
+  if(!me.qHand) me.qHand=[];
+
+  // Retirer la carte CLUB jouée de clubHand
+  me.clubHand.splice(clubIdx, 1);
+
+  // Retirer la carte QUESTION jouée de qHand (par qIdx)
+  const qIdx = selectedQ.qIdx !== undefined ? selectedQ.qIdx : 0;
+  me.qHand.splice(qIdx, 1);
+
+  // Piocher 1 remplacement club
+  let attempts=0, tmpDiscard=[];
+  if(GS.clubDeck && GS.clubDeck.length>0)
+    me.clubHand.push(GS.clubDeck.pop());
+
+  // Piocher 1 remplacement question (sans doublon)
+  attempts=0; tmpDiscard=[];
+  while(GS.qDeck && GS.qDeck.length>0 && attempts<20){
+    attempts++;
+    const candidate = GS.qDeck.pop();
+    if(!me.qHand.some(q=>q.qId===candidate.qId)){
+      me.qHand.push(candidate); break;
+    } else {
+      tmpDiscard.push(candidate);
+    }
+  }
+  GS.qDeck.unshift(...tmpDiscard);
+
   GS.selectedQuestion=null;
+  GS.flippedQs=[];
   await beginPlay(card,0,clubId,clubName,league,selectedQ.qId,selectedQ.qLabel);
 }
 
