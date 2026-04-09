@@ -1266,7 +1266,7 @@ function renderSplitCards(clubCards, questionCards){
     const wrap=document.createElement('div');
     wrap.className='card-wrap'+((isSelected||wasFlipped)?' flipped':'');
     if(isSelected){
-      wrap.style.outline='4px solid #0D1F0D';wrap.style.boxShadow='0 0 0 2px var(--gold)';
+      wrap.style.outline='5px solid #4ADE80';wrap.style.boxShadow='0 0 0 2px var(--gold)';
       wrap.style.borderRadius='14px';
     }
 
@@ -1293,7 +1293,7 @@ function renderSplitCards(clubCards, questionCards){
       // Mettre à jour highlights
       document.querySelectorAll('[id^="cw-q-"]').forEach(w=>{
         const isThis = w.id===`cw-q-${qIdx}`;
-        w.style.outline = isThis?'4px solid #0D1F0D':'none';
+        w.style.outline = isThis?'5px solid #4ADE80':'none';
         w.style.borderRadius = isThis?'14px':'';
       });
       // Griser clubs bloqués
