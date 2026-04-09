@@ -1106,27 +1106,29 @@ function renderHandScreen(){
   if(!me.qHand) me.qHand=[];
   if(!GS.clubDeck) GS.clubDeck=[];
   if(!GS.qDeck) GS.qDeck=[];
-  // Draw if needed — compléter jusqu'à 4 clubs et 2 questions
-  const needsClub = me.clubHand.length < 4;
-  const needsQ = me.qHand.length < 2;
-  if(me.needsDraw || needsClub || needsQ){
+  // Piocher uniquement si explicitement demandé (needsDraw) ou main totalement vide
+  const totallyEmpty = me.clubHand.length===0 && me.qHand.length===0;
+  if(me.needsDraw || totallyEmpty){
     me.needsDraw=false;
-    while(me.clubHand.length<4 && GS.clubDeck && GS.clubDeck.length>0) me.clubHand.push(GS.clubDeck.pop());
-    while(me.qHand.length<2 && GS.qDeck && GS.qDeck.length>0){
-      const candidate = GS.qDeck.pop();
-      // Éviter doublons (même qId déjà en main)
+    // Piocher jusqu'à 4 clubs
+    while(me.clubHand.length<4 && GS.clubDeck && GS.clubDeck.length>0)
+      me.clubHand.push(GS.clubDeck.pop());
+    // Piocher jusqu'à 2 questions sans doublon
+    let attempts=0;
+    const tmpDiscard=[];
+    while(me.qHand.length<2 && GS.qDeck && GS.qDeck.length>0 && attempts<30){
+      attempts++;
+      const candidate=GS.qDeck.pop();
       if(!me.qHand.some(q=>q.qId===candidate.qId)){
         me.qHand.push(candidate);
-      } else if(GS.qDeck.length===0){
-        me.qHand.push(candidate); // forcé si plus d'autres choix
-        break;
+      } else {
+        tmpDiscard.push(candidate); // remettre à la fin du deck
       }
     }
-    if(needsClub||needsQ){
-      GS.selectedQuestion=null;
-      GS.flippedQs=[];
-      saveGS(GS);
-    }
+    GS.qDeck.unshift(...tmpDiscard);
+    GS.selectedQuestion=null;
+    GS.flippedQs=[];
+    saveGS(GS);
   }
   document.getElementById('hand-name').textContent=me.name.toUpperCase();
   document.getElementById('hand-tokens').textContent=me.tokens;
