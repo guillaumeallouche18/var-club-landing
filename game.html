@@ -134,8 +134,8 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .card-back-logo{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:rgba(240,180,41,.35);}
 .card-front{transform:rotateY(180deg);}
 .cf-club{width:100%;height:100%;background-image:repeating-linear-gradient(180deg,#ffffff 0px,#ffffff 22px,#f0f5f0 22px,#f0f5f0 44px);border:3px solid #ffffff;outline:2px solid #2a4230;display:flex;flex-direction:column;border-radius:var(--r);}
-.cf-club-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;gap:6px;overflow:hidden;text-align:center;}
-.cf-club-name{font-family:'Bebas Neue',cursive;font-size:clamp(14px,4vw,20px);letter-spacing:2px;color:#0D1F0D;text-align:center;line-height:1.1;}
+.cf-club-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;gap:8px;overflow:hidden;width:100%;}
+.cf-club-name{font-family:'Bebas Neue',cursive;font-size:clamp(12px,3.5vw,18px);letter-spacing:2px;color:#0D1F0D;text-align:center;line-height:1.2;width:100%;}
 .cf-or{font-size:8px;color:rgba(13,31,13,.4);letter-spacing:1px;margin:1px 0;}
 .cf-divider{width:28px;height:1px;background:#F0B429;margin:4px 0;opacity:.7;}
 .cf-q-num{font-family:'Bebas Neue',cursive;font-size:11px;color:#F0B429;letter-spacing:1px;background:rgba(13,31,13,.07);padding:2px 9px;border-radius:3px;}
@@ -143,17 +143,17 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .cf-footer{background:rgba(255,255,255,.9);padding:5px 8px;border-top:1px solid rgba(13,31,13,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cf-footer img{height:12px;width:auto;opacity:.45;}
 .cf-action{width:100%;height:100%;display:flex;flex-direction:column;border-radius:var(--r);overflow:hidden;}
-.cf-action.clr-gold{background-image:repeating-linear-gradient(180deg,#F0B429 0px,#F0B429 22px,#F5C842 22px,#F5C842 44px);border:3px solid rgba(13,31,13,.25);}
+.cf-action.clr-gold{background-image:repeating-linear-gradient(180deg,#FFE28A 0px,#FFE28A 22px,#FFD055 22px,#FFD055 44px);border:3px solid rgba(13,31,13,.15);}
 .cf-action.clr-red{background-image:repeating-linear-gradient(180deg,#C0392B 0px,#C0392B 22px,#E74C3C 22px,#E74C3C 40px);border:3px solid rgba(255,255,255,.2);}
-.cf-action.clr-green{background-image:repeating-linear-gradient(180deg,#0D1F0D 0px,#0D1F0D 22px,#1C3A22 22px,#1C3A22 44px);border:3px solid rgba(240,180,41,.4);}
+.cf-action.clr-green{background-image:repeating-linear-gradient(180deg,#FFDDB0 0px,#FFDDB0 22px,#FFC87A 22px,#FFC87A 44px);border:3px solid rgba(180,100,0,.2);}
 .cf-action-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;gap:4px;overflow:hidden;}
 .cf-action-icon{font-size:30px;line-height:1;}
 .cf-action-name{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;text-align:center;line-height:1;}
-.clr-gold .cf-action-name{color:#0D1F0D;}
-.clr-red .cf-action-name{color:#fff;}.clr-green .cf-action-name{color:#0D1F0D;}
+.clr-gold .cf-action-name{color:#5A3A00;}
+.clr-red .cf-action-name{color:#fff;}.clr-green .cf-action-name{color:#6B3800;}
 .cf-action-desc{font-size:10px;text-align:center;line-height:1.3;letter-spacing:.3px;}
-.clr-gold .cf-action-desc{color:rgba(13,31,13,.6);}
-.clr-red .cf-action-desc{color:rgba(255,255,255,.55);}.clr-green .cf-action-desc{color:rgba(13,31,13,.6);}
+.clr-gold .cf-action-desc{color:rgba(90,58,0,.65);}
+.clr-red .cf-action-desc{color:rgba(255,255,255,.55);}.clr-green .cf-action-desc{color:rgba(107,56,0,.7);}
 .cf-footer-action{background:rgba(0,0,0,.18);padding:5px 8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cf-footer-action img{height:12px;width:auto;opacity:.25;filter:brightness(0) invert(1);}
 .card-play-btn{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);border:none;padding:5px 16px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;white-space:nowrap;z-index:10;display:none;}
@@ -937,7 +937,7 @@ function initGameState(playerNames){
     }
     return{name:n,tokens:15,hand,blocked:false};
   });
-  return{phase:'waiting',players,deck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null,selectedQuestion:null};
+  return{phase:'waiting',players,deck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null,selectedQuestion:null,flippedCards:[]};
 }
 
 function buildDeck(){
@@ -1085,7 +1085,8 @@ function renderSplitCards(hand){
     const isSelected=selQ&&selQ.cardIdx===globalIdx;
 
     const wrap=document.createElement('div');
-    wrap.className='card-wrap'+(isSelected?' flipped':'');
+    const wasFlipped=GS.flippedCards&&GS.flippedCards.includes(globalIdx);
+    wrap.className='card-wrap'+((isSelected||wasFlipped)?' flipped':'');
     wrap.style.cursor='pointer';
     if(isSelected){
       wrap.style.outline='3px solid var(--gold)';
@@ -1108,14 +1109,30 @@ function renderSplitCards(hand){
     wrap.appendChild(inner);
 
     wrap.addEventListener('click', function(){
-      // Flip
+      // Flip — mémoriser dans GS
       if(!wrap.classList.contains('flipped')){
         wrap.classList.add('flipped');
+        if(!GS.flippedCards) GS.flippedCards=[];
+        if(!GS.flippedCards.includes(globalIdx)) GS.flippedCards.push(globalIdx);
       }
       // Select this question
       GS.selectedQuestion={qId:card.qId,qLabel:card.qLabel,cardIdx:globalIdx};
-      // Re-render to update highlights + grayed clubs
-      renderSplitCards(hand);
+      // Update highlights only (sans re-render pour garder l'état flipped)
+      document.querySelectorAll('[id^="cw-q-"]').forEach(w=>{
+        const isThis=w.id===`cw-q-${globalIdx}`;
+        w.style.outline=isThis?'3px solid var(--gold)':'none';
+        w.style.borderRadius=isThis?'14px':'';
+      });
+      // Gray clubs based on selected question
+      const blocked=NATIONALITY_BLOCKS[card.qId]||[];
+      document.querySelectorAll('[id^="cw-c-"]').forEach(w=>{
+        const cid=w.dataset.clubId;
+        const isBlocked=cid&&blocked.includes(cid);
+        w.style.opacity=isBlocked?'0.35':'1';
+        w.style.filter=isBlocked?'grayscale(0.8)':'none';
+        w.style.cursor=isBlocked?'not-allowed':'pointer';
+        w.dataset.blocked=isBlocked?'1':'0';
+      });
       // Show footer buttons
       document.getElementById('btn-pass-turn').style.display='block';
       document.getElementById('btn-discard').style.display='block';
