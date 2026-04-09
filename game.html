@@ -127,7 +127,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .cards-grid{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow-y:visible;}
 
 /* ── CARD FLIP ── */
-.card-wrap{width:100%;height:0;padding-bottom:150%;position:relative;cursor:pointer;}
+.card-wrap{width:100%;height:0;padding-bottom:130%;position:relative;cursor:pointer;}
 .card-wrap.flipped{cursor:default;}
 .card-inner{position:absolute;top:0;left:0;right:0;bottom:0;transform-style:preserve-3d;transition:transform .5s ease;border-radius:var(--r);}
 .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
@@ -138,7 +138,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .card-front{transform:rotateY(180deg);}
 .cf-club{width:100%;height:100%;background-image:repeating-linear-gradient(180deg,#ffffff 0px,#ffffff 22px,#f0f5f0 22px,#f0f5f0 44px);border:3px solid #ffffff;outline:2px solid #2a4230;display:flex;flex-direction:column;border-radius:var(--r);overflow:hidden;}
 .cf-club-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;gap:6px;overflow:hidden;width:100%;box-sizing:border-box;}
-.cf-club-name{font-family:'Bebas Neue',cursive;font-size:clamp(11px,2.8vw,16px);letter-spacing:1.5px;color:#0D1F0D;text-align:center;line-height:1.2;width:100%;padding:0 4px;box-sizing:border-box;word-break:break-word;}
+.cf-club-name{font-family:'Bebas Neue',cursive;font-size:clamp(9px,2.2vw,13px);letter-spacing:1px;color:#0D1F0D;text-align:center;line-height:1.2;width:100%;padding:0 3px;box-sizing:border-box;word-break:break-word;}
 .cf-or{font-size:8px;color:rgba(13,31,13,.4);letter-spacing:1px;margin:1px 0;}
 .cf-divider{width:28px;height:1px;background:#F0B429;margin:4px 0;opacity:.7;}
 .cf-q-num{font-family:'Bebas Neue',cursive;font-size:11px;color:#F0B429;letter-spacing:1px;background:rgba(13,31,13,.07);padding:2px 9px;border-radius:3px;}
@@ -153,11 +153,11 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .clr-orange .cf-action-name{color:#6B3800;}
 .clr-orange .cf-action-desc{color:rgba(107,56,0,.7);}
 .cf-action-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;gap:4px;overflow:hidden;}
-.cf-action-icon{font-size:30px;line-height:1;}
-.cf-action-name{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;text-align:center;line-height:1;}
+.cf-action-icon{font-size:clamp(18px,5vw,24px);line-height:1;}
+.cf-action-name{font-family:'Bebas Neue',cursive;font-size:clamp(11px,3vw,15px);letter-spacing:1px;text-align:center;line-height:1;}
 .clr-gold .cf-action-name{color:#5A3A00;}
 .clr-red .cf-action-name{color:#fff;}.clr-green .cf-action-name{color:#6B3800;}
-.cf-action-desc{font-size:10px;text-align:center;line-height:1.3;letter-spacing:.3px;}
+.cf-action-desc{font-size:clamp(7px,1.8vw,9px);text-align:center;line-height:1.3;letter-spacing:.2px;}
 .clr-gold .cf-action-desc{color:rgba(90,58,0,.65);}
 .clr-red .cf-action-desc{color:rgba(255,255,255,.55);}.clr-green .cf-action-desc{color:rgba(107,56,0,.7);}
 .cf-footer-action{background:rgba(0,0,0,.18);padding:5px 8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -267,6 +267,12 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .var-players{padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px;}
 .var-tag{padding:5px 10px;background:rgba(138,184,138,.07);border:1px solid rgba(138,184,138,.18);border-radius:6px;font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:5px;}
 .var-tag img{width:16px;height:16px;border-radius:50%;object-fit:cover;}
+.var-tag.clickable{cursor:pointer;transition:all .15s;user-select:none;}
+.var-tag.clickable:hover{border-color:var(--gold);background:rgba(240,180,41,.15);}
+.var-tag.validated{background:rgba(74,222,128,.2);border-color:#4ADE80;color:#4ADE80;font-weight:600;}
+.var-tag.validated img{filter:none;}
+.judge-manual-add{display:flex;align-items:center;gap:8px;margin-top:10px;}
+.judge-manual-label{font-size:11px;color:var(--muted);flex:1;}
 .var-none{font-size:12px;color:rgba(138,184,138,.4);padding:8px;}
 .var-footer{padding:12px 16px;flex-shrink:0;}
 .back-btn{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--muted);padding:14px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;}
@@ -454,16 +460,16 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   </div>
   <div class="sboard" id="hand-sboard"></div>
   <div style="padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);">1. Questions</div>
-    <div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);" id="step2-label">2. Clubs</div>
+    <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">1. Questions</div>
+    <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);" id="step2-label">2. Clubs</div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;padding:0 16px 14px;">
+  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;padding:0 8px 8px;">
     <!-- Question cards — left -->
-    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-right:10px;"></div>
+    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-right:6px;"></div>
     <!-- Divider -->
     <div style="background:var(--border);margin:0 4px;"></div>
     <!-- Club cards — right -->
-    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-left:10px;"></div>
+    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-left:6px;"></div>
   </div>
   <div class="hand-footer" style="display:flex;gap:8px;" id="hand-footer">
     <button class="ghost-btn" id="btn-pass-turn" onclick="passTurn()" style="flex:1;display:none;">Passer mon tour</button>
@@ -1114,7 +1120,10 @@ function renderCurrentScreen(){
     if(GS.play){renderPlayScreen();show('play');}
     else{renderHandScreen();show('hand');}
   } else if(GS.play&&GS.play.judge===ME.name){
-    // Je suis l'arbitre VAR
+    // Je suis l'arbitre VAR — reset les clics si nouveau play
+    if(!GS.play.judgeVerdict && _judgeValidated.size>0 && GS.play._judgeResetTs!==GS.play.ts){
+      // Nouveau tour = reset
+    }
     renderJudgeScreen();
     show('judge');
   } else {
@@ -1173,8 +1182,8 @@ function buildCardFront(card){
   if(card.type==='question'){
     el.className='cf-action clr-gold';
     el.innerHTML=`<div class="cf-action-body" style="gap:8px;">
-      <div style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:rgba(13,31,13,.6);">Q${card.qId}</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:clamp(14px,3.5vw,18px);letter-spacing:1px;color:#0D1F0D;text-align:center;line-height:1.2;">${card.qLabel}</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:clamp(8px,2vw,11px);letter-spacing:2px;color:rgba(13,31,13,.6);">Q${card.qId}</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:clamp(9px,2.5vw,13px);letter-spacing:.5px;color:#0D1F0D;text-align:center;line-height:1.2;padding:0 2px;">${card.qLabel}</div>
     </div><div class="cf-footer-action"><span style="font-family:'Bebas Neue',cursive;font-size:8px;letter-spacing:2px;color:rgba(13,31,13,.3);">VAR CLUB</span></div>`;
 
   } else if(card.type==='club'){
@@ -1188,9 +1197,9 @@ function buildCardFront(card){
     const c2=CLUBS.find(c=>c.id===card.clubs?.[1]);
     el.className='cf-club';
     el.innerHTML=`<div class="cf-club-body" style="justify-content:center;gap:6px;text-align:center;">
-      <div class="cf-club-name" style="font-size:clamp(10px,2.5vw,14px);">${c1?.name||''}</div>
+      <div class="cf-club-name" style="font-size:clamp(8px,2vw,11px);">${c1?.name||''}</div>
       <div style="font-size:8px;color:rgba(13,31,13,.4);letter-spacing:2px;">OU</div>
-      <div class="cf-club-name" style="font-size:clamp(10px,2.5vw,14px);">${c2?.name||''}</div>
+      <div class="cf-club-name" style="font-size:clamp(8px,2vw,11px);">${c2?.name||''}</div>
     </div><div class="cf-footer"><span style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:rgba(13,31,13,.3);">VAR CLUB</span></div>`;
 
   } else if(card.type==='action'){
@@ -1458,34 +1467,15 @@ async function doBeginPlay(card,clubIdx,selectedQ,clubId,clubName,league){
   if(!me.qHand) me.qHand=[];
 
   // Retirer la carte CLUB jouée de clubHand
-  console.log('AVANT retrait - clubHand:', me.clubHand.length, 'qHand:', me.qHand.length, 'clubIdx:', clubIdx);
   me.clubHand.splice(clubIdx, 1);
-  console.log('APRES retrait club - clubHand:', me.clubHand.length);
 
   // Retirer la carte QUESTION jouée de qHand (par qIdx)
   const qIdx = selectedQ.qIdx !== undefined ? selectedQ.qIdx : 0;
   me.qHand.splice(qIdx, 1);
-  console.log('APRES retrait question - qHand:', me.qHand.length);
 
-  // Piocher 1 remplacement club
-  let attempts=0, tmpDiscard=[];
-  if(GS.clubDeck && GS.clubDeck.length>0)
-    me.clubHand.push(GS.clubDeck.pop());
+  // Utiliser enforceHandSize pour garantir 4 clubs + 2 questions
+  enforceHandSize(me);
 
-  // Piocher 1 remplacement question (sans doublon)
-  attempts=0; tmpDiscard=[];
-  while(GS.qDeck && GS.qDeck.length>0 && attempts<20){
-    attempts++;
-    const candidate = GS.qDeck.pop();
-    if(!me.qHand.some(q=>q.qId===candidate.qId)){
-      me.qHand.push(candidate); break;
-    } else {
-      tmpDiscard.push(candidate);
-    }
-  }
-  GS.qDeck.unshift(...tmpDiscard);
-
-  console.log('APRES pioche - clubHand:', me.clubHand.length, 'qHand:', me.qHand.length);
   GS.selectedQuestion=null;
   GS.flippedQs=[];
   await beginPlay(card,0,clubId,clubName,league,selectedQ.qId,selectedQ.qLabel);
@@ -1519,6 +1509,7 @@ async function beginPlay(card,idx,clubId,clubName,league,qId,qLabel){
   };
   GS.varOpen=true;
   console.log('beginPlay — judge:', GS.varJudge, 'play.judge:', GS.play.judge);
+  resetJudgeValidated();
   await saveGS(GS);
   show('play');
 }
@@ -1770,28 +1761,55 @@ function renderSpectatorScreen(){
 // ═══════════════════════════════════════════
 let judgeCount=0;
 
+// Ensemble des joueurs validés par clic (par nom)
+let _judgeValidated = new Set();
+
 function renderJudgeScreen(){
   const ps=GS.play;
   if(!ps)return;
 
   document.getElementById('judge-club-name').textContent=ps.clubName.toUpperCase();
   document.getElementById('judge-q-label').textContent=`Q${ps.qId} — ${ps.qLabel}`;
-  document.getElementById('judge-active-name').textContent=
-    GS.players[GS.cur]?.name||'';
+  document.getElementById('judge-active-name').textContent=GS.players[GS.cur]?.name||'';
 
-  // Afficher les réponses VAR directement
+  // Liste des réponses VAR — cliquables
   const ans=ps.answers||[];
-  document.getElementById('judge-var-count').textContent=ans.length;
   const cont=document.getElementById('judge-var-players');
+
   if(!ans.length){
     cont.innerHTML='<span class="var-none">Aucun joueur répertorié</span>';
   } else {
-    cont.innerHTML=ans.map(p=>{
-      const n=typeof p==='object'?p.name:p;
-      const ph=typeof p==='object'?p.photo:'';
-      return `<span class="var-tag">${ph?`<img src="${ph}" onerror="this.style.display='none'">`:''}${n}</span>`;
-    }).join('');
+    cont.innerHTML='';
+    ans.forEach(p=>{
+      const name=typeof p==='object'?p.name:p;
+      const photo=typeof p==='object'?p.photo:'';
+      const tag=document.createElement('span');
+      tag.className='var-tag clickable'+((_judgeValidated.has(name))?' validated':'');
+      if(photo) tag.innerHTML=`<img src="${photo}" onerror="this.style.display='none'">`;
+      tag.innerHTML+=name;
+
+      tag.addEventListener('click',()=>{
+        if(_judgeValidated.has(name)){
+          _judgeValidated.delete(name);
+          tag.classList.remove('validated');
+        } else {
+          _judgeValidated.add(name);
+          tag.classList.add('validated');
+        }
+        // Sync judgeCount avec les clics
+        judgeCount=_judgeValidated.size;
+        const el=document.getElementById('cnt-val-judge');
+        if(el) el.textContent=judgeCount;
+        document.getElementById('judge-confirm-btn').disabled=(judgeCount===0);
+        // Mettre à jour le compte affiché
+        document.getElementById('judge-var-count').textContent=ans.length;
+      });
+      cont.appendChild(tag);
+    });
   }
+
+  // Compte de référence (total liste)
+  document.getElementById('judge-var-count').textContent=ans.length;
 
   // Verdict déjà soumis ?
   if(ps.judgeVerdict){
@@ -1803,8 +1821,15 @@ function renderJudgeScreen(){
   } else {
     document.getElementById('judge-confirm-btn').disabled=(judgeCount===0);
     document.getElementById('judge-verdict-wrap').innerHTML='';
-    document.getElementById('cnt-val-judge').textContent=judgeCount;
+    const el=document.getElementById('cnt-val-judge');
+    if(el) el.textContent=judgeCount;
   }
+}
+
+// Reset les clics validés à chaque nouveau play
+function resetJudgeValidated(){
+  _judgeValidated=new Set();
+  judgeCount=0;
 }
 
 
@@ -1814,7 +1839,7 @@ async function judgeConfirm(){
   GS.play.judgeCount=judgeCount;
   GS.play.judgeVerdict='accept';
   const saved=judgeCount;
-  judgeCount=0;
+  resetJudgeValidated();
   await saveGS(GS);
   toast(`✓ Verdict soumis : ${saved} jeton${saved>1?'s':''}`);
   renderJudgeScreen();
@@ -1823,7 +1848,7 @@ async function judgeConfirm(){
 async function judgeReject(){
   GS.play.judgeVerdict='reject';
   GS.play.judgeCount=0;
-  judgeCount=0;
+  resetJudgeValidated();
   await saveGS(GS);
   toast('✗ Réponse refusée');
   renderJudgeScreen();
