@@ -1213,7 +1213,7 @@ function renderCards(hand){
   const grid=document.getElementById('cards-grid');
   if(!grid)return;
   grid.innerHTML='';
-  hand.forEach((card,idx)=>{
+  hand.forEach((card,i)=>{
     const wrap=document.createElement('div');
     wrap.className='card-wrap';
     wrap.id=`cw-${idx}`;
@@ -1227,7 +1227,7 @@ function renderCards(hand){
     const playBtn=document.createElement('button');
     playBtn.className='card-play-btn';
     playBtn.textContent='Jouer';
-    playBtn.onclick=(e)=>{e.stopPropagation();playCard(idx);};
+    playBtn.onclick=(e)=>{e.stopPropagation();playCard(i);};
     inner.appendChild(back);
     inner.appendChild(front);
     wrap.appendChild(inner);
@@ -1672,20 +1672,22 @@ async function nextTurn(){
 // ACTION CARDS
 // ═══════════════════════════════════════════
 async function handleAction(card,idx){
+  const cardIdx=idx; // capturer pour les closures async
   const others=GS.players.map((p,i)=>({p,i})).filter(({i})=>GS.players[i].name!==ME.name);
   if(card.actionId==='sub'){
     showModal({icon:'🔄',title:'Substitution',desc:'Échangez votre main avec un adversaire',
       list:others.map(({p,i})=>({name:p.name,info:`${p.tokens}🪙`,cb:async()=>{
+        removeCard(cardIdx);
         const me=GS.players[myIdx()];
-        if(!me.clubHand)me.clubHand=[];me.clubHand.splice(idx,1);
-        if(!me.clubHand)me.clubHand=[];if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
-        const tmp=me.clubHand||[];me.clubHand=GS.players[i].clubHand||[];GS.players[i].clubHand=tmp;
+        const tmp=[...me.clubHand];
+        me.clubHand=[...(GS.players[i].clubHand||[])];
+        GS.players[i].clubHand=tmp;
         await nextTurn();
       }}))});
   } else if(card.actionId==='red_card'){
     showModal({icon:'🟥',title:'Carton Rouge',desc:'Bloquez un adversaire',
       list:others.map(({p,i})=>({name:p.name,info:`${p.tokens}🪙`,cb:async()=>{
-        GS.players[i].blocked=true;removeCard(idx);await nextTurn();
+        GS.players[i].blocked=true;removeCard(cardIdx);await nextTurn();
       }}))});
   } else if(card.actionId==='plus5'){
     showModal({icon:'💰',title:'+5 Jetons',desc:'Donnez 5 jetons à un adversaire',
@@ -1693,7 +1695,7 @@ async function handleAction(card,idx){
         closeAllModals();
         GS.players[i].tokens+=5;
         animateTokens(5,'add',p.name);
-        removeCard(idx);
+        removeCard(cardIdx);
         await saveGS(GS);
         await nextTurn();
       }}))});
@@ -1703,7 +1705,7 @@ async function handleAction(card,idx){
         closeAllModals();
         GS.players[i].tokens+=3;
         animateTokens(3,'add',p.name);
-        removeCard(idx);
+        removeCard(cardIdx);
         await saveGS(GS);
         await nextTurn();
       }}))});
@@ -1714,18 +1716,18 @@ async function handleAction(card,idx){
       list:drawn.map((c,i)=>({
         name:c.type==='action'?`${c.icon} ${c.name}`:(c.clubName||c.label||'Carte'),
         info:c.type,
-        cb:async()=>{removeCard(idx);if(!GS.players[myIdx()].clubHand)GS.players[myIdx()].clubHand=[];GS.players[myIdx()].clubHand.push(drawn[i]);await nextTurn();}
+        cb:async()=>{removeCard(cardIdx);if(!GS.players[myIdx()].clubHand)GS.players[myIdx()].clubHand=[];GS.players[myIdx()].clubHand.push(drawn[i]);await nextTurn();}
       }))});
   } else if(card.actionId==='hors_jeu'){
     showModal({icon:'🚩',title:'Hors-Jeu',desc:'Carte conservée — annule une action adverse.',
-      confirm:'OK',onConfirm:async()=>{removeCard(idx);await nextTurn();}});
+      confirm:'OK',onConfirm:async()=>{removeCard(cardIdx);await nextTurn();}});
   }
 }
 
-function removeCard(idx){
+function removeCard(cardIdx){
   const me=GS.players[myIdx()];
-  if(!me.clubHand)me.clubHand=[];me.clubHand.splice(idx,1);
-  if(!me.clubHand)me.clubHand=[];if(GS.clubDeck&&GS.clubDeck.length>0)me.clubHand.push(GS.clubDeck.pop());
+  if(!me.clubHand)me.clubHand=[];
+  if(idx!==undefined && idx>=0) me.clubHand.splice(idx,1);
 }
 
 function renderSpectatorScreen(){
