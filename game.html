@@ -1216,7 +1216,7 @@ function renderCards(hand){
   hand.forEach((card,i)=>{
     const wrap=document.createElement('div');
     wrap.className='card-wrap';
-    wrap.id=`cw-${idx}`;
+    wrap.id=`cw-${i}`;
     const inner=document.createElement('div');
     inner.className='card-inner';
     const back=document.createElement('div');
