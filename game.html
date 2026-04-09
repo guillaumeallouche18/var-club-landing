@@ -134,7 +134,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .card-back-logo{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:rgba(240,180,41,.35);}
 .card-front{transform:rotateY(180deg);}
 .cf-club{width:100%;height:100%;background-image:repeating-linear-gradient(180deg,#ffffff 0px,#ffffff 22px,#f0f5f0 22px,#f0f5f0 44px);border:3px solid #ffffff;outline:2px solid #2a4230;display:flex;flex-direction:column;border-radius:var(--r);}
-.cf-club-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;gap:3px;overflow:hidden;}
+.cf-club-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;gap:6px;overflow:hidden;text-align:center;}
 .cf-club-name{font-family:'Bebas Neue',cursive;font-size:clamp(14px,4vw,20px);letter-spacing:2px;color:#0D1F0D;text-align:center;line-height:1.1;}
 .cf-or{font-size:8px;color:rgba(13,31,13,.4);letter-spacing:1px;margin:1px 0;}
 .cf-divider{width:28px;height:1px;background:#F0B429;margin:4px 0;opacity:.7;}
@@ -150,10 +150,10 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .cf-action-icon{font-size:30px;line-height:1;}
 .cf-action-name{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;text-align:center;line-height:1;}
 .clr-gold .cf-action-name{color:#0D1F0D;}
-.clr-red .cf-action-name,.clr-green .cf-action-name{color:#fff;}
+.clr-red .cf-action-name{color:#fff;}.clr-green .cf-action-name{color:#0D1F0D;}
 .cf-action-desc{font-size:10px;text-align:center;line-height:1.3;letter-spacing:.3px;}
 .clr-gold .cf-action-desc{color:rgba(13,31,13,.6);}
-.clr-red .cf-action-desc,.clr-green .cf-action-desc{color:rgba(255,255,255,.55);}
+.clr-red .cf-action-desc{color:rgba(255,255,255,.55);}.clr-green .cf-action-desc{color:rgba(13,31,13,.6);}
 .cf-footer-action{background:rgba(0,0,0,.18);padding:5px 8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cf-footer-action img{height:12px;width:auto;opacity:.25;filter:brightness(0) invert(1);}
 .card-play-btn{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);border:none;padding:5px 16px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;white-space:nowrap;z-index:10;display:none;}
@@ -625,6 +625,16 @@ const QUESTIONS=[
   {id:14,label:'+400 matchs au club'},{id:15,label:'Transfert >50M€'},
 ];
 
+// Nationality-club blocks (can't combine Q1 Français with PSG etc)
+const NATIONALITY_BLOCKS = {
+  1:['psg','marseille','lyon'],
+  2:['real','barca','atleti'],
+  3:['bayern','dortmund'],
+  4:['milan','inter','juve','napoli'],
+  5:['liverpool','arsenal','chelsea','manutd','mancity'],
+  6:[],7:[],8:[],9:[],10:[],12:[],13:[],14:[],15:[],
+};
+
 const VALID_QUESTIONS = {
   'psg': [2,3,4,6,7,8,9,10,12,13,14,15],
   'marseille': [2,3,4,5,6,7,8,9,10,12,13],
@@ -1063,100 +1073,117 @@ function renderSplitCards(hand){
 
   const clubCards=hand.filter(c=>c.type==='club'||c.type==='double'||c.type==='action');
   const questionCards=hand.filter(c=>c.type==='question');
+  const selQ=GS.selectedQuestion;
 
   // Step label
   const step2=document.getElementById('step2-label');
-  if(step2) step2.style.opacity=GS.selectedQuestion?'1':'0.35';
+  if(step2) step2.style.opacity=selQ?'1':'0.35';
 
-  // Question cards — left
+  // ── QUESTION CARDS (left) ──
   questionCards.forEach((card)=>{
     const globalIdx=hand.indexOf(card);
+    const isSelected=selQ&&selQ.cardIdx===globalIdx;
+
     const wrap=document.createElement('div');
-    wrap.className='card-wrap';
-    wrap.id=`cw-q-${globalIdx}`;
-
-    const inner=document.createElement('div');
-    inner.className='card-inner';
-    const back=document.createElement('div');
-    back.className='card-back question-back';
-    back.innerHTML='<span style="font-family:Bebas Neue,cursive;font-size:10px;letter-spacing:3px;color:rgba(13,31,13,.5);">VAR CLUB</span>';
-    const front=document.createElement('div');
-    front.className='card-front';
-    front.appendChild(buildCardFront(card));
-    inner.appendChild(back);
-    inner.appendChild(front);
-    wrap.appendChild(inner);
-
-    // Highlight if selected
-    if(GS.selectedQuestion&&GS.selectedQuestion.cardIdx===globalIdx){
+    wrap.className='card-wrap'+(isSelected?' flipped':'');
+    wrap.style.cursor='pointer';
+    if(isSelected){
       wrap.style.outline='3px solid var(--gold)';
       wrap.style.borderRadius='14px';
     }
 
-    wrap.onclick=()=>{
+    const inner=document.createElement('div');
+    inner.className='card-inner';
+
+    const back=document.createElement('div');
+    back.className='card-back question-back';
+    back.innerHTML='<span style="font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:2px;color:rgba(13,31,13,.4);">VAR CLUB</span>';
+
+    const front=document.createElement('div');
+    front.className='card-front';
+    front.appendChild(buildCardFront(card));
+
+    inner.appendChild(back);
+    inner.appendChild(front);
+    wrap.appendChild(inner);
+
+    wrap.addEventListener('click', function(){
+      // Flip
       if(!wrap.classList.contains('flipped')){
         wrap.classList.add('flipped');
       }
-      // Always select on click (flipped or not after flip)
+      // Select this question
       GS.selectedQuestion={qId:card.qId,qLabel:card.qLabel,cardIdx:globalIdx};
-      // Update highlights
-      document.querySelectorAll('[id^="cw-q-"]').forEach(w=>{
-        w.style.outline=w===wrap?'3px solid var(--gold)':'none';
-        w.style.borderRadius=w===wrap?'14px':'';
-      });
+      // Re-render to update highlights + grayed clubs
+      renderSplitCards(hand);
       // Show footer buttons
       document.getElementById('btn-pass-turn').style.display='block';
       document.getElementById('btn-discard').style.display='block';
-      // Update step label
-      const s2=document.getElementById('step2-label');
-      if(s2) s2.style.opacity='1';
-    };
+    });
+
     questionsGrid.appendChild(wrap);
   });
 
-  // Club/action cards — right
+  // ── CLUB/ACTION CARDS (right) ──
+  const blockedClubs=selQ?( NATIONALITY_BLOCKS[selQ.qId]||[]):[];
+
   clubCards.forEach((card)=>{
     const globalIdx=hand.indexOf(card);
+
+    // Check if this club is blocked by selected question
+    const isBlocked=card.type==='club'&&blockedClubs.includes(card.clubId)
+      || card.type==='double'&&card.clubs.every(id=>blockedClubs.includes(id));
+
     const wrap=document.createElement('div');
     wrap.className='card-wrap';
-    wrap.id=`cw-c-${globalIdx}`;
+    wrap.style.cursor=isBlocked?'not-allowed':'pointer';
+    if(isBlocked){
+      wrap.style.opacity='0.35';
+      wrap.style.filter='grayscale(0.8)';
+    }
 
     const inner=document.createElement('div');
     inner.className='card-inner';
+
     const back=document.createElement('div');
     back.className='card-back';
-    back.innerHTML='<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIyMiIgaGVpZ2h0PSI4MDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+" style="height:16px;width:auto;opacity:.35;">';
+    back.innerHTML='<span style="font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:2px;color:rgba(240,180,41,.3);">VAR CLUB</span>';
+
     const front=document.createElement('div');
     front.className='card-front';
     front.appendChild(buildCardFront(card));
 
     const playBtn=document.createElement('button');
     playBtn.className='card-play-btn';
-    playBtn.textContent='Jouer';
-    playBtn.onclick=(e)=>{
-      e.stopPropagation();
-      if(card.type==='action') handleAction(card,globalIdx);
-      else if(GS.selectedQuestion) playCardWithQuestion(globalIdx,GS.selectedQuestion);
-      else toast('👉 Choisis d'abord une question !');
-    };
+    playBtn.textContent=card.type==='action'?'Jouer':'Jouer';
 
     inner.appendChild(back);
     inner.appendChild(front);
     wrap.appendChild(inner);
     wrap.appendChild(playBtn);
 
-    wrap.onclick=()=>{
+    wrap.addEventListener('click', function(){
+      if(isBlocked){toast('❌ Ce club est bloqué par la question !');return;}
       if(!wrap.classList.contains('flipped')){
         wrap.classList.add('flipped');
         document.getElementById('btn-pass-turn').style.display='block';
         document.getElementById('btn-discard').style.display='block';
-      } else {
-        // Already flipped — play if question selected
-        if(card.type==='action') handleAction(card,globalIdx);
-        else if(GS.selectedQuestion) playCardWithQuestion(globalIdx,GS.selectedQuestion);
-        else toast('👉 Choisis d'abord une question !');
+        return;
       }
-    };
+      // Already flipped — play
+      if(card.type==='action'){handleAction(card,globalIdx);return;}
+      if(!GS.selectedQuestion){toast('👉 Retourne d'abord une question !');return;}
+      playCardWithQuestion(globalIdx,GS.selectedQuestion);
+    });
+
+    playBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(isBlocked){toast('❌ Ce club est bloqué par la question !');return;}
+      if(card.type==='action'){handleAction(card,globalIdx);return;}
+      if(!GS.selectedQuestion){toast('👉 Retourne d'abord une question !');return;}
+      playCardWithQuestion(globalIdx,GS.selectedQuestion);
+    });
+
     clubsGrid.appendChild(wrap);
   });
 }
