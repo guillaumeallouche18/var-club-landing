@@ -1046,7 +1046,7 @@ async function joinGame(){
     if(!GS.clubDeck) GS.clubDeck = (GS.deck||[]).filter(c=>c.type!=='question');
     if(!GS.qDeck) GS.qDeck = (GS.deck||[]).filter(c=>c.type==='question');
     const clubHand=[], qHand=[];
-    for(let i=0;i<4&&GS.clubDeck.length>0;i++) clubHand.push(GS.clubDeck.pop());
+    {const tC=[];let aC=0;while(clubHand.length<4&&GS.clubDeck.length>0&&aC<GS.clubDeck.length+8){aC++;const c=GS.clubDeck.pop();const cid=c.type==='double'?c.clubs.join('+'):c.clubId;if(!clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid))clubHand.push(c);else tC.push(c);}GS.clubDeck.unshift(...tC);}
     for(let i=0;i<2&&GS.qDeck.length>0;i++) qHand.push(GS.qDeck.pop());
     GS.players.push({name,tokens:15,clubHand,qHand,blocked:false});
     await saveGS(GS);
@@ -1296,11 +1296,13 @@ function initGameState(playerNames){
 
 function buildDeck(){
   const d=[];
-  // Club cards (no question attached)
+  // Club cards — 2 copies de chaque pour avoir assez de cartes sans doublon par main
   CLUBS.forEach(c=>{
+    d.push({type:'club',clubId:c.id,clubName:c.name,league:c.league});
     d.push({type:'club',clubId:c.id,clubName:c.name,league:c.league});
   });
   DOUBLE_CLUBS.forEach(dc=>{
+    d.push({type:'double',clubs:dc.clubs,label:dc.label});
     d.push({type:'double',clubs:dc.clubs,label:dc.label});
   });
   // Question cards — 3 copies pour avoir assez de cartes
@@ -1431,9 +1433,20 @@ function renderHandScreen(){
   const totallyEmpty = me.clubHand.length===0 && me.qHand.length===0;
   if(me.needsDraw || totallyEmpty){
     me.needsDraw=false;
-    // Piocher jusqu'à 4 clubs
-    while(me.clubHand.length<4 && GS.clubDeck && GS.clubDeck.length>0)
-      me.clubHand.push(GS.clubDeck.pop());
+    // Piocher jusqu'à 4 clubs sans doublon de clubId
+    {
+      const tmpC=[];
+      let attC=0;
+      while(me.clubHand.length<4 && GS.clubDeck && GS.clubDeck.length>0 && attC<GS.clubDeck.length+8){
+        attC++;
+        const c=GS.clubDeck.pop();
+        const cid=c.type==='double'?c.clubs.join('+'):c.clubId;
+        const has=me.clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid);
+        if(!has) me.clubHand.push(c);
+        else tmpC.push(c);
+      }
+      GS.clubDeck.unshift(...tmpC);
+    }
     // Piocher jusqu'à 2 questions sans doublon
     let attempts=0;
     const tmpDiscard=[];
@@ -1752,9 +1765,19 @@ function enforceHandSize(me){
   if(!GS.qDeck) GS.qDeck=[];
   let changed=false;
 
-  // Clubs
-  while(me.clubHand.length<4 && GS.clubDeck.length>0){
-    me.clubHand.push(GS.clubDeck.pop()); changed=true;
+  // Clubs — sans doublon de clubId dans la même main
+  {
+    const tmpC=[];
+    let attC=0;
+    while(me.clubHand.length<4 && GS.clubDeck.length>0 && attC<GS.clubDeck.length+8){
+      attC++;
+      const c=GS.clubDeck.pop();
+      const cid=c.type==='double'?c.clubs.join('+'):c.clubId;
+      const alreadyHas=me.clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid);
+      if(!alreadyHas){ me.clubHand.push(c); changed=true; }
+      else tmpC.push(c);
+    }
+    GS.clubDeck.unshift(...tmpC);
   }
 
   // Questions — sans doublon de qId
@@ -2773,7 +2796,7 @@ async function checkAllRulesRead(){
     GS.players.forEach(p=>{
       if(!p.clubHand) p.clubHand=[];
       if(!p.qHand) p.qHand=[];
-      while(p.clubHand.length<4 && GS.clubDeck?.length>0) p.clubHand.push(GS.clubDeck.pop());
+      {const tC=[];let aC=0;while(p.clubHand.length<4&&GS.clubDeck?.length>0&&aC<(GS.clubDeck.length+8)){aC++;const c=GS.clubDeck.pop();const cid=c.type==='double'?c.clubs.join('+'):c.clubId;if(!p.clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid))p.clubHand.push(c);else tC.push(c);}GS.clubDeck.unshift(...tC);}
       while(p.qHand.length<2 && GS.qDeck?.length>0) p.qHand.push(GS.qDeck.pop());
     });
   }
@@ -2793,7 +2816,7 @@ async function selectMode(mode){
   GS.players.forEach(p=>{
     if(!p.clubHand) p.clubHand=[];
     if(!p.qHand) p.qHand=[];
-    while(p.clubHand.length<4&&GS.clubDeck&&GS.clubDeck.length>0) p.clubHand.push(GS.clubDeck.pop());
+    {const tC=[];let aC=0;while(p.clubHand.length<4&&GS.clubDeck&&GS.clubDeck.length>0&&aC<(GS.clubDeck.length+8)){aC++;const c=GS.clubDeck.pop();const cid=c.type==='double'?c.clubs.join('+'):c.clubId;if(!p.clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid))p.clubHand.push(c);else tC.push(c);}GS.clubDeck.unshift(...tC);}
     // Distribuer 2 questions sans doublon
     let attempts=0; const tmp=[];
     while(p.qHand.length<2&&GS.qDeck&&GS.qDeck.length>0&&attempts<30){
