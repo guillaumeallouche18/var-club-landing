@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>VAR CLUB — Multijoueur</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -1052,6 +1052,7 @@ async function subscribeToGame(code){
 
 let lastAnimTs=0;
 let _prevTokens={};
+let _rulesShown=false;
 
 function renderSboard(elId){
   const el=document.getElementById(elId);
@@ -2681,12 +2682,10 @@ Un grand club est tiré au sort. À toi de montrer que tu le connais par cœur �
 };
 
 // Flag pour éviter double affichage
-let _rulesShown = false;
 
 
 
 // ── Sync règles pour tous ──
-let _rulesShown = false;
 
 function showRulesForAll(mode){
   showRules(mode, async()=>{
