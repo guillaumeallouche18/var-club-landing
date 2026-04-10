@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>VAR CLUB — Multijoueur</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+<!-- Supabase via fetch direct, pas de CDN externe -->
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -777,24 +777,34 @@ console.log('VAR CLUB game.html v5-1775769181-6db883 — 1775761223 — IDs:', O
 // ═══════════════════════════════════════════
 const SUPA_URL = 'https://ojyobjndnkhyfqpwhemc.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qeW9iam5kbmtoeWZxcHdoZW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTkwOTIsImV4cCI6MjA4OTA3NTA5Mn0.fKk8v2LSI1EHWAR03vfxCRE6U3zD_5HQG91CetlUzfM';
-let supa = null;
-function getSupa(){
-  if(!supa){
-    if(!window.supabase){
-      // Script externe bloqué par le navigateur — afficher message
-      const existing = document.getElementById('supa-error');
-      if(!existing){
-        const div = document.createElement('div');
-        div.id = 'supa-error';
-        div.style.cssText = 'position:fixed;inset:0;background:#0D1F0D;color:#F0B429;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;padding:24px;text-align:center;font-family:sans-serif;';
-        div.innerHTML = '<div style="font-size:28px;margin-bottom:12px;">⚠️</div><div style="font-size:16px;font-weight:700;margin-bottom:8px;">Connexion bloquée</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:20px;">La librairie réseau est bloquée par votre navigateur (Tracking Prevention).<br>Essayez dans Chrome ou désactivez le blocage pour ce site.</div><button onclick="location.reload()" style="background:#F0B429;color:#0D1F0D;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Réessayer</button>';
-        document.body.appendChild(div);
-      }
-      return null;
-    }
-    supa = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-  }
-  return supa;
+// API Supabase via fetch direct — pas de dépendance CDN
+const SUPA_HEADERS = {
+  'apikey': SUPA_KEY,
+  'Authorization': 'Bearer ' + SUPA_KEY,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=minimal'
+};
+
+// Lecture d'une session
+async function supaGet(code){
+  try{
+    const r = await fetch(SUPA_URL+'/rest/v1/game_sessions?id=eq.'+code+'&select=state,updated_at&limit=1',
+      {headers: SUPA_HEADERS});
+    const data = await r.json();
+    return {data: data?.[0]||null, error: data?.length===0?'not found':null};
+  }catch(e){return {data:null, error:e.message};}
+}
+
+// Upsert d'une session
+async function supaUpsert(code, state, updatedAt){
+  try{
+    const r = await fetch(SUPA_URL+'/rest/v1/game_sessions',{
+      method:'POST',
+      headers:{...SUPA_HEADERS, 'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify({id:code, state, updated_at:updatedAt})
+    });
+    return {error: r.ok ? null : await r.text()};
+  }catch(e){return {error:e.message};}
 }
 
 // ═══════════════════════════════════════════
@@ -1022,7 +1032,7 @@ async function joinGame(){
   console.log('Joining game:', code);
   let data=null,error=null;
   for(let attempt=0;attempt<3;attempt++){
-    const res=await getSupa().from('game_sessions').select('state').eq('id',code).single();
+    const res=await supaGet(code);
     data=res.data; error=res.error;
     console.log(`Join attempt ${attempt+1}:`, data, error);
     if(data)break;
@@ -1048,10 +1058,12 @@ async function joinGame(){
 }
 
 async function saveGS(gs){
-  if(!getSupa()) return;
-  const {error}=await getSupa().from('game_sessions').upsert({id:ME.gameCode,state:gs,updated_at:new Date().toISOString()});
-  if(error)console.error('saveGS error:', error);
-  else console.log('saveGS OK:', ME.gameCode);
+  const code = ME.gameCode;
+  if(!code) return;
+  const ts = new Date().toISOString();
+  const {error} = await supaUpsert(code, gs, ts);
+  if(error) console.error('saveGS error:', error);
+  else console.log('saveGS OK:', code);
   GS=gs;
 }
 
@@ -1060,7 +1072,7 @@ async function subscribeToGame(code){
   if(channel)clearInterval(channel);
   let lastUpdated = null;
   channel = setInterval(async()=>{
-    const {data,error}=await getSupa().from('game_sessions').select('state,updated_at').eq('id',code).single();
+    const {data,error}=await supaGet(code);
     if(error||!data)return;
     if(data.updated_at !== lastUpdated){
       lastUpdated = data.updated_at;
