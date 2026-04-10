@@ -21,6 +21,8 @@
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes alarmPulse{0%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(-5deg)}}
+@keyframes timerUrgent{0%,100%{color:var(--coral);border-color:var(--coral)}50%{color:#ff8888;border-color:#ff8888}}
 @keyframes tokenFly{
   0%{transform:translate(0,0) scale(1);opacity:1;}
   70%{opacity:.8;}
@@ -69,6 +71,13 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 }
 .cta:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
 .cta:not(:disabled):hover{opacity:.88;}
+.settings-opt{
+  width:100%;background:var(--card);border:1.5px solid var(--border);
+  color:var(--muted);padding:13px 16px;border-radius:var(--r);
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .2s;text-align:left;
+}
+.settings-opt-active{border-color:var(--gold);color:var(--gold);background:rgba(240,180,41,.08);}
 .cta-ghost{
   width:100%;background:transparent;border:1.5px solid var(--gold);
   color:var(--gold);padding:14px;border-radius:var(--r);
@@ -124,10 +133,10 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 }
 .token-particle.add{animation:tokenAdd .6s ease forwards;}
 
-.cards-grid{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow-y:visible;}
+.cards-grid{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 
 /* ── CARD FLIP ── */
-.card-wrap{width:100%;height:0;padding-bottom:130%;position:relative;cursor:pointer;}
+.card-wrap{width:100%;height:0;padding-bottom:min(130%, 42vw);position:relative;cursor:pointer;}
 .card-wrap.flipped{cursor:default;}
 .card-inner{position:absolute;top:0;left:0;right:0;bottom:0;transform-style:preserve-3d;transition:transform .5s ease;border-radius:var(--r);}
 .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
@@ -328,6 +337,56 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 </div>
 
 <!-- MODE SELECTION -->
+<!-- TIMER OVERLAY -->
+<div id="timer-overlay" style="display:none;position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;pointer-events:none;">
+  <div id="timer-display" style="background:rgba(13,31,13,.92);border:2px solid var(--gold);border-radius:50px;padding:8px 20px;font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;color:var(--gold);text-align:center;min-width:80px;transition:all .3s;">
+    30
+  </div>
+</div>
+
+<!-- RÉVEIL ANIMATION -->
+<div id="alarm-overlay" style="display:none;position:fixed;inset:0;z-index:300;pointer-events:none;align-items:center;justify-content:center;">
+  <div style="font-size:80px;animation:alarmPulse .4s ease infinite;">⏰</div>
+</div>
+
+<!-- POP-UP RÈGLES -->
+<div id="rules-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center;padding:20px;" onclick="">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:400px;width:100%;padding:28px 24px;max-height:85vh;overflow-y:auto;">
+    <div style="font-size:32px;text-align:center;margin-bottom:8px;" id="rules-icon">⚽</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;text-align:center;color:var(--gold);margin-bottom:16px;" id="rules-title">DUEL VAR</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;overflow-y:auto;max-height:60vh;" id="rules-body"></div>
+    <div style="margin-top:8px;font-size:10px;color:var(--muted);text-align:center;" id="rules-timer-info"></div>
+    <button class="rules-close-btn cta" style="margin-top:20px;width:100%;max-width:320px;">C'est parti ! ▶</button>
+    <button class="cta" style="margin-top:20px;" onclick="closeRules()">C'est parti ! ▶</button>
+  </div>
+</div>
+
+<!-- SETTINGS (avant le choix du mode) -->
+<div id="screen-settings" class="screen">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px 20px;gap:20px;">
+    <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;color:var(--white);">⚙️ Réglages</div>
+    <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px;">
+
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:20px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">⏱ Temps par tour</div>
+        <div style="display:flex;flex-direction:column;gap:8px;" id="timer-options">
+          <button onclick="selectTimer(0)" id="timer-0" class="settings-opt settings-opt-active">
+            ∞ Illimité
+          </button>
+          <button onclick="selectTimer(20)" id="timer-20" class="settings-opt">
+            ⏱ 20 secondes
+          </button>
+          <button onclick="selectTimer(30)" id="timer-30" class="settings-opt">
+            ⏱ 30 secondes
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <button class="cta" style="max-width:400px;" onclick="validateSettings()">Choisir le mode ▶</button>
+  </div>
+</div>
+
 <div id="screen-mode" class="screen" style="overflow-y:auto;">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px 20px;gap:0;">
     <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIyMiIgaGVpZ2h0PSI4MDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjE1ODkiIHk9IjgzMyIgd2lkdGg9IjEyMjIiIGhlaWdodD0iODA5Ii8+PC9jbGlwUGF0aD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwKSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE1ODkgLTgzMykiPjxwYXRoIGQ9Ik0xNzE0LjMgMTIxOCAxODAxLjcgMTIxOEMxODA1LjE3IDEyMTggMTgwOC4yNCAxMjE1Ljc1IDE4MDkuMjggMTIxMi40NUwxOTI2LjgxIDgzOS4zMDNDMTkyNy42NCA4MzYuNjc1IDE5MjUuNjcgODM0IDE5MjIuOTEgODM0TDE4MzIuNDYgODM0QzE4MzAuNjMgODM0IDE4MjkuMDMgODM1LjIxMiAxODI4LjUzIDgzNi45NjdMMTc1OS4xIDEwODEuMTlDMTc1OC43OCAxMDgyLjI5IDE3NTcuMjIgMTA4Mi4yOSAxNzU2LjkxIDEwODEuMTlMMTY4Ny40NyA4MzYuOTY3QzE2ODYuOTggODM1LjIxMiAxNjg1LjM3IDgzNCAxNjgzLjU0IDgzNEwxNTkzLjEgODM0QzE1OTAuMzMgODM0IDE1ODguMzYgODM2LjY3NSAxNTg5LjE5IDgzOS4zMDNMMTcwNi43MiAxMjEyLjQ1QzE3MDcuNzYgMTIxNS43NSAxNzEwLjgzIDEyMTggMTcxNC4zIDEyMThaIiBmaWxsPSIjRjdGREY0IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNMjA3My41NCA4MzkuNTQ5QzIwNzIuNDggODM2LjI0NyAyMDY5LjM3IDgzNCAyMDY1Ljg0IDgzNEwxOTc3LjE2IDgzNEMxOTczLjYzIDgzNCAxOTcwLjUyIDgzNi4yNDcgMTk2OS40NiA4MzkuNTQ5TDE4NTAuMTkgMTIxMi43QzE4NDkuMzUgMTIxNS4zMyAxODUxLjM1IDEyMTggMTg1NC4xNSAxMjE4TDE5NDMuODcgMTIxOEMxOTQ1LjczIDEyMTggMTk0Ny4zNiAxMjE2Ljc5IDE5NDcuODcgMTIxNS4wM0wxOTY3LjM5IDExNDcuMDggMjA3NS42MSAxMTQ3LjA4IDIwOTUuMTMgMTIxNS4wM0MyMDk1LjY0IDEyMTYuNzkgMjA5Ny4yNyAxMjE4IDIwOTkuMTMgMTIxOEwyMTg4Ljg1IDEyMThDMjE5MS42NSAxMjE4IDIxOTMuNjUgMTIxNS4zMyAyMTkyLjgxIDEyMTIuN0wyMDczLjU0IDgzOS41NDlaTTE5ODguNTIgMTA3My41MiAyMDIwLjM5IDk2NC42MzlDMjAyMC43MSA5NjMuNTM4IDIwMjIuMjkgOTYzLjUzOCAyMDIyLjYxIDk2NC42MzlMMjA1NC40OCAxMDczLjUyIDE5ODguNTIgMTA3My41MloiIGZpbGw9IiNGN0ZERjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik0yNDEzLjczIDEwNzAuODFDMjQzOC4zNyAxMDYzLjEgMjQ5MS4xOSAxMDM5LjI1IDI0OTEuMTkgOTUwLjg5MyAyNDkxLjE5IDg2Mi41MzMgMjQwOC44IDgzNCAyMzUyLjQ3IDgzNEwyMjExLjE3IDgzNEMyMjA4LjMxIDgzNCAyMjA2IDgzNi4zMDUgMjIwNiA4MzkuMTVMMjIwNiAxMjE1Ljg1QzIyMDYgMTIxOC43IDIyMDguMzEgMTIyMSAyMjExLjE3IDEyMjFMMjI5MC4yNiAxMjIxQzIyOTMuMTEgMTIyMSAyMjk1LjQzIDEyMTguNyAyMjk1LjQzIDEyMTUuODVMMjI5NS40MyAxMDg0LjEzIDIzMTUuODUgMTA4NC4xMyAyMzkwLjU3IDEyMTMuNjlDMjM5Mi4yNiAxMjE2LjYyIDIzOTUuNCAxMjE4LjQyIDIzOTguNzkgMTIxOC40MkwyNDg2LjY0IDEyMTguNDJDMjQ5MS41IDEyMTguNDIgMjQ5NC41NiAxMjEzLjIxIDI0OTIuMTcgMTIwOC45OUwyNDEzLjczIDEwNzAuODFaTTIzOTYuMTMgOTY0LjkxOUMyMzk2LjEzIDk4Ny4zODMgMjM3Ny44NCAxMDA1LjU5IDIzNTUuMjggMTAwNS41OUwyMjk1LjQzIDEwMDUuNTkgMjI5NS40MyA5MjQuMjQ3IDIzNTUuMjggOTI0LjI0N0MyMzc3Ljg0IDkyNC4yNDcgMjM5Ni4xMyA5NDIuNDU3IDIzOTYuMTMgOTY0LjkyMUwyMzk2LjEzIDk2NC45MjFaIiBmaWxsPSIjRjdGREY0IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNMjQ4NC40NSAxMjU3IDI0MDMuOTEgMTI1N0MyNDAxLjM5IDEyNTcgMjM5OS4zNiAxMjU5LjA0IDIzOTkuMzYgMTI2MS41NkwyMzk5LjM2IDE0OTYuNTZDMjM5OS4zNiAxNTI1Ljk1IDIzNzUuMzQgMTU1MC43MiAyMzQ1Ljk5IDE1NTAuMTYgMjMxNy41NCAxNTQ5LjYyIDIyOTQuNjUgMTUyNi4zNiAyMjk0LjY1IDE0OTcuNzRMMjI5NC42NSAxMjYxLjU2QzIyOTQuNjUgMTI1OS4wNCAyMjkyLjYxIDEyNTcgMjI5MC4xIDEyNTdMMjIwOS41NSAxMjU3QzIyMDcuMDQgMTI1NyAyMjA1IDEyNTkuMDQgMjIwNSAxMjYxLjU2TDIyMDUgMTUwMy45MkMyMjA1IDE1OTguNTYgMjI2OC41OCAxNjQyIDIzNDcgMTY0MkwyMzQ3IDE2NDJDMjQyNS40MiAxNjQyIDI0ODkgMTU5My42NSAyNDg5IDE1MDMuOTJMMjQ4OSAxMjYxLjU2QzI0ODkgMTI1OS4wNCAyNDg2Ljk2IDEyNTcgMjQ4NC40NSAxMjU3WiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTIxNzQuNDggMTU0NC41MyAyMDM0Ljg0IDE1NDQuNTNDMjAzMS41NCAxNTQ0LjUzIDIwMjguODYgMTU0MS44NiAyMDI4Ljg2IDE1MzguNTdMMjAyOC44NiAxMjYwLjUxQzIwMjguODYgMTI1OC41NyAyMDI3LjI5IDEyNTcgMjAyNS4zNCAxMjU3TDE5MzkuNTIgMTI1N0MxOTM3LjU3IDEyNTcgMTkzNiAxMjU4LjU3IDE5MzYgMTI2MC41MUwxOTM2IDE2MzEuNDlDMTkzNiAxNjMzLjQzIDE5MzcuNTcgMTYzNSAxOTM5LjUyIDE2MzVMMjE3NC40OCAxNjM1QzIxNzYuNDMgMTYzNSAyMTc4IDE2MzMuNDMgMjE3OCAxNjMxLjQ5TDIxNzggMTU0OC4wNEMyMTc4IDE1NDYuMSAyMTc2LjQzIDE1NDQuNTMgMjE3NC40OCAxNTQ0LjUzWiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTE3NTkuNSAxMjUzIDE3NTkuNSAxMjUzQzE2NzUuODMgMTI1MyAxNjA4IDEzMTIuNTMgMTYwOCAxMzkxLjA0TDE2MDggMTUwMy45NkMxNjA4IDE1OTguNTcgMTY3NS44MyAxNjQyIDE3NTkuNSAxNjQyTDE3NTkuNSAxNjQyQzE4NDMuMTcgMTY0MiAxOTExIDE1OTMuNjcgMTkxMSAxNTAzLjk2TDE5MTEgMTQ4OC40OUMxOTExIDE0ODUuNCAxOTA4LjQ4IDE0ODIuODkgMTkwNS4zOCAxNDgyLjg5TDE4MjQuMjYgMTQ4Mi44OUMxODIxLjI2IDE0ODIuODkgMTgxOC43OSAxNDg1LjI0IDE4MTguNjUgMTQ4OC4yMiAxODE2Ljc0IDE1MjkuOTcgMTgwMi4xMyAxNTUyLjM0IDE3NTkuNSAxNTUyLjM0TDE3NTkuNSAxNTUyLjM0QzE3MjEuMTMgMTU1Mi4zNCAxNzAwLjEyIDE1MjguOTMgMTcwMC4xMiAxNDc3LjkzTDE3MDAuMTIgMTQxNy4wNkMxNzAwLjEyIDEzNzQuNzQgMTcxNS41IDEzNDIuNjYgMTc1OS41IDEzNDIuNjZMMTc1OS41IDEzNDIuNjZDMTgwMi4yNyAxMzQyLjY2IDE4MTUuOTEgMTM2OCAxODE4LjQyIDE0MDMuMzQgMTgxOC42MyAxNDA2LjI4IDE4MjEuMDcgMTQwOC41NiAxODI0LjAyIDE0MDguNTZMMTkwNS4zNyAxNDA4LjU2QzE5MDguNDggMTQwOC41NiAxOTExIDE0MDYuMDUgMTkxMSAxNDAyLjk2TDE5MTEgMTM5MS4wNEMxOTExIDEzMTIuNTMgMTg0My4xNyAxMjUzIDE3NTkuNSAxMjUzWiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTI3NjIuOTIgMTQzOS4xM0MyNzYxLjM1IDE0MzguMTQgMjc2MS4yIDE0MzUuOTYgMjc2Mi41NSAxNDM0LjY5IDI3OTQuNjcgMTQwNC42NiAyODAzLjQ3IDEzNjIuMzEgMjc4NS43MiAxMzE3LjMxIDI3NjcuNDcgMTI3MS4wMyAyNzIyLjUzIDEyNTcgMjY3NC4wNyAxMjU3TDI1MjQuODYgMTI1N0MyNTIyLjczIDEyNTcgMjUyMSAxMjU4LjczIDI1MjEgMTI2MC44NkwyNTIxIDE2MzEuMTRDMjUyMSAxNjMzLjI3IDI1MjIuNzMgMTYzNSAyNTI0Ljg2IDE2MzVMMjY4My45IDE2MzVDMjc3Mi4zOCAxNjM1IDI4MTEgMTU4MSAyODExIDE1MjIuNzkgMjgxMSAxNDczLjQgMjc3NC4xIDE0NDYuMjMgMjc2Mi45MiAxNDM5LjEzWk0yNjExLjU4IDEzNDcuNDdDMjYxMS41OCAxMzQ1LjUzIDI2MTMuMTUgMTM0My45NiAyNjE1LjA5IDEzNDMuOTZMMjY3MS45NyAxMzQzLjk2QzI2OTAgMTM0My45NiAyNzA0LjYyIDEzNTguNTYgMjcwNC42MiAxMzc2LjU3IDI3MDQuNjIgMTM5NC41OCAyNjkwIDE0MDkuMTggMjY3MS45NyAxNDA5LjE4TDI2MTUuMDkgMTQwOS4xOEMyNjEzLjE1IDE0MDkuMTggMjYxMS41OCAxNDA3LjYxIDI2MTEuNTggMTQwNS42OEwyNjExLjU4IDEzNDcuNDdaTTI3MTYuMjEgMTUxNi44M0MyNzE2LjIxIDE1MzQuMDcgMjcwMi4yMiAxNTQ4LjA0IDI2ODQuOTYgMTU0OC4wNEwyNjE1LjA5IDE1NDguMDRDMjYxMy4xNSAxNTQ4LjA0IDI2MTEuNTggMTU0Ni40NyAyNjExLjU4IDE1NDQuNTNMMjYxMS41OCAxNDg5LjEzQzI2MTEuNTggMTQ4Ny4xOSAyNjEzLjE1IDE0ODUuNjIgMjYxNS4wOSAxNDg1LjYyTDI2ODQuOTYgMTQ4NS42MkMyNzAyLjIyIDE0ODUuNjIgMjcxNi4yMSAxNDk5LjYgMjcxNi4yMSAxNTE2LjgzTDI3MTYuMjEgMTUxNi44M1oiIGZpbGw9IiNGN0ZERjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik0yNzcyLjc1IDgzMyAyNTMxLjI1IDgzM0MyNTI2LjY5IDgzMyAyNTIzIDgzNi42ODkgMjUyMyA4NDEuMjM5TDI1MjMgMTIxMC43NkMyNTIzIDEyMTUuMzEgMjUyNi42OSAxMjE5IDI1MzEuMjUgMTIxOUwyNzcyLjc1IDEyMTlDMjc3Ny4zMSAxMjE5IDI3ODEgMTIxNS4zMSAyNzgxIDEyMTAuNzZMMjc4MSA4NDEuMjM5QzI3ODEgODM2LjY4OSAyNzc3LjMxIDgzMyAyNzcyLjc1IDgzM1pNMjYwOS43NSA4NDkuNDc4IDI2OTQuMjYgODQ5LjQ3OCAyNjk0LjI2IDg4Mi4wNCAyNjA5Ljc1IDg4Mi4wNCAyNjA5Ljc1IDg0OS40NzhaTTI1OTcuMzcgODQ5LjQ3OCAyNTk3LjM3IDg4OC4yMTlDMjU5Ny4zNyA4OTEuNjMyIDI2MDAuMTQgODk0LjM5OCAyNjAzLjU2IDg5NC4zOThMMjcwMC40NCA4OTQuMzk4QzI3MDMuODYgODk0LjM5OCAyNzA2LjYzIDg5MS42MzIgMjcwNi42MyA4ODguMjE5TDI3MDYuNjMgODQ5LjQ3OCAyNzY0LjUgODQ5LjQ3OCAyNzY0LjUgMTAxOS44MiAyNzI4LjI1IDEwMTkuODJDMjcyNS4xIDk4MC41MDMgMjY5Mi4xOCA5NDkuNTcyIDI2NTIgOTQ5LjU3MiAyNjExLjgyIDk0OS41NzIgMjU3OC45IDk4MC41MDMgMjU3NS43NSAxMDE5LjgyTDI1MzkuNSAxMDE5LjgyIDI1MzkuNSA4NDkuNDc4IDI1OTcuMzcgODQ5LjQ3OFpNMjcwOC41MSAxMDUxLjI0QzI3MDguNTEgMTA1MS4yNCAyNzA1LjM1IDEwNDEuMDggMjY3OC42OCAxMDQxLjA4TDI2NzguNjggMTAxMC45MkMyNzA1LjM1IDEwMTAuOTIgMjcwOC41MSAxMDAwLjc2IDI3MDguNTEgMTAwMC43NiAyNzEzLjc4IDEwMDkuODcgMjcxMy4wOCAxMDI2IDI3MTMuMDggMTAyNiAyNzEzLjA4IDEwMjYgMjcxMy43OCAxMDQyLjEzIDI3MDguNTEgMTA1MS4yNFpNMjY2Ny4wOSA5OTkuMzU2IDI2MzYuOTEgOTk5LjM1NkMyNjM2LjkxIDk3Mi43MTEgMjYyNi43MyA5NjkuNTU1IDI2MjYuNzMgOTY5LjU1NSAyNjM1Ljg1IDk2NC4yOTcgMjY1MiA5NjQuOTk3IDI2NTIgOTY0Ljk5NyAyNjUyIDk2NC45OTcgMjY2OC4xNSA5NjQuMjk3IDI2NzcuMjcgOTY5LjU1NSAyNjc3LjI3IDk2OS41NTUgMjY2Ny4wOSA5NzIuNzExIDI2NjcuMDkgOTk5LjM1NlpNMjY3Ny4yNyAxMDgyLjQ0QzI2NjguMTUgMTA4Ny43IDI2NTIgMTA4NyAyNjUyIDEwODcgMjY1MiAxMDg3IDI2MzUuODUgMTA4Ny43IDI2MjYuNzMgMTA4Mi40NCAyNjI2LjczIDEwODIuNDQgMjYzNi45MSAxMDc5LjI5IDI2MzYuOTEgMTA1Mi42NEwyNjY3LjA5IDEwNTIuNjRDMjY2Ny4wOSAxMDc5LjI5IDI2NzcuMjcgMTA4Mi40NCAyNjc3LjI3IDEwODIuNDRaTTI1OTUuNDkgMTAwMC43NkMyNTk1LjQ5IDEwMDAuNzYgMjU5OC42NSAxMDEwLjkyIDI2MjUuMzIgMTAxMC45MkwyNjI1LjMyIDEwNDEuMDhDMjU5OC42NSAxMDQxLjA4IDI1OTUuNDkgMTA1MS4yNCAyNTk1LjQ5IDEwNTEuMjQgMjU5MC4yMiAxMDQyLjEzIDI1OTAuOTIgMTAyNiAyNTkwLjkyIDEwMjYgMjU5MC45MiAxMDI2IDI1OTAuMjIgMTAwOS44NyAyNTk1LjQ5IDEwMDAuNzZaTTI2OTQuMjUgMTIwMi41MiAyNjA5Ljc0IDEyMDIuNTIgMjYwOS43NCAxMTY5Ljk2IDI2OTQuMjUgMTE2OS45NiAyNjk0LjI1IDEyMDIuNTJaTTI3MDYuNjMgMTIwMi41MiAyNzA2LjYzIDExNjMuNzhDMjcwNi42MyAxMTYwLjM3IDI3MDMuODYgMTE1Ny42IDI3MDAuNDQgMTE1Ny42TDI2MDMuNTYgMTE1Ny42QzI2MDAuMTQgMTE1Ny42IDI1OTcuMzcgMTE2MC4zNyAyNTk3LjM3IDExNjMuNzhMMjU5Ny4zNyAxMjAyLjUyIDI1MzkuNSAxMjAyLjUyIDI1MzkuNSAxMDMyLjE4IDI1NzUuNzUgMTAzMi4xOEMyNTc4LjkgMTA3MS41IDI2MTEuODIgMTEwMi40MyAyNjUyIDExMDIuNDMgMjY5Mi4xOCAxMTAyLjQzIDI3MjUuMSAxMDcxLjUgMjcyOC4yNSAxMDMyLjE4TDI3NjQuNSAxMDMyLjE4IDI3NjQuNSAxMjAyLjUyIDI3MDYuNjMgMTIwMi41MloiIGZpbGw9IiNGMEI0MjkiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=" style="height:clamp(50px,12vw,70px);width:auto;margin-bottom:6px;display:block;">
@@ -356,7 +415,48 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
         <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--coral);border:1px solid rgba(231,76,60,.3);display:inline-block;padding:3px 10px;border-radius:20px;">EXPERT</div>
       </button>
 
+      <button id="mode-family-btn" onclick="selectMode('family')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid #4ADE80;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
+          <div>
+            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#4ADE80;">FAMILY</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5;">Un club est tiré. Réponds aux questions sur la ville, le stade, les légendes…</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#4ADE80;border:1px solid rgba(74,222,128,.3);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
+      </button>
+
     </div>
+  </div>
+</div>
+
+<!-- FAMILY PLAY SCREEN -->
+<div id="screen-family" class="screen">
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0;">
+    <div style="font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#4ADE80;margin-bottom:4px;">🏠 FAMILY</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:clamp(18px,5vw,28px);letter-spacing:3px;color:var(--white);" id="family-club-name">CLUB</div>
+    <div style="font-size:10px;color:var(--muted);" id="family-player-name"></div>
+  </div>
+  <div style="padding:14px 16px;overflow-y:auto;min-height:0;flex:1;">
+    <div id="family-questions-list"></div>
+    <div id="family-extra-section" style="margin-top:12px;">
+      <div class="box">
+        <div class="box-label">👑 Joueurs / Légendes annoncés</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Clique sur les légendes confirmées</div>
+        <div id="family-legendes-list" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;color:var(--muted);">Joueur valide non listé :</span>
+          <button class="cnt-btn" onclick="familyAddExtra(-1)">−</button>
+          <div class="cnt-val" id="family-extra-cnt" style="font-size:24px;">0</div>
+          <button class="cnt-btn" onclick="familyAddExtra(1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div id="family-score-wrap" style="margin-top:12px;"></div>
+  </div>
+  <div style="position:sticky;bottom:0;left:0;width:100%;box-sizing:border-box;padding:12px 16px;display:flex;gap:8px;background:var(--bg);border-top:1px solid var(--border);z-index:10;">
+    <button class="ghost-btn" onclick="passTurn()" style="flex:0 0 auto;padding:14px 16px;">Passer</button>
+    <button class="confirm-btn" id="family-confirm-btn" onclick="confirmFamily()" style="flex:1;">✓ Valider le score</button>
   </div>
 </div>
 
@@ -463,13 +563,13 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
     <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">1. Questions</div>
     <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);" id="step2-label">2. Clubs</div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;padding:0 8px 8px;">
+  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;padding:0 8px 8px;flex:1;min-height:0;">
     <!-- Question cards — left -->
-    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-right:6px;"></div>
+    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-right:6px;align-content:start;"></div>
     <!-- Divider -->
     <div style="background:var(--border);margin:0 4px;"></div>
     <!-- Club cards — right -->
-    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-left:6px;"></div>
+    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-left:6px;align-content:start;"></div>
   </div>
   <div class="hand-footer" style="display:flex;gap:8px;" id="hand-footer">
     <button class="ghost-btn" id="btn-pass-turn" onclick="passTurn()" style="flex:1;display:none;">Passer mon tour</button>
@@ -696,6 +796,38 @@ const DOUBLE_CLUBS=[
   {id:'d7',clubs:['manutd','milan'],label:'Man Utd / AC Milan'},
 
 ];
+
+const FAMILY_DB = [
+  {id:'psg',nom:"Paris Saint-Germain",ville:"Paris",pays:"France",continent:"Europe",stade:"Parc des Princes",surnom:"Les Parisiens",couleurs:"Rouge & Bleu",legendes:["Zlatan Ibrahimović", "Ronaldinho", "David Beckham", "Thiago Silva", "Cavani"]},
+  {id:'marseille',nom:"Olympique de Marseille",ville:"Marseille",pays:"France",continent:"Europe",stade:"Vélodrome",surnom:"Les Phocéens",couleurs:"Blanc & Bleu ciel",legendes:["Didier Drogba", "Franck Ribéry", "Jean-Pierre Papin", "Chris Waddle", "Samir Nasri"]},
+  {id:'lyon',nom:"Olympique Lyonnais",ville:"Lyon",pays:"France",continent:"Europe",stade:"Groupama Stadium",surnom:"Les Gones",couleurs:"Rouge & Bleu marine",legendes:["Juninho Pernambucano", "Karim Benzema", "Samuel Umtiti", "Florent Malouda", "Sidney Govou"]},
+  {id:'real',nom:"Real Madrid",ville:"Madrid",pays:"Espagne",continent:"Europe",stade:"Santiago Bernabéu",surnom:"La Casa Blanca",couleurs:"Blanc & Or",legendes:["Raúl González", "Ronaldo Nazário", "Roberto Carlos", "Zinédine Zidane", "Cristiano Ronaldo"]},
+  {id:'barca',nom:"FC Barcelone",ville:"Barcelone",pays:"Espagne",continent:"Europe",stade:"Spotify Camp Nou",surnom:"Le Barça",couleurs:"Bleu & Grenat",legendes:["Lionel Messi", "Ronaldinho", "Xavi Hernández", "Andrés Iniesta", "Carles Puyol"]},
+  {id:'atleti',nom:"Atlético de Madrid",ville:"Madrid",pays:"Espagne",continent:"Europe",stade:"Civitas Metropolitano",surnom:"Los Colchoneros",couleurs:"Rouge & Blanc",legendes:["Fernando Torres", "Diego Forlán", "Kun Agüero", "Radamel Falcao", "Antoine Griezmann"]},
+  {id:'liverpool',nom:"Liverpool FC",ville:"Liverpool",pays:"Angleterre",continent:"Europe",stade:"Anfield",surnom:"The Reds",couleurs:"Rouge",legendes:["Steven Gerrard", "Kenny Dalglish", "Robbie Fowler", "Sami Hyypiä", "Dirk Kuyt"]},
+  {id:'arsenal',nom:"Arsenal FC",ville:"Londres",pays:"Angleterre",continent:"Europe",stade:"Emirates Stadium",surnom:"The Gunners",couleurs:"Rouge & Blanc",legendes:["Thierry Henry", "Patrick Vieira", "Dennis Bergkamp", "Robert Pires", "Tony Adams"]},
+  {id:'chelsea',nom:"Chelsea FC",ville:"Londres",pays:"Angleterre",continent:"Europe",stade:"Stamford Bridge",surnom:"The Blues",couleurs:"Bleu roi",legendes:["Frank Lampard", "John Terry", "Didier Drogba", "Gianfranco Zola", "Petr Čech"]},
+  {id:'manutd',nom:"Manchester United",ville:"Manchester",pays:"Angleterre",continent:"Europe",stade:"Old Trafford",surnom:"The Red Devils",couleurs:"Rouge & Noir",legendes:["Eric Cantona", "Roy Keane", "Paul Scholes", "Cristiano Ronaldo", "Wayne Rooney"]},
+  {id:'mancity',nom:"Manchester City",ville:"Manchester",pays:"Angleterre",continent:"Europe",stade:"Etihad Stadium",surnom:"The Citizens",couleurs:"Bleu ciel",legendes:["David Silva", "Vincent Kompany", "Yaya Touré", "Carlos Tevez", "Sergio Agüero"]},
+  {id:'bayern',nom:"Bayern Munich",ville:"Munich",pays:"Allemagne",continent:"Europe",stade:"Allianz Arena",surnom:"Der Rekordmeister",couleurs:"Rouge & Blanc",legendes:["Oliver Kahn", "Franz Beckenbauer", "Gerd Müller", "Lothar Matthäus", "Franck Ribéry"]},
+  {id:'dortmund',nom:"Borussia Dortmund",ville:"Dortmund",pays:"Allemagne",continent:"Europe",stade:"Signal Iduna Park",surnom:"Die Schwarzgelben",couleurs:"Jaune & Noir",legendes:["Michael Zorc", "Stefan Reuter", "Karl-Heinz Riedle", "Jürgen Kohler", "Robert Lewandowski"]},
+  {id:'milan',nom:"AC Milan",ville:"Milan",pays:"Italie",continent:"Europe",stade:"San Siro",surnom:"Il Diavolo Rosso",couleurs:"Rouge & Noir",legendes:["Paolo Maldini", "Franco Baresi", "Andriy Shevchenko", "Kaká", "Ronaldo Nazário"]},
+  {id:'inter',nom:"Inter Milan",ville:"Milan",pays:"Italie",continent:"Europe",stade:"San Siro",surnom:"La Beneamata",couleurs:"Bleu & Noir",legendes:["Ronaldo Nazário", "Javier Zanetti", "Roberto Carlos", "Zlatan Ibrahimović", "Samuel Eto'o"]},
+  {id:'juve',nom:"Juventus FC",ville:"Turin",pays:"Italie",continent:"Europe",stade:"Allianz Stadium",surnom:"La Vecchia Signora",couleurs:"Blanc & Noir",legendes:["Alessandro Del Piero", "Zinédine Zidane", "Pavel Nedvěd", "Gianluigi Buffon", "Michel Platini"]},
+  {id:'napoli',nom:"SSC Napoli",ville:"Naples",pays:"Italie",continent:"Europe",stade:"Diego Armando Maradona",surnom:"Gli Azzurri",couleurs:"Bleu ciel",legendes:["Diego Maradona", "Careca", "Dries Mertens", "Ciro Ferrara", "Lorenzo Insigne"]}
+];
+
+// Questions Family par catégorie
+const FAMILY_QUESTIONS = [
+  {id:'ville',label:'Ville du club',icon:'🏙️',fn:(c)=>c.ville},
+  {id:'pays',label:'Pays',icon:'🌍',fn:(c)=>c.pays},
+  {id:'continent',label:'Continent',icon:'🗺️',fn:(c)=>c.continent},
+  {id:'stade',label:'Nom du stade',icon:'🏟️',fn:(c)=>c.stade},
+  {id:'surnom',label:'Surnom du club',icon:'⭐',fn:(c)=>c.surnom},
+  {id:'couleurs',label:'Couleurs',icon:'🎨',fn:(c)=>c.couleurs},
+  {id:'legendes',label:'Joueurs / Légendes',icon:'👑',fn:(c)=>c.legendes},
+];
+
 const ACTIONS=[
   {id:'red_card',name:'Carton Rouge',icon:'🟥',desc:'Bloque un adversaire',clr:'red',n:2},
   {id:'sub',name:'Substitution',icon:'🔄',desc:'Échangez votre main avec un adversaire',clr:'gold',n:2},
@@ -919,6 +1051,7 @@ function migrateGS(gs){
   }
   if(!gs.flippedQs) gs.flippedQs=[];
   if(!gs.selectedQuestion) gs.selectedQuestion=null;
+  if(!gs.familyScores) gs.familyScores={};
   // Migrer joueurs
   if(gs.players){
     gs.players.forEach(p=>{
@@ -938,21 +1071,43 @@ function migrateGS(gs){
 
 let _lastStateHash='';
 function onRemoteUpdate(newState){
-  // Éviter re-render si l'état n'a pas changé
   const hash=JSON.stringify({
     phase:newState.phase,
     cur:newState.cur,
-    play:newState.play,
+    play:JSON.stringify(newState.play),
     varJudge:newState.varJudge,
     selectedQuestion:newState.selectedQuestion,
     tokens:newState.players?.map(p=>p.tokens),
     mercato:newState.mercato?.club1?.id,
     judgeVerdict:newState.play?.judgeVerdict,
+    timerStart:newState.timerStart,
+    mode:newState.mode,
   });
+
   checkTokenChanges_pre(newState);
+  const prevMode = GS?.mode;
+  const prevTimerStart = GS?.timerStart;
   GS=migrateGS(newState);
   GS.players?.forEach(p=>{ _prevTokens[p.name]=p.tokens; });
-  if(hash===_lastStateHash) return; // rien de changé
+
+  // Afficher règles quand le mode est choisi pour la 1ère fois
+  if(GS.mode && GS.mode !== prevMode){
+    setTimeout(()=>showRules(GS.mode), 300);
+  }
+
+  // Sync timer
+  if(GS.timerStart && GS.timerStart !== prevTimerStart){
+    const timerSec = GS.settings?.timer || 0;
+    if(timerSec){
+      const elapsed = (Date.now() - GS.timerStart) / 1000;
+      const remaining = Math.max(0, timerSec - Math.floor(elapsed));
+      if(remaining > 0) startTimer(remaining);
+      else triggerAlarm();
+    }
+  }
+  if(!GS.timerStart && prevTimerStart) stopTimer();
+
+  if(hash===_lastStateHash) return;
   _lastStateHash=hash;
   renderCurrentScreen();
 }
@@ -1000,7 +1155,6 @@ function renderWaiting(){
 async function startGame(){
   if(!ME.isHost)return;
   GS=migrateGS(GS);
-  // S'assurer que chaque joueur a ses cartes
   GS.players.forEach(p=>{
     if(!p.clubHand) p.clubHand=[];
     if(!p.qHand) p.qHand=[];
@@ -1009,7 +1163,8 @@ async function startGame(){
   });
   GS.phase='playing';
   await saveGS(GS);
-  renderCurrentScreen();
+  // Hôte voit les settings
+  show('settings');
 }
 
 async function leaveGame(){
@@ -1037,7 +1192,7 @@ function initGameState(playerNames){
     qDeck.unshift(..._qtmp);
     return{name:n,tokens:15,clubHand,qHand,blocked:false};
   });
-  return{phase:'waiting',players,clubDeck,qDeck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null,selectedQuestion:null,flippedQs:[]};
+  return{phase:'waiting',players,clubDeck,qDeck,cur:0,play:null,varOpen:false,mode:null,mercato:null,varJudge:null,selectedQuestion:null,flippedQs:[],settings:{timer:0},timerStart:null};
 }
 
 function buildDeck(){
@@ -1084,6 +1239,18 @@ function renderCurrentScreen(){
       document.getElementById('var-spectator-btn').disabled=true;
       return;
     }
+  }
+
+  // ── MODE FAMILY ──
+  if(GS.mode==='family'){
+    if(isMyTurn()){
+      renderFamilyScreen();
+      show('family');
+    } else {
+      renderSpectatorScreen();
+      show('spectator');
+    }
+    return;
   }
 
   // ── MODE PRO MERCATO ──
@@ -1548,10 +1715,15 @@ async function beginPlay(card,idx,clubId,clubName,league,qId,qLabel){
     judgeVerdict:null,
   };
   GS.varOpen=true;
+  // Démarrer timer si configuré
+  if(GS.settings?.timer){
+    GS.timerStart=Date.now();
+  }
   console.log('beginPlay — judge:', GS.varJudge, 'play.judge:', GS.play.judge);
   resetJudgeValidated();
   await saveGS(GS);
   show('play');
+  if(GS.settings?.timer) startTimer(GS.settings.timer);
 }
 
 // ═══════════════════════════════════════════
@@ -1690,6 +1862,8 @@ async function discardHand(){
 }
 
 async function nextTurn(){
+  stopTimer();
+  GS.timerStart=null;
   let next=(GS.cur+1)%GS.players.length;
   let tries=0;
   while(GS.players[next].blocked&&tries<GS.players.length){
@@ -1762,6 +1936,115 @@ function removeCard(cardIdx){
   if(!me.clubHand)me.clubHand=[];
   if(cardIdx!==undefined && cardIdx>=0) me.clubHand.splice(cardIdx,1);
 }
+
+// ═══════════════════════════════════════════
+// MODE FAMILY
+// ═══════════════════════════════════════════
+let _familyValidated = new Set();
+let _familyExtraCnt = 0;
+
+function familyAddExtra(d){
+  _familyExtraCnt = Math.max(0, _familyExtraCnt + d);
+  const el = document.getElementById('family-extra-cnt');
+  if(el) el.textContent = _familyExtraCnt;
+}
+
+function renderFamilyScreen(){
+  // Tirer un club si pas encore fait ce tour
+  if(!GS.family || GS.family.playerName !== GS.players[GS.cur]?.name){
+    const club = FAMILY_DB[Math.floor(Math.random()*FAMILY_DB.length)];
+    GS.family = {
+      clubId: club.id,
+      clubNom: club.nom,
+      playerName: GS.players[GS.cur]?.name,
+      answers: {},
+    };
+    _familyValidated = new Set();
+    _familyExtraCnt = 0;
+  }
+
+  const club = FAMILY_DB.find(c=>c.id===GS.family.clubId)||FAMILY_DB[0];
+
+  document.getElementById('family-club-name').textContent = club.nom.toUpperCase();
+  document.getElementById('family-player-name').textContent = 'Tour de ' + GS.players[GS.cur]?.name;
+
+  // Questions non-légendes
+  const qList = document.getElementById('family-questions-list');
+  qList.innerHTML = '';
+  FAMILY_QUESTIONS.filter(q=>q.id!=='legendes').forEach(q=>{
+    const answer = q.fn(club);
+    const validated = GS.family.answers[q.id];
+    const div = document.createElement('div');
+    div.className = 'box';
+    div.style.marginBottom = '8px';
+    div.style.cursor = 'pointer';
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <span style="font-size:14px;">${q.icon}</span>
+          <span style="font-size:11px;font-weight:600;letter-spacing:1px;color:${validated?'#4ADE80':'var(--muted)'};margin-left:6px;">${q.label}</span>
+        </div>
+        <div style="font-size:18px;">${validated?'✅':'⬜'}</div>
+      </div>
+      ${validated?`<div style="font-size:11px;color:#4ADE80;margin-top:4px;">✓ ${answer}</div>`:''}
+    `;
+    div.onclick = ()=>{
+      if(GS.family.answers[q.id]){
+        delete GS.family.answers[q.id];
+      } else {
+        GS.family.answers[q.id] = answer;
+      }
+      renderFamilyScreen();
+    };
+    qList.appendChild(div);
+  });
+
+  // Légendes cliquables
+  const legList = document.getElementById('family-legendes-list');
+  legList.innerHTML = '';
+  document.getElementById('family-extra-cnt').textContent = _familyExtraCnt;
+  club.legendes.forEach(name=>{
+    const tag = document.createElement('span');
+    const ok = _familyValidated.has(name);
+    tag.className = 'var-tag clickable' + (ok?' validated':'');
+    tag.textContent = name;
+    tag.onclick = ()=>{
+      if(_familyValidated.has(name)) _familyValidated.delete(name);
+      else _familyValidated.add(name);
+      renderFamilyScreen();
+    };
+    legList.appendChild(tag);
+  });
+
+  // Score courant
+  const qScore = Object.keys(GS.family.answers).length;
+  const legScore = _familyValidated.size + _familyExtraCnt;
+  const total = qScore + legScore;
+  document.getElementById('family-score-wrap').innerHTML = `
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Score ce tour</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:36px;color:var(--gold);">${total}</div>
+      <div style="font-size:10px;color:var(--muted);">${qScore} questions + ${legScore} joueurs</div>
+    </div>
+  `;
+}
+
+async function confirmFamily(){
+  const club = FAMILY_DB.find(c=>c.id===GS.family?.clubId)||FAMILY_DB[0];
+  const qScore = Object.keys(GS.family?.answers||{}).length;
+  const legScore = _familyValidated.size + _familyExtraCnt;
+  const total = qScore + legScore;
+  const me = GS.players[myIdx()];
+  if(!GS.familyScores) GS.familyScores = {};
+  GS.familyScores[me.name] = (GS.familyScores[me.name]||0) + total;
+  toast(`+${total} points !`);
+  animateTokens(total, 'add', me.name);
+  _familyValidated = new Set();
+  _familyExtraCnt = 0;
+  GS.family = null;
+  await nextTurn();
+}
+
 
 function renderSpectatorScreen(){
   if(!GS||!GS.players)return;
@@ -2042,15 +2325,212 @@ function renderPlayScreen(){
   }
 }
 
+
+// ═══════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════
+let _selectedTimer = 0;
+
+function selectTimer(sec){
+  _selectedTimer = sec;
+  ['0','20','30'].forEach(v=>{
+    const el = document.getElementById(`timer-${v}`);
+    if(el) el.className = 'settings-opt' + (v==sec?' settings-opt-active':'');
+  });
+}
+
+function validateSettings(){
+  if(!GS) return;
+  if(!GS.settings) GS.settings={};
+  GS.settings.timer = _selectedTimer;
+  saveGS(GS);
+  show('mode');
+}
+
+// ═══════════════════════════════════════════
+// RÈGLES
+// ═══════════════════════════════════════════
+const RULES = {
+  duel: {
+    icon: '🛡️',
+    title: 'DUEL VAR',
+    body: `<b>Objectif</b> : Défaussez tous vos jetons avant les autres.<br><br>
+<b>Votre main</b> : 2 cartes <span style="color:var(--gold)">Questions</span> + 4 cartes <span style="color:#ccc">Clubs</span>.<br><br>
+<b>Votre tour</b> :<br>
+① Retournez une <b>carte Question</b> (ex: Joueurs Français)<br>
+② Retournez une <b>carte Club</b> (ex: PSG)<br>
+③ Confirmez la combinaison<br>
+④ Annoncez vos joueurs à voix haute<br>
+⑤ L'arbitre VAR valide le nombre de bonnes réponses<br>
+⑥ Défaussez autant de jetons que de réponses validées<br><br>
+<b>Attention</b> : Les combos impossibles sont grisés (ex: Joueurs Espagnols + Real Madrid).<br><br>
+<b>Cartes Actions</b> : Substitution, +3/+5 jetons, Carton Rouge, Hors-Jeu, Mercato.`
+  },
+  mercato: {
+    icon: '🔥',
+    title: 'PRO MERCATO',
+    body: `<b>Objectif</b> : Trouver le plus de joueurs ayant porté les deux maillots.<br><br>
+<b>Chaque tour</b> : 2 clubs sont tirés au hasard.<br><br>
+Le joueur actif annonce un joueur ayant joué dans les <b>deux clubs</b>.<br><br>
+L'arbitre VAR consulte la liste et valide ou refuse.<br><br>
+Pour chaque joueur validé, le joueur défausse 1 jeton.<br><br>
+<b>Conseil</b> : Pensez aux joueurs de l'ère Bosman (post 1995) qui ont beaucoup voyagé !`
+  }
+};
+
+function showRules(mode){
+  const r = RULES[mode];
+  if(!r) return;
+  document.getElementById('rules-icon').textContent = r.icon;
+  document.getElementById('rules-title').textContent = r.title;
+  document.getElementById('rules-body').innerHTML = r.body;
+  const el = document.getElementById('rules-overlay');
+  el.style.display = 'flex';
+}
+
+function closeRules(){
+  document.getElementById('rules-overlay').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════
+let _timerInterval = null;
+let _timerRemaining = 0;
+
+function startTimer(seconds){
+  stopTimer();
+  if(!seconds) return;
+  _timerRemaining = seconds;
+  const overlay = document.getElementById('timer-overlay');
+  const display = document.getElementById('timer-display');
+  if(!overlay || !display) return;
+  overlay.style.display = 'block';
+  display.textContent = seconds;
+  display.style.animation = '';
+  display.style.color = 'var(--gold)';
+  display.style.borderColor = 'var(--gold)';
+
+  _timerInterval = setInterval(()=>{
+    _timerRemaining--;
+    display.textContent = _timerRemaining;
+
+    // Urgent < 10s
+    if(_timerRemaining <= 10){
+      display.style.animation = 'timerUrgent .6s ease infinite';
+    }
+
+    if(_timerRemaining <= 0){
+      stopTimer();
+      triggerAlarm();
+    }
+  }, 1000);
+}
+
+function stopTimer(){
+  if(_timerInterval){ clearInterval(_timerInterval); _timerInterval=null; }
+  const overlay = document.getElementById('timer-overlay');
+  if(overlay) overlay.style.display = 'none';
+}
+
+function triggerAlarm(){
+  const alarm = document.getElementById('alarm-overlay');
+  if(!alarm) return;
+  alarm.style.display = 'flex';
+  // Vibration si supportée
+  if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
+  setTimeout(()=>{ alarm.style.display = 'none'; }, 3000);
+}
+
+// Sync timer via GS.timerStart
+function checkTimerSync(newState){
+  if(!newState.timerStart) return;
+  const timerSec = newState.settings?.timer || 0;
+  if(!timerSec) return;
+  // Si nouveau timerStart différent de l'ancien
+  if(newState.timerStart !== (GS?.timerStart||null)){
+    const elapsed = (Date.now() - newState.timerStart) / 1000;
+    const remaining = Math.max(0, timerSec - elapsed);
+    if(remaining > 0) startTimer(Math.round(remaining));
+    else if(remaining === 0) triggerAlarm();
+  }
+}
+
 // ═══════════════════════════════════════════
 // MODE SELECTION
 // ═══════════════════════════════════════════
+
+// ═══════════════════════════════════════════
+// RÈGLES PAR MODE
+// ═══════════════════════════════════════════
+const MODE_RULES = {
+  duel: {
+    icon: '🛡️',
+    title: 'DUEL VAR',
+    body: `<b>Objectif :</b> Défausser tous tes jetons avant les autres.<br><br>
+<b>Comment jouer :</b><br>
+1️⃣ Retourne une carte <b>Question</b> (gauche)<br>
+2️⃣ Retourne une carte <b>Club</b> (droite)<br>
+3️⃣ Confirme la combinaison<br>
+4️⃣ Annonce à voix haute tous les joueurs que tu connais<br>
+5️⃣ L'arbitre VAR valide via la liste de référence<br><br>
+<b>Score :</b> Tu défausses 1 jeton par joueur valide annoncé.<br>
+<b>Gagne :</b> Le premier à 0 jeton remporte la partie !`
+  },
+  mercato: {
+    icon: '🔥',
+    title: 'PRO MERCATO',
+    body: `<b>Objectif :</b> Trouver les joueurs qui ont porté les deux maillots.<br><br>
+<b>Comment jouer :</b><br>
+1️⃣ Deux clubs sont tirés au hasard<br>
+2️⃣ À ton tour, annonce un joueur ayant joué dans les deux clubs<br>
+3️⃣ Les autres joueurs valident ou refusent<br><br>
+<b>Score :</b> 1 jeton défaussé par joueur valide trouvé.<br>
+<b>Gagne :</b> Le premier à 0 jeton remporte la partie !`
+  },
+  family: {
+    icon: '🏠',
+    title: 'FAMILY',
+    body: `<b>Pour toute la famille !</b><br><br>
+Un club est tiré au hasard. Le joueur actif doit répondre aux questions :<br><br>
+🏙️ Ville du club<br>
+🌍 Pays<br>
+🗺️ Continent<br>
+🏟️ Nom du stade<br>
+⭐ Surnom du club<br>
+🎨 Couleurs<br>
+👑 Joueurs / Légendes du club<br><br>
+<b>Score :</b> 1 point par bonne réponse. Plus de jetons !<br>
+<b>Gagne :</b> Le joueur avec le plus de points à la fin !`
+  }
+};
+
+function showRules(mode, onClose){
+  const rule = MODE_RULES[mode];
+  if(!rule) { onClose(); return; }
+  const overlay = document.getElementById('rules-overlay');
+  document.getElementById('rules-icon').textContent = rule.icon;
+  document.getElementById('rules-title').textContent = rule.title;
+  document.getElementById('rules-body').innerHTML = rule.body;
+  const timerEl = document.getElementById('rules-timer-info');
+  if(timerEl){
+    const t = GS?.timerSec || 0;
+    timerEl.textContent = t > 0 ? `⏱ Timer : ${t} secondes par tour` : '';
+  }
+  overlay.style.display = 'flex';
+  // Bouton fermer
+  const btn = overlay.querySelector('.rules-close-btn');
+  if(btn) btn.onclick = () => { overlay.style.display = 'none'; onClose(); };
+}
+
 async function selectMode(mode){
   console.log('selectMode called:', mode, 'isHost:', ME.isHost, 'phase:', GS.phase);
   if(!ME.isHost){toast('Seul le host peut choisir le mode');return;}
   GS=migrateGS(GS);
   GS.mode=mode;
   GS.phase='playing';
+  if(!GS.settings) GS.settings={};
+  GS.settings.timer = _selectedTimer;
   GS.players.forEach(p=>{
     if(!p.clubHand) p.clubHand=[];
     if(!p.qHand) p.qHand=[];
@@ -2067,6 +2547,8 @@ async function selectMode(mode){
   });
   await saveGS(GS);
   renderCurrentScreen();
+  // Afficher les règles sur tous les téléphones via renderCurrentScreen
+  // qui appellera showRulesIfNeeded
 }
 
 // ═══════════════════════════════════════════
