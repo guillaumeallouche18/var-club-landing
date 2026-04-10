@@ -278,7 +278,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .var-tag img{width:16px;height:16px;border-radius:50%;object-fit:cover;}
 .var-tag.clickable{cursor:pointer;transition:all .15s;user-select:none;}
 .var-tag.clickable:hover{border-color:var(--gold);background:rgba(240,180,41,.15);}
-.var-tag.validated{background:rgba(74,222,128,.2);border-color:#4ADE80;color:#4ADE80;font-weight:600;}
+.var-tag.validated{background:rgba(240,180,41,.2);border-color:var(--gold);color:var(--gold);font-weight:600;}
 .var-tag.validated img{filter:none;}
 .judge-manual-add{display:flex;align-items:center;gap:8px;margin-top:10px;}
 .judge-manual-label{font-size:11px;color:var(--muted);flex:1;}
@@ -395,13 +395,13 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 
       <button id="mode-family-btn" onclick="selectMode('family')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
         <div style="display:flex;align-items:center;gap:14px;">
-          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid #4ADE80;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
+          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
           <div>
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#4ADE80;">FAMILY</div>
+            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--gold);">FAMILY</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5;">Un club est tiré. Réponds aux questions sur la ville, le stade, les légendes…</div>
           </div>
         </div>
-        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#4ADE80;border:1px solid rgba(74,222,128,.3);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
+        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(240,180,41,.2);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
       </button>
 
       <button id="mode-duel-btn" onclick="selectMode('duel')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
@@ -433,7 +433,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 <!-- FAMILY PLAY SCREEN -->
 <div id="screen-family" class="screen">
   <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0;">
-    <div style="font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#4ADE80;margin-bottom:4px;">🏠 FAMILY</div>
+    <div style="font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">🏠 FAMILY</div>
     <div style="font-family:'Bebas Neue',cursive;font-size:clamp(18px,5vw,28px);letter-spacing:3px;color:var(--white);" id="family-club-name">CLUB</div>
     <div style="font-size:10px;color:var(--muted);" id="family-player-name"></div>
   </div>
@@ -463,7 +463,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 <!-- FAMILY JUDGE SCREEN -->
 <div id="screen-family-judge" class="screen">
   <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0;">
-    <div style="font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#4ADE80;margin-bottom:3px;">🏁 TU ES L'ARBITRE — FAMILY</div>
+    <div style="font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;">🏁 ARBITRE VAR — FAMILY</div>
     <div style="font-family:'Bebas Neue',cursive;font-size:clamp(16px,4vw,24px);letter-spacing:3px;" id="fj-club-name">CLUB</div>
     <div style="font-size:10px;color:var(--muted);" id="fj-player-name"></div>
   </div>
@@ -484,7 +484,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
     <div id="fj-score" style="margin-top:12px;"></div>
   </div>
   <div style="position:sticky;bottom:0;left:0;width:100%;box-sizing:border-box;padding:12px 16px;display:flex;gap:8px;background:var(--bg);border-top:1px solid var(--border);z-index:10;">
-    <button class="confirm-btn" onclick="fjValidate()" style="flex:1;background:#4ADE80;color:#0D1F0D;">✓ Valider le score</button>
+    <button class="confirm-btn" onclick="fjValidate()" style="flex:1;background:var(--gold);color:#0D1F0D;">✓ Valider le score</button>
   </div>
 </div>
 
@@ -1172,7 +1172,7 @@ function onRemoteUpdate(newState){
     mode:newState.mode,
     pendingRules:newState.pendingRules,
     rulesReady:newState.rulesReadyNames?.length,
-    family:JSON.stringify(newState.family?.judgeVerdict),
+    family:JSON.stringify({jv:newState.family?.judgeVerdict,js:newState.family?.judgeScore,judge:newState.family?.judge}),
   });
 
   checkTokenChanges_pre(newState);
@@ -1181,15 +1181,16 @@ function onRemoteUpdate(newState){
   GS=migrateGS(newState);
   GS.players?.forEach(p=>{ _prevTokens[p.name]=p.tokens; });
 
-  // ── RÈGLES : montrer à tous les joueurs non-hôtes ──
+  // ── RÈGLES : montrer à tous (y compris hôte via polling) ──
   if(GS.pendingRules){
-    const hasRead = GS.rulesReadyNames?.includes(ME.name);
+    const hasRead = (GS.rulesReadyNames||[]).includes(ME.name);
     if(!hasRead && !_rulesShown){
       _rulesShown = true;
       showRulesForAll(GS.pendingRules);
       return;
     }
     if(hasRead && ME.isHost) checkAllRulesRead();
+    if(hasRead) return; // garder l'écran stable
     return;
   }
   _rulesShown = false;
@@ -1558,7 +1559,7 @@ function renderSplitCards(clubCards, questionCards){
     const wrap=document.createElement('div');
     wrap.className='card-wrap'+((isSelected||wasFlipped)?' flipped':'');
     if(isSelected){
-      wrap.style.outline='5px solid #4ADE80';wrap.style.boxShadow='0 0 0 2px var(--gold)';
+      wrap.style.outline='5px solid var(--gold)';wrap.style.boxShadow='0 0 0 2px var(--gold)';
       wrap.style.borderRadius='14px';
     }
 
@@ -1585,7 +1586,7 @@ function renderSplitCards(clubCards, questionCards){
       // Mettre à jour highlights
       document.querySelectorAll('[id^="cw-q-"]').forEach(w=>{
         const isThis = w.id===`cw-q-${qIdx}`;
-        w.style.outline = isThis?'5px solid #4ADE80':'none';
+        w.style.outline = isThis?'5px solid var(--gold)':'none';
         w.style.borderRadius = isThis?'14px':'';
       });
       // Griser clubs bloqués
@@ -2177,7 +2178,7 @@ function renderFamilyJudgeScreen(){
       <div>
         <span style="font-size:12px;">${q.icon}</span>
         <span style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-left:6px;">${q.label}</span>
-        <div style="font-size:12px;color:${validated?'#4ADE80':'rgba(255,255,255,.4)'};margin-top:3px;margin-left:2px;">${answer}</div>
+        <div style="font-size:12px;color:${validated?'var(--gold)':'rgba(255,255,255,.4)'};margin-top:3px;margin-left:2px;">${answer}</div>
       </div>
       <div style="font-size:20px;">${validated?'✅':'⬜'}</div>
     `;
@@ -2215,9 +2216,9 @@ function updateFjScore(){
   const total = qScore + legScore;
   const el = document.getElementById('fj-score');
   if(el) el.innerHTML=`
-    <div style="background:var(--card2);border:1px solid #4ADE80;border-radius:var(--r);padding:14px;text-align:center;">
+    <div style="background:var(--card2);border:1px solid var(--gold);border-radius:var(--r);padding:14px;text-align:center;">
       <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Score</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:40px;color:#4ADE80;">${total}</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:40px;color:var(--gold);">${total}</div>
       <div style="font-size:10px;color:var(--muted);">${qScore} questions + ${legScore} joueurs</div>
     </div>`;
 }
@@ -2699,9 +2700,9 @@ Deux clubs sont tirés au sort. Ton défi : retrouver les joueurs qui ont <b>por
   family: {
     icon: '🏠',
     title: 'MODE FAMILY',
-    body: `<div style="text-align:center;margin-bottom:14px;font-size:15px;font-weight:600;color:#4ADE80;letter-spacing:1px;">Le football, ça se vit en famille 🌟</div>
+    body: `<div style="text-align:center;margin-bottom:14px;font-size:15px;font-weight:600;color:var(--gold);letter-spacing:1px;">Le football, ça se vit en famille 🌟</div>
 Un grand club est tiré au sort. À toi de montrer que tu le connais par cœur — même les petits peuvent surprendre les grands !<br><br>
-<div style="border-left:3px solid #4ADE80;padding-left:10px;margin:10px 0;">
+<div style="border-left:3px solid var(--gold);padding-left:10px;margin:10px 0;">
 🏙️ Sa <b>ville</b>, son <b>pays</b>, son <b>continent</b><br>
 🏟️ Le nom de son <b>stade</b><br>
 ⭐ Son <b>surnom</b> et ses <b>couleurs</b><br>
@@ -2732,8 +2733,12 @@ function showRulesForAll(mode){
 
 async function checkAllRulesRead(){
   const total = GS.players?.length||1;
-  const ready = GS.rulesReadyNames?.length||0;
-  if(ready < total) return;
+  const ready = (GS.rulesReadyNames||[]).length;
+  // Afficher le statut d'attente
+  if(ready < total){
+    if(ME.isHost) toast(`${ready}/${total} joueurs prêts…`);
+    return;
+  }
   // Tous ont lu — lancer la partie
   const mode = GS.pendingRules;
   GS.pendingRules = null;
@@ -2755,44 +2760,6 @@ async function checkAllRulesRead(){
   renderCurrentScreen();
 }
 
-// Stocker le callback globalement pour éviter les problèmes de closure
-let _rulesOnClose = null;
-
-function showRules(mode, onClose){
-  const rule = MODE_RULES[mode];
-  if(!rule) { if(typeof onClose==='function') onClose(); return; }
-  _rulesOnClose = onClose;
-  const overlay = document.getElementById('rules-overlay');
-  document.getElementById('rules-icon').textContent = rule.icon;
-  document.getElementById('rules-title').textContent = rule.title;
-  document.getElementById('rules-body').innerHTML = rule.body;
-  const timerEl = document.getElementById('rules-timer-info');
-  if(timerEl){
-    const t = GS?.settings?.timer || _selectedTimer || 0;
-    timerEl.textContent = t > 0 ? `⏱ Timer : ${t} secondes par tour` : '';
-  }
-  overlay.style.display = 'flex';
-
-  // Créer UN SEUL bouton fermer
-  const existingBtn = overlay.querySelector('.rules-close-btn');
-  if(existingBtn) existingBtn.remove();
-  const innerDiv = overlay.querySelector('div');
-  const btn = document.createElement('button');
-  btn.className = 'rules-close-btn cta';
-  btn.style.cssText = 'margin-top:20px;width:100%;max-width:320px;';
-  btn.textContent = "C'est parti ! ▶";
-  btn.onclick = closeRules;
-  innerDiv.appendChild(btn);
-}
-
-function closeRules(){
-  document.getElementById('rules-overlay').style.display='none';
-  if(typeof _rulesOnClose === 'function'){
-    const cb = _rulesOnClose;
-    _rulesOnClose = null;
-    cb();
-  }
-}
 
 async function selectMode(mode){
   console.log('selectMode called:', mode, 'isHost:', ME.isHost, 'phase:', GS.phase);
