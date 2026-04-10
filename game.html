@@ -536,6 +536,33 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   </div>
 </div>
 
+<!-- MERCATO JUDGE SCREEN -->
+<div id="screen-mercato-judge" class="screen">
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0;">
+    <div style="font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;">🏁 TU ES L'ARBITRE — MERCATO</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:clamp(14px,3.5vw,20px);letter-spacing:2px;" id="mj-clubs">CLUB × CLUB</div>
+    <div style="font-size:10px;color:var(--muted);" id="mj-player"></div>
+  </div>
+  <div style="padding:14px 16px;overflow-y:auto;flex:1;min-height:0;">
+    <div class="box" style="margin-bottom:10px;">
+      <div class="box-label">👥 Joueurs communs — clique pour valider</div>
+      <div id="mj-common-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+    </div>
+    <div class="box" style="margin-bottom:10px;">
+      <div class="box-label">Joueur valide non listé</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+        <button class="cnt-btn" onclick="if(!window._mjExtra)window._mjExtra=0;window._mjExtra=Math.max(0,window._mjExtra-1);renderMercatoJudgeScreen();">−</button>
+        <div class="cnt-val" id="mj-extra-cnt" style="font-size:24px;">0</div>
+        <button class="cnt-btn" onclick="if(!window._mjExtra)window._mjExtra=0;window._mjExtra++;renderMercatoJudgeScreen();">+</button>
+      </div>
+    </div>
+    <div id="mj-score"></div>
+  </div>
+  <div style="position:sticky;bottom:0;left:0;width:100%;box-sizing:border-box;padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);z-index:10;">
+    <button class="confirm-btn" onclick="mjValidate()" style="width:100%;background:var(--gold);color:var(--bg);">✓ Valider le score</button>
+  </div>
+</div>
+
 <!-- PRO MERCATO VAR SCREEN -->
 <div id="screen-var-mercato" class="screen">
   <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0;">
@@ -1102,30 +1129,40 @@ function migrateGS(gs){
 let _lastStateHash='';
 function onRemoteUpdate(newState){
   const hash=JSON.stringify({
-    phase:newState.phase,
-    cur:newState.cur,
+    phase:newState.phase,cur:newState.cur,
     play:JSON.stringify(newState.play),
     varJudge:newState.varJudge,
     selectedQuestion:newState.selectedQuestion,
     tokens:newState.players?.map(p=>p.tokens),
-    mercato:newState.mercato?.club1?.id,
+    mercato:JSON.stringify(newState.mercato?.judgeVerdict),
     judgeVerdict:newState.play?.judgeVerdict,
     timerStart:newState.timerStart,
     mode:newState.mode,
+    pendingRules:newState.pendingRules,
+    rulesReady:newState.rulesReadyNames?.length,
+    family:JSON.stringify(newState.family?.judgeVerdict),
   });
 
   checkTokenChanges_pre(newState);
-  const prevMode = GS?.mode;
   const prevTimerStart = GS?.timerStart;
+
   GS=migrateGS(newState);
   GS.players?.forEach(p=>{ _prevTokens[p.name]=p.tokens; });
 
-  // Afficher règles quand le mode est choisi pour la 1ère fois
-  if(GS.mode && GS.mode !== prevMode){
-    setTimeout(()=>showRules(GS.mode), 300);
+  // ── RÈGLES : montrer à tous les joueurs non-hôtes ──
+  if(GS.pendingRules){
+    const hasRead = GS.rulesReadyNames?.includes(ME.name);
+    if(!hasRead && !_rulesShown){
+      _rulesShown = true;
+      showRulesForAll(GS.pendingRules);
+      return;
+    }
+    if(hasRead && ME.isHost) checkAllRulesRead();
+    return;
   }
+  _rulesShown = false;
 
-  // Sync timer
+  // ── TIMER sync ──
   if(GS.timerStart && GS.timerStart !== prevTimerStart){
     const timerSec = GS.settings?.timer || 0;
     if(timerSec){
@@ -1141,6 +1178,7 @@ function onRemoteUpdate(newState){
   _lastStateHash=hash;
   renderCurrentScreen();
 }
+
 
 function checkTokenChanges_pre(newState){
   if(!newState?.players) return;
@@ -1288,6 +1326,12 @@ function renderCurrentScreen(){
   // ── MODE PRO MERCATO ──
   if(GS.mode==='mercato'){
     if(GS.phase==='win'){document.getElementById('win-name').textContent=GS.winner?.toUpperCase()||'';show('win');return;}
+    // Arbitre VAR mercato
+    if(GS.mercato && GS.mercato.judge===ME.name && !GS.mercato.judgeVerdict && !isMyTurn()){
+      renderMercatoJudgeScreen();
+      show('mercato-judge');
+      return;
+    }
     if(!GS.mercato){
       // Joueur actif lance un round mercato
       if(isMyTurn()){
@@ -2003,17 +2047,23 @@ function renderFamilyScreen(){
     if(others.length===0){
       // Solo — joueur est son propre arbitre
       GS.family.judge = ME.name;
+      if(GS.settings?.timer) GS.timerStart=Date.now();
       saveGS(GS);
+      if(GS.settings?.timer) startTimer(GS.settings.timer);
       renderFamilyActiveScreen();
     } else if(others.length===1){
       GS.family.judge = others[0].name;
+      if(GS.settings?.timer) GS.timerStart=Date.now();
       saveGS(GS);
+      if(GS.settings?.timer) startTimer(GS.settings.timer);
       renderFamilyActiveScreen();
     } else {
       showModal({icon:'🏁',title:'Arbitre VAR Family',desc:'Qui valide les réponses ?',
         list:others.map(p=>({name:p.name,info:'',cb:async()=>{
           GS.family.judge=p.name;
+          if(GS.settings?.timer) GS.timerStart=Date.now();
           await saveGS(GS);
+          if(GS.settings?.timer) startTimer(GS.settings.timer);
           renderFamilyActiveScreen();
         }}))
       });
@@ -2630,6 +2680,51 @@ Un grand club est tiré au sort. À toi de montrer que tu le connais par cœur �
   }
 };
 
+// Flag pour éviter double affichage
+let _rulesShown = false;
+
+
+
+// ── Sync règles pour tous ──
+let _rulesShown = false;
+
+function showRulesForAll(mode){
+  showRules(mode, async()=>{
+    if(!GS.rulesReadyNames) GS.rulesReadyNames=[];
+    if(!GS.rulesReadyNames.includes(ME.name)){
+      GS.rulesReadyNames.push(ME.name);
+      await saveGS(GS);
+    }
+    _rulesShown = false;
+    if(ME.isHost) checkAllRulesRead();
+  });
+}
+
+async function checkAllRulesRead(){
+  const total = GS.players?.length||1;
+  const ready = GS.rulesReadyNames?.length||0;
+  if(ready < total) return;
+  // Tous ont lu — lancer la partie
+  const mode = GS.pendingRules;
+  GS.pendingRules = null;
+  GS.rulesReadyNames = [];
+  GS.mode = mode;
+  GS.phase = 'playing';
+  if(mode==='family'){
+    GS.family = null;
+    GS.familyScores = Object.fromEntries(GS.players.map(p=>[p.name,0]));
+  } else {
+    GS.players.forEach(p=>{
+      if(!p.clubHand) p.clubHand=[];
+      if(!p.qHand) p.qHand=[];
+      while(p.clubHand.length<4 && GS.clubDeck?.length>0) p.clubHand.push(GS.clubDeck.pop());
+      while(p.qHand.length<2 && GS.qDeck?.length>0) p.qHand.push(GS.qDeck.pop());
+    });
+  }
+  await saveGS(GS);
+  renderCurrentScreen();
+}
+
 // Stocker le callback globalement pour éviter les problèmes de closure
 let _rulesOnClose = null;
 
@@ -2796,11 +2891,16 @@ async function startMercatoRound(){
     club1:{id:c1.clubId,name:c1.clubName,league:c1.league},
     club2:{id:c2.clubId,name:c2.clubName,league:c2.league},
     common,
-    varOpen:true
+    varOpen:true,
+    judge: null,
+    judgeVerdict: null,
+    judgeScore: 0,
   };
   GS.play=null;
   GS.varOpen=false;
+  if(GS.settings?.timer) GS.timerStart=Date.now();
   await saveGS(GS);
+  if(GS.settings?.timer) startTimer(GS.settings.timer);
 }
 
 function renderMercatoScreen(){
@@ -2814,9 +2914,75 @@ function renderMercatoScreen(){
   document.getElementById('merc-cnt').textContent=mercCount;
   document.getElementById('merc-v-yes').classList.remove('on');
   document.getElementById('merc-v-no').classList.remove('on');
-  document.getElementById('merc-vote-status').textContent='';
-  document.getElementById('merc-verdict-wrap').innerHTML='';
-  document.getElementById('merc-confirm-btn').disabled=true;
+
+  // Sélection arbitre si pas encore fait
+  if(!m.judge){
+    const others=GS.players.filter(p=>p.name!==ME.name);
+    if(others.length===1){
+      m.judge=others[0].name;
+      saveGS(GS);
+    } else if(others.length>1){
+      showModal({icon:'🏁',title:'Arbitre VAR',desc:'Qui valide les réponses ?',
+        list:others.map(p=>({name:p.name,info:`${p.tokens}🪙`,cb:async()=>{
+          m.judge=p.name; await saveGS(GS);
+        }}))});
+    }
+  }
+
+  // Verdict arbitre reçu ?
+  if(m.judgeVerdict){
+    document.getElementById('merc-verdict-wrap').innerHTML=`
+      <div class="verdict win">
+        <div class="verdict-title">ARBITRE A VALIDÉ ✓</div>
+        <div class="verdict-sub">${m.judgeScore} joueur${m.judgeScore>1?'s':''} validé${m.judgeScore>1?'s':''}</div>
+      </div>`;
+    document.getElementById('merc-confirm-btn').disabled=false;
+    document.getElementById('merc-vote-status').textContent='';
+  } else {
+    document.getElementById('merc-verdict-wrap').innerHTML='';
+    document.getElementById('merc-vote-status').textContent=m.judge?`Arbitre: ${m.judge}`:'';
+    document.getElementById('merc-confirm-btn').disabled=true;
+  }
+}
+
+function renderMercatoJudgeScreen(){
+  const m=GS.mercato;
+  if(!m)return;
+  const el=document.getElementById('mj-clubs');
+  if(el) el.textContent=`${m.club1.name} × ${m.club2.name}`;
+  const playerEl=document.getElementById('mj-player');
+  if(playerEl) playerEl.textContent='Annonces de '+(GS.players[GS.cur]?.name||'');
+
+  // Liste joueurs communs cliquables
+  const cont=document.getElementById('mj-common-list');
+  if(!cont)return;
+  cont.innerHTML='';
+  const common=m.common||[];
+  if(!common.length){
+    cont.innerHTML='<span class="var-none">Aucun joueur en commun dans la base</span>';
+  } else {
+    if(!window._mjValidated) window._mjValidated=new Set();
+    common.forEach(p=>{
+      const tag=document.createElement('span');
+      const ok=window._mjValidated.has(p.name);
+      tag.className='var-tag clickable'+(ok?' validated':'');
+      if(p.photo) tag.innerHTML=`<img src="${p.photo}" onerror="this.style.display='none'">`;
+      tag.innerHTML+=p.name;
+      tag.onclick=()=>{
+        if(window._mjValidated.has(p.name)) window._mjValidated.delete(p.name);
+        else window._mjValidated.add(p.name);
+        renderMercatoJudgeScreen();
+      };
+      cont.appendChild(tag);
+    });
+  }
+  // Compteur
+  if(!window._mjExtra) window._mjExtra=0;
+  document.getElementById('mj-extra-cnt').textContent=window._mjExtra;
+  const total=(window._mjValidated?.size||0)+window._mjExtra;
+  document.getElementById('mj-score').innerHTML=`
+    <div style="text-align:center;font-family:'Bebas Neue',cursive;font-size:36px;color:var(--gold);">${total}</div>
+    <div style="text-align:center;font-size:10px;color:var(--muted);">joueurs validés</div>`;
 }
 
 function renderMercatoSpectator(){
@@ -2869,15 +3035,87 @@ function openMercVarSpectator(){
 
 function closeMercVar(){show('spectator');}
 
+let _mjValidated = new Set();
+let _mjExtra = 0;
+
+function mjExtra(d){
+  _mjExtra = Math.max(0, _mjExtra+d);
+  const el = document.getElementById('mj-extra-cnt');
+  if(el) el.textContent = _mjExtra;
+  mjUpdateScore();
+}
+
+function mjUpdateScore(){
+  const total = _mjValidated.size + _mjExtra;
+  const el = document.getElementById('mj-score');
+  if(el) el.innerHTML = `<div style="font-family:'Bebas Neue',cursive;font-size:40px;color:var(--gold);">${total}</div><div style="font-size:10px;color:var(--muted);">joueurs validés</div>`;
+}
+
+function renderMercatoJudgeScreen(){
+  const m = GS.mercato;
+  if(!m) return;
+  const clubsEl = document.getElementById('mj-clubs');
+  if(clubsEl) clubsEl.textContent = m.club1.name + ' × ' + m.club2.name;
+  const playerEl = document.getElementById('mj-player');
+  if(playerEl) playerEl.textContent = 'Annonces de ' + (GS.players[GS.cur]?.name||'');
+  document.getElementById('mj-extra-cnt').textContent = _mjExtra;
+
+  const cont = document.getElementById('mj-common-list');
+  if(!cont) return;
+  cont.innerHTML = '';
+  const common = m.common||[];
+  if(!common.length){
+    cont.innerHTML = '<span class="var-none">Aucun joueur commun dans la base</span>';
+  } else {
+    common.forEach(p=>{
+      const tag = document.createElement('span');
+      const ok = _mjValidated.has(p.name);
+      tag.className = 'var-tag clickable' + (ok?' validated':'');
+      if(p.photo) tag.innerHTML = `<img src="${p.photo}" onerror="this.style.display='none'">`;
+      tag.innerHTML += p.name;
+      tag.onclick = ()=>{
+        if(_mjValidated.has(p.name)) _mjValidated.delete(p.name);
+        else _mjValidated.add(p.name);
+        renderMercatoJudgeScreen();
+      };
+      cont.appendChild(tag);
+    });
+  }
+  mjUpdateScore();
+}
+
+async function mjValidate(){
+  const total = _mjValidated.size + _mjExtra;
+  GS.mercato.judgeVerdict = 'done';
+  GS.mercato.judgeScore = total;
+  _mjValidated = new Set();
+  _mjExtra = 0;
+  await saveGS(GS);
+  toast(`✓ Score soumis : ${total} joueur${total>1?'s':''}`);
+}
+
+async function mjValidate(){
+  const total=(window._mjValidated?.size||0)+(window._mjExtra||0);
+  GS.mercato.judgeVerdict='done';
+  GS.mercato.judgeScore=total;
+  window._mjValidated=new Set();
+  window._mjExtra=0;
+  await saveGS(GS);
+  toast(`✓ Score soumis : ${total} joueur${total>1?'s':''}`);
+}
+
 async function confirmMercato(){
   const me=GS.players[myIdx()];
-  const won=mercVoteVal==='yes';
-  if(won){
-    me.tokens=Math.max(0,me.tokens-mercCount);
+  const score=GS.mercato?.judgeScore||mercCount;
+  if(score>0){
+    me.tokens=Math.max(0,me.tokens-score);
+    animateTokens(score,'remove',me.name);
     if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.mercato=null;await saveGS(GS);return;}
   }
   GS.mercato=null;
   mercCount=0;mercVoteVal=null;
+  window._mjValidated=new Set();
+  window._mjExtra=0;
   await nextTurn();
 }
 </script>
