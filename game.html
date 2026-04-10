@@ -364,7 +364,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 <!-- SETTINGS (avant le choix du mode) -->
 <div id="screen-settings" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px 20px;gap:20px;">
-    <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;color:var(--white);">⚙️ Réglages</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;color:var(--white);">⚙️ Paramètres de la partie</div>
     <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px;">
 
       <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:20px;">
@@ -383,7 +383,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
       </div>
 
     </div>
-    <button class="cta" style="max-width:400px;" onclick="validateSettings()">Choisir le mode ▶</button>
+    <button class="cta" style="max-width:400px;" onclick="validateSettings()">Confirmer ▶</button>
   </div>
 </div>
 
@@ -1193,8 +1193,7 @@ async function startGame(){
   });
   GS.phase='playing';
   await saveGS(GS);
-  // Hôte voit les settings
-  show('settings');
+  show('mode');
 }
 
 async function leaveGame(){
@@ -2458,12 +2457,18 @@ function selectTimer(sec){
   });
 }
 
-function validateSettings(){
+async function validateSettings(){
   if(!GS) return;
+  GS=migrateGS(GS);
   if(!GS.settings) GS.settings={};
   GS.settings.timer = _selectedTimer;
-  saveGS(GS);
-  show('mode');
+  const mode = _pendingMode || 'duel';
+  // Stocker le mode en attente — tous les joueurs verront les règles
+  GS.pendingRules=mode;
+  GS.rulesReadyNames=[];
+  await saveGS(GS);
+  // L'hôte voit les règles
+  showRulesForAll(mode);
 }
 
 // ═══════════════════════════════════════════
@@ -2586,41 +2591,42 @@ const MODE_RULES = {
   duel: {
     icon: '🛡️',
     title: 'DUEL VAR',
-    body: `<b>Objectif :</b> Défausser tous tes jetons avant les autres.<br><br>
-<b>Comment jouer :</b><br>
-1️⃣ Retourne une carte <b>Question</b> (gauche)<br>
-2️⃣ Retourne une carte <b>Club</b> (droite)<br>
-3️⃣ Confirme la combinaison<br>
-4️⃣ Annonce à voix haute tous les joueurs que tu connais<br>
-5️⃣ L'arbitre VAR valide via la liste de référence<br><br>
-<b>Score :</b> Tu défausses 1 jeton par joueur valide annoncé.<br>
-<b>Gagne :</b> Le premier à 0 jeton remporte la partie !`
+    body: `<div style="text-align:center;margin-bottom:14px;font-size:15px;font-weight:600;color:var(--gold);letter-spacing:1px;">Le terrain est à toi. Prouve que tu le mérites.</div>
+Tu as <b>15 jetons</b>. Chaque joueur que tu annonces et que la VAR valide t'en fait défausser un. Le premier à zéro <b>remporte la partie</b> — comme soulever le trophée sous les ovations.<br><br>
+<div style="border-left:3px solid var(--gold);padding-left:10px;margin:10px 0;">
+⚡ <b>Retourne une Question</b> — quelle sera ta thématique ?<br>
+⚽ <b>Retourne un Club</b> — sur quel terrain vas-tu jouer ?<br>
+🎤 <b>Annonce tes joueurs</b> à voix haute, sans hésiter<br>
+🏁 <b>L'arbitre VAR</b> consulte la liste et valide chaque nom
+</div>
+<div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.5);">💡 Conseil : les grands connaisseurs citent les légendes oubliées. Chaque nom compte.</div>`
   },
   mercato: {
     icon: '🔥',
     title: 'PRO MERCATO',
-    body: `<b>Objectif :</b> Trouver les joueurs qui ont porté les deux maillots.<br><br>
-<b>Comment jouer :</b><br>
-1️⃣ Deux clubs sont tirés au hasard<br>
-2️⃣ À ton tour, annonce un joueur ayant joué dans les deux clubs<br>
-3️⃣ Les autres joueurs valident ou refusent<br><br>
-<b>Score :</b> 1 jeton défaussé par joueur valide trouvé.<br>
-<b>Gagne :</b> Le premier à 0 jeton remporte la partie !`
+    body: `<div style="text-align:center;margin-bottom:14px;font-size:15px;font-weight:600;color:var(--coral);letter-spacing:1px;">Le marché des transferts n'a aucun secret pour toi ?</div>
+Deux clubs sont tirés au sort. Ton défi : retrouver les joueurs qui ont <b>porté les deux maillots</b>. Des Galactiques aux mercenaires, des prêts aux transferts records — tu dois tout savoir.<br><br>
+<div style="border-left:3px solid var(--coral);padding-left:10px;margin:10px 0;">
+🎲 <b>Deux clubs tirés</b> — le destin choisit pour toi<br>
+🧠 <b>Annonce un joueur</b> commun aux deux clubs<br>
+⚖️ <b>Les autres valident</b> ou contestent ta réponse<br>
+🏆 <b>1 jeton défaussé</b> par joueur correct trouvé
+</div>
+<div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.5);">💡 Conseil : pense aux prêts, aux fins de carrière, aux transferts surprises. Les grands scouts pensent à tout.</div>`
   },
   family: {
     icon: '🏠',
-    title: 'FAMILY',
-    body: `<b>Pour toute la famille !</b><br><br>
-Un club est tiré au hasard. Le joueur actif doit répondre aux questions :<br><br>
-🏙️ Ville du club<br>
-🌍 Pays<br>
-🗺️ Continent<br>
-🏟️ Nom du stade<br>
-⭐ Surnom du club<br>
-🎨 Couleurs<br>
-👑 Joueurs / Légendes du club<br><br>
-<b>Score :</b> 1 point par bonne réponse. Plus de jetons !<br>
-<b>Gagne :</b> Le joueur avec le plus de points à la fin !`
+    title: 'MODE FAMILY',
+    body: `<div style="text-align:center;margin-bottom:14px;font-size:15px;font-weight:600;color:#4ADE80;letter-spacing:1px;">Le football, ça se vit en famille 🌟</div>
+Un grand club est tiré au sort. À toi de montrer que tu le connais par cœur — même les petits peuvent surprendre les grands !<br><br>
+<div style="border-left:3px solid #4ADE80;padding-left:10px;margin:10px 0;">
+🏙️ Sa <b>ville</b>, son <b>pays</b>, son <b>continent</b><br>
+🏟️ Le nom de son <b>stade</b><br>
+⭐ Son <b>surnom</b> et ses <b>couleurs</b><br>
+👑 Les <b>légendes et joueurs</b> que tu connais
+</div>
+1 point par bonne réponse. Pas de pression, juste du plaisir !<br><br>
+<div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.5);">💡 Conseil : même les plus jeunes ont leur chance — qui connaît Maradona et Zidane ?</div>`
   }
 };
 
@@ -2633,13 +2639,22 @@ function showRules(mode, onClose){
   document.getElementById('rules-body').innerHTML = rule.body;
   const timerEl = document.getElementById('rules-timer-info');
   if(timerEl){
-    const t = GS?.timerSec || 0;
+    const t = GS?.settings?.timer || _selectedTimer || 0;
     timerEl.textContent = t > 0 ? `⏱ Timer : ${t} secondes par tour` : '';
   }
   overlay.style.display = 'flex';
-  // Bouton fermer
-  const btn = overlay.querySelector('.rules-close-btn');
-  if(btn) btn.onclick = () => { overlay.style.display = 'none'; onClose(); };
+
+  // Créer UN SEUL bouton fermer (supprimer l'ancien s'il existe)
+  const existingBtn = overlay.querySelector('.rules-close-btn');
+  if(existingBtn) existingBtn.remove();
+
+  const innerDiv = overlay.querySelector('div');
+  const btn = document.createElement('button');
+  btn.className = 'rules-close-btn cta';
+  btn.style.cssText = 'margin-top:20px;width:100%;max-width:320px;';
+  btn.textContent = "C'est parti ! ▶";
+  btn.onclick = () => { overlay.style.display = 'none'; onClose(); };
+  innerDiv.appendChild(btn);
 }
 
 async function selectMode(mode){
