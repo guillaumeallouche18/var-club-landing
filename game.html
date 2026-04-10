@@ -2034,7 +2034,7 @@ async function handleAction(card,idx){
         cb:async()=>{removeCard(cardIdx);if(!GS.players[myIdx()].clubHand)GS.players[myIdx()].clubHand=[];GS.players[myIdx()].clubHand.push(drawn[i]);await nextTurn();}
       }))});
   } else if(card.actionId==='hors_jeu'){
-    showModal({icon:'🚩',title:'Hors-Jeu',desc:'Cette carte annule la prochaine action adverse qui vous cible. Elle reste dans votre main jusqu'à utilisation. Voulez-vous la garder en réserve ou la défausser maintenant ?',
+    showModal({icon:'🚩',title:'Hors-Jeu',desc:"Cette carte annule la prochaine action adverse qui vous cible. Elle reste dans votre main jusqu'à utilisation. Voulez-vous la garder en réserve ou la défausser maintenant ?",
       list:[
         {name:'🛡️ Garder en réserve', info:'', cb:async()=>{
           // Marquer comme "tenue en réserve" — pas retirée de la main
