@@ -551,9 +551,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
     <div class="box" style="margin-bottom:10px;">
       <div class="box-label">Joueur valide non listé</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-        <button class="cnt-btn" onclick="if(!window._mjExtra)window._mjExtra=0;window._mjExtra=Math.max(0,window._mjExtra-1);renderMercatoJudgeScreen();">−</button>
+        <button class="cnt-btn" onclick="if(!_mjExtra)_mjExtra=0;_mjExtra=Math.max(0,_mjExtra-1);renderMercatoJudgeScreen();">−</button>
         <div class="cnt-val" id="mj-extra-cnt" style="font-size:24px;">0</div>
-        <button class="cnt-btn" onclick="if(!window._mjExtra)window._mjExtra=0;window._mjExtra++;renderMercatoJudgeScreen();">+</button>
+        <button class="cnt-btn" onclick="if(!_mjExtra)_mjExtra=0;_mjExtra++;renderMercatoJudgeScreen();">+</button>
       </div>
     </div>
     <div id="mj-score"></div>
@@ -2132,18 +2132,24 @@ function renderFamilyActiveScreen(){
   // Verdict si l'arbitre a validé
   if(GS.family.judgeVerdict){
     const score = GS.family.judgeScore||0;
+    const me = GS.players[myIdx()];
+    const newTokens = Math.max(0,(me?.tokens||0) - score);
     document.getElementById('family-score-wrap').innerHTML=`
       <div class="verdict win">
         <div class="verdict-title">ARBITRE A VALIDÉ ✓</div>
-        <div class="verdict-sub">${score} point${score>1?'s':''} ce tour</div>
+        <div class="verdict-sub">−${score} jeton${score>1?'s':''} · Tu passes à ${newTokens} 🪙</div>
       </div>`;
     document.getElementById('family-confirm-btn').disabled=false;
     document.getElementById('family-confirm-btn').textContent='✓ Confirmer et continuer';
   } else {
+    const me = GS.players[myIdx()];
     document.getElementById('family-score-wrap').innerHTML=`
-      <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;">
-        <div style="font-size:11px;color:var(--muted);">En attente de l'arbitre…</div>
-        <div style="font-size:9px;color:var(--muted);margin-top:4px;">${GS.family.judge} valide tes réponses</div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Tes jetons</span>
+          <span style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);">${me?.tokens||0}</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;">⏳ ${GS.family.judge} valide tes réponses…</div>
       </div>`;
     document.getElementById('family-confirm-btn').disabled=true;
     document.getElementById('family-confirm-btn').textContent='✓ Valider le score';
@@ -2214,12 +2220,21 @@ function updateFjScore(){
   const qScore = Object.keys(GS.family?.answers||{}).length;
   const legScore = _fjValidated.size + _fjExtraCnt;
   const total = qScore + legScore;
+  const player = GS.players[GS.cur];
+  const currentTokens = player?.tokens||0;
+  const newTokens = Math.max(0, currentTokens - total);
   const el = document.getElementById('fj-score');
   if(el) el.innerHTML=`
-    <div style="background:var(--card2);border:1px solid var(--gold);border-radius:var(--r);padding:14px;text-align:center;">
-      <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Score</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:40px;color:var(--gold);">${total}</div>
-      <div style="font-size:10px;color:var(--muted);">${qScore} questions + ${legScore} joueurs</div>
+    <div style="background:var(--card2);border:1px solid var(--gold);border-radius:var(--r);padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Bonnes réponses</span>
+        <span style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--gold);">${total}</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);text-align:center;margin-bottom:4px;">${qScore} question${qScore>1?'s':''} + ${legScore} joueur${legScore>1?'s':''}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--border);">
+        <span style="font-size:10px;color:var(--muted);">${player?.name||''} : ${currentTokens} → ${newTokens} 🪙</span>
+        <span style="font-size:10px;color:var(--gold);">−${total}</span>
+      </div>
     </div>`;
 }
 
@@ -2238,10 +2253,19 @@ async function fjValidate(){
 async function confirmFamily(){
   const total = GS.family?.judgeScore||0;
   const me = GS.players[myIdx()];
-  if(!GS.familyScores) GS.familyScores = {};
-  GS.familyScores[me.name] = (GS.familyScores[me.name]||0) + total;
-  toast(`+${total} point${total>1?'s':''} !`);
-  animateTokens(total, 'add', me.name);
+  // Même logique que les autres modes : défausser les jetons
+  if(total > 0){
+    me.tokens = Math.max(0, me.tokens - total);
+    GS.lastAnim = {count:total, type:'remove', player:ME.name, ts:Date.now()};
+    animateTokens(total, 'remove', me.name);
+    if(me.tokens <= 0){
+      GS.phase='win';
+      GS.winner=ME.name;
+      GS.family=null;
+      await saveGS(GS);
+      return;
+    }
+  }
   GS.family = null;
   await nextTurn();
 }
@@ -2477,7 +2501,8 @@ function showModal({icon,title,desc,list,confirm,onConfirm}){
     html+=`</div><button class="modal-cancel" onclick="closeAllModals()">Annuler</button>`;
     window._mcbs=list.map(x=>x.cb);
   } else {
-    html+=`<button class="modal-ok" onclick="closeAllModals();(${onConfirm.toString()})()">${confirm||'OK'}</button>`;
+    window._modalOkCb = onConfirm;
+    html+=`<button class="modal-ok" onclick="closeAllModals();if(window._modalOkCb)window._modalOkCb();">${confirm||'OK'}</button>`;
   }
   html+=`</div>`;
   bg.innerHTML=html;
@@ -2958,25 +2983,25 @@ function renderMercatoJudgeScreen(){
   if(!common.length){
     cont.innerHTML='<span class="var-none">Aucun joueur en commun dans la base</span>';
   } else {
-    if(!window._mjValidated) window._mjValidated=new Set();
+    
     common.forEach(p=>{
       const tag=document.createElement('span');
-      const ok=window._mjValidated.has(p.name);
+      const ok=_mjValidated.has(p.name);
       tag.className='var-tag clickable'+(ok?' validated':'');
       if(p.photo) tag.innerHTML=`<img src="${p.photo}" onerror="this.style.display='none'">`;
       tag.innerHTML+=p.name;
       tag.onclick=()=>{
-        if(window._mjValidated.has(p.name)) window._mjValidated.delete(p.name);
-        else window._mjValidated.add(p.name);
+        if(_mjValidated.has(p.name)) _mjValidated.delete(p.name);
+        else _mjValidated.add(p.name);
         renderMercatoJudgeScreen();
       };
       cont.appendChild(tag);
     });
   }
   // Compteur
-  if(!window._mjExtra) window._mjExtra=0;
-  document.getElementById('mj-extra-cnt').textContent=window._mjExtra;
-  const total=(window._mjValidated?.size||0)+window._mjExtra;
+  if(!_mjExtra) _mjExtra=0;
+  document.getElementById('mj-extra-cnt').textContent=_mjExtra;
+  const total=(_mjValidated?.size||0)+_mjExtra;
   document.getElementById('mj-score').innerHTML=`
     <div style="text-align:center;font-family:'Bebas Neue',cursive;font-size:36px;color:var(--gold);">${total}</div>
     <div style="text-align:center;font-size:10px;color:var(--muted);">joueurs validés</div>`;
@@ -3043,9 +3068,22 @@ function mjExtra(d){
 }
 
 function mjUpdateScore(){
-  const total = _mjValidated.size + _mjExtra;
+  const total = (_mjValidated?.size||0) + (_mjExtra||0);
+  const player = GS.players[GS.cur];
+  const currentTokens = player?.tokens||0;
+  const newTokens = Math.max(0, currentTokens - total);
   const el = document.getElementById('mj-score');
-  if(el) el.innerHTML = `<div style="font-family:'Bebas Neue',cursive;font-size:40px;color:var(--gold);">${total}</div><div style="font-size:10px;color:var(--muted);">joueurs validés</div>`;
+  if(el) el.innerHTML = `
+    <div style="background:var(--card2);border:1px solid var(--gold);border-radius:var(--r);padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Joueurs valides</span>
+        <span style="font-family:'Bebas Neue',cursive;font-size:32px;color:var(--gold);">${total}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--border);">
+        <span style="font-size:10px;color:var(--muted);">${player?.name||''} : ${currentTokens} → ${newTokens} 🪙</span>
+        <span style="font-size:10px;color:var(--gold);">−${total}</span>
+      </div>
+    </div>`;
 }
 
 function renderMercatoJudgeScreen(){
@@ -3091,15 +3129,6 @@ async function mjValidate(){
   toast(`✓ Score soumis : ${total} joueur${total>1?'s':''}`);
 }
 
-async function mjValidate(){
-  const total=(window._mjValidated?.size||0)+(window._mjExtra||0);
-  GS.mercato.judgeVerdict='done';
-  GS.mercato.judgeScore=total;
-  window._mjValidated=new Set();
-  window._mjExtra=0;
-  await saveGS(GS);
-  toast(`✓ Score soumis : ${total} joueur${total>1?'s':''}`);
-}
 
 async function confirmMercato(){
   const me=GS.players[myIdx()];
@@ -3111,8 +3140,8 @@ async function confirmMercato(){
   }
   GS.mercato=null;
   mercCount=0;mercVoteVal=null;
-  window._mjValidated=new Set();
-  window._mjExtra=0;
+  _mjValidated=new Set();
+  _mjExtra=0;
   await nextTurn();
 }
 </script>
