@@ -395,13 +395,13 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 
       <button id="mode-family-btn" onclick="selectMode('family')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
         <div style="display:flex;align-items:center;gap:14px;">
-          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
+          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--white);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
           <div>
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--gold);">FAMILY</div>
+            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--white);">FAMILY</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5;">Un club est tiré. Réponds aux questions sur la ville, le stade, les légendes…</div>
           </div>
         </div>
-        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(240,180,41,.2);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
+        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--white);border:1px solid rgba(255,255,255,.35);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
       </button>
 
       <button id="mode-duel-btn" onclick="selectMode('duel')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
@@ -917,6 +917,7 @@ const ACTIONS=[
   {id:'plus5',name:'+5 Jetons',icon:'💰',desc:'Donnez 5 jetons à un adversaire',clr:'orange',n:2},
   {id:'plus3',name:'+3 Jetons',icon:'💵',desc:'Donnez 3 jetons à un adversaire',clr:'orange',n:2},
   {id:'mercato',name:'Mercato',icon:'📋',desc:'Piochez 3 cartes, gardez-en une',clr:'orange',n:2},
+  {id:'hors_jeu',name:'Hors-Jeu',icon:'🚩',desc:'Annule une action adverse',clr:'orange',n:2},
 ];
 
 // ═══════════════════════════════════════════
@@ -1046,7 +1047,7 @@ async function joinGame(){
     if(!GS.clubDeck) GS.clubDeck = (GS.deck||[]).filter(c=>c.type!=='question');
     if(!GS.qDeck) GS.qDeck = (GS.deck||[]).filter(c=>c.type==='question');
     const clubHand=[], qHand=[];
-    {const tC=[];let aC=0;while(clubHand.length<4&&GS.clubDeck.length>0&&aC<GS.clubDeck.length+8){aC++;const c=GS.clubDeck.pop();const cid=c.type==='double'?c.clubs.join('+'):c.clubId;if(!clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid))clubHand.push(c);else tC.push(c);}GS.clubDeck.unshift(...tC);}
+    for(let i=0;i<4&&GS.clubDeck.length>0;i++) clubHand.push(GS.clubDeck.pop());
     for(let i=0;i<2&&GS.qDeck.length>0;i++) qHand.push(GS.qDeck.pop());
     GS.players.push({name,tokens:15,clubHand,qHand,blocked:false});
     await saveGS(GS);
@@ -1296,13 +1297,11 @@ function initGameState(playerNames){
 
 function buildDeck(){
   const d=[];
-  // Club cards — 2 copies de chaque pour avoir assez de cartes sans doublon par main
+  // Club cards (no question attached)
   CLUBS.forEach(c=>{
-    d.push({type:'club',clubId:c.id,clubName:c.name,league:c.league});
     d.push({type:'club',clubId:c.id,clubName:c.name,league:c.league});
   });
   DOUBLE_CLUBS.forEach(dc=>{
-    d.push({type:'double',clubs:dc.clubs,label:dc.label});
     d.push({type:'double',clubs:dc.clubs,label:dc.label});
   });
   // Question cards — 3 copies pour avoir assez de cartes
@@ -1433,20 +1432,9 @@ function renderHandScreen(){
   const totallyEmpty = me.clubHand.length===0 && me.qHand.length===0;
   if(me.needsDraw || totallyEmpty){
     me.needsDraw=false;
-    // Piocher jusqu'à 4 clubs sans doublon de clubId
-    {
-      const tmpC=[];
-      let attC=0;
-      while(me.clubHand.length<4 && GS.clubDeck && GS.clubDeck.length>0 && attC<GS.clubDeck.length+8){
-        attC++;
-        const c=GS.clubDeck.pop();
-        const cid=c.type==='double'?c.clubs.join('+'):c.clubId;
-        const has=me.clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid);
-        if(!has) me.clubHand.push(c);
-        else tmpC.push(c);
-      }
-      GS.clubDeck.unshift(...tmpC);
-    }
+    // Piocher jusqu'à 4 clubs
+    while(me.clubHand.length<4 && GS.clubDeck && GS.clubDeck.length>0)
+      me.clubHand.push(GS.clubDeck.pop());
     // Piocher jusqu'à 2 questions sans doublon
     let attempts=0;
     const tmpDiscard=[];
@@ -1765,19 +1753,9 @@ function enforceHandSize(me){
   if(!GS.qDeck) GS.qDeck=[];
   let changed=false;
 
-  // Clubs — sans doublon de clubId dans la même main
-  {
-    const tmpC=[];
-    let attC=0;
-    while(me.clubHand.length<4 && GS.clubDeck.length>0 && attC<GS.clubDeck.length+8){
-      attC++;
-      const c=GS.clubDeck.pop();
-      const cid=c.type==='double'?c.clubs.join('+'):c.clubId;
-      const alreadyHas=me.clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid);
-      if(!alreadyHas){ me.clubHand.push(c); changed=true; }
-      else tmpC.push(c);
-    }
-    GS.clubDeck.unshift(...tmpC);
+  // Clubs
+  while(me.clubHand.length<4 && GS.clubDeck.length>0){
+    me.clubHand.push(GS.clubDeck.pop()); changed=true;
   }
 
   // Questions — sans doublon de qId
@@ -2056,7 +2034,10 @@ async function handleAction(card,idx){
         info:c.type,
         cb:async()=>{removeCard(cardIdx);if(!GS.players[myIdx()].clubHand)GS.players[myIdx()].clubHand=[];GS.players[myIdx()].clubHand.push(drawn[i]);await nextTurn();}
       }))});
-   }
+  } else if(card.actionId==='hors_jeu'){
+    showModal({icon:'🚩',title:'Hors-Jeu',desc:'Carte conservée — annule une action adverse.',
+      confirm:'OK',onConfirm:async()=>{removeCard(cardIdx);await nextTurn();}});
+  }
 }
 
 function removeCard(cardIdx){
@@ -2796,7 +2777,7 @@ async function checkAllRulesRead(){
     GS.players.forEach(p=>{
       if(!p.clubHand) p.clubHand=[];
       if(!p.qHand) p.qHand=[];
-      {const tC=[];let aC=0;while(p.clubHand.length<4&&GS.clubDeck?.length>0&&aC<(GS.clubDeck.length+8)){aC++;const c=GS.clubDeck.pop();const cid=c.type==='double'?c.clubs.join('+'):c.clubId;if(!p.clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid))p.clubHand.push(c);else tC.push(c);}GS.clubDeck.unshift(...tC);}
+      while(p.clubHand.length<4 && GS.clubDeck?.length>0) p.clubHand.push(GS.clubDeck.pop());
       while(p.qHand.length<2 && GS.qDeck?.length>0) p.qHand.push(GS.qDeck.pop());
     });
   }
@@ -2816,7 +2797,7 @@ async function selectMode(mode){
   GS.players.forEach(p=>{
     if(!p.clubHand) p.clubHand=[];
     if(!p.qHand) p.qHand=[];
-    {const tC=[];let aC=0;while(p.clubHand.length<4&&GS.clubDeck&&GS.clubDeck.length>0&&aC<(GS.clubDeck.length+8)){aC++;const c=GS.clubDeck.pop();const cid=c.type==='double'?c.clubs.join('+'):c.clubId;if(!p.clubHand.some(x=>(x.type==='double'?x.clubs.join('+'):x.clubId)===cid))p.clubHand.push(c);else tC.push(c);}GS.clubDeck.unshift(...tC);}
+    while(p.clubHand.length<4&&GS.clubDeck&&GS.clubDeck.length>0) p.clubHand.push(GS.clubDeck.pop());
     // Distribuer 2 questions sans doublon
     let attempts=0; const tmp=[];
     while(p.qHand.length<2&&GS.qDeck&&GS.qDeck.length>0&&attempts<30){
