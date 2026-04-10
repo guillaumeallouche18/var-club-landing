@@ -114,19 +114,19 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 
 /* ══ HAND SCREEN (joueur actif) ══ */
 #screen-hand{padding:0;}
-.hand-hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.hand-hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .hand-hdr-left .name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;}
 .hand-hdr-left .sub{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:1px;}
-.hand-hdr-right .num{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);line-height:1;text-align:right;}
+.hand-hdr-right .num{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold);line-height:1;text-align:right;}
 .hand-hdr-right .lbl{font-size:8px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;text-align:right;}
 
-.sboard{margin:6px 10px 0;background:var(--card2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
-.sboard-row{display:flex;align-items:center;padding:6px 10px;border-bottom:.5px solid var(--border);}
+.sboard{margin:4px 8px 0;background:var(--card2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.sboard-row{display:flex;align-items:center;padding:5px 10px;border-bottom:.5px solid var(--border);}
 .sboard-row:last-child{border-bottom:none;}
 .sboard-row.me{background:rgba(240,180,41,.05);}
 .sb-av{width:24px;height:24px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:10px;color:var(--gold);flex-shrink:0;margin-right:10px;}
 .sb-name{flex:1;font-size:13px;font-weight:500;}
-.sb-tokens{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--gold);position:relative;}
+.sb-tokens{font-family:'Bebas Neue',cursive;font-size:17px;color:var(--gold);position:relative;}
 .token-particle{
   position:fixed;font-size:18px;pointer-events:none;z-index:999;
   animation:tokenFly .7s ease forwards;
@@ -136,7 +136,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .cards-grid{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 
 /* ── CARD FLIP ── */
-.card-wrap{width:100%;height:0;padding-bottom:min(115%, 36vw);position:relative;cursor:pointer;}
+.card-wrap{width:100%;height:0;padding-bottom:min(110%, 34vw);position:relative;cursor:pointer;}
 .card-wrap.flipped{cursor:default;}
 .card-inner{position:absolute;top:0;left:0;right:0;bottom:0;transform-style:preserve-3d;transition:transform .5s ease;border-radius:var(--r);}
 .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
@@ -356,6 +356,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
     <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;text-align:center;color:var(--gold);margin-bottom:16px;" id="rules-title">DUEL VAR</div>
     <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;overflow-y:auto;max-height:60vh;" id="rules-body"></div>
     <div style="margin-top:8px;font-size:10px;color:var(--muted);text-align:center;" id="rules-timer-info"></div>
+    <button class="rules-close-btn cta" style="margin-top:20px;width:100%;max-width:320px;">C'est parti ! ▶</button>
     <button class="cta" style="margin-top:20px;" onclick="closeRules()">C'est parti ! ▶</button>
   </div>
 </div>
@@ -394,13 +395,13 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 
       <button id="mode-family-btn" onclick="selectMode('family')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
         <div style="display:flex;align-items:center;gap:14px;">
-          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
+          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--white);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
           <div>
             <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--white);">FAMILY</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5;">Un club est tiré. Réponds aux questions sur la ville, le stade, les légendes…</div>
           </div>
         </div>
-        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(240,180,41,.2);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
+        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--white);border:1px solid rgba(255,255,255,.3);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
       </button>
 
       <button id="mode-duel-btn" onclick="selectMode('duel')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
@@ -411,7 +412,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
             <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5;">Tire une carte club + une question. Annonce tes joueurs. La VAR valide.</div>
           </div>
         </div>
-        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);display:inline-block;padding:3px 10px;border-radius:20px;">INTERMÉDIAIRE</div>
+        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(240,180,41,.35);display:inline-block;padding:3px 10px;border-radius:20px;">INTERMÉDIAIRE</div>
       </button>
 
       <button id="mode-mercato-btn" onclick="selectMode('mercato')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
@@ -613,17 +614,17 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
     </div>
   </div>
   <div class="sboard" id="hand-sboard"></div>
-  <div style="padding:6px 10px 4px;display:flex;align-items:center;justify-content:space-between;">
+  <div style="padding:4px 10px 2px;display:flex;align-items:center;justify-content:space-between;">
     <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">1. Questions</div>
     <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);" id="step2-label">2. Clubs</div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;padding:0 4px 4px;flex:1;min-height:0;">
     <!-- Question cards — left -->
-    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-right:6px;align-content:start;"></div>
+    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:3px;padding-right:4px;align-content:start;"></div>
     <!-- Divider -->
     <div style="background:var(--border);margin:0 4px;"></div>
     <!-- Club cards — right -->
-    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-left:6px;align-content:start;"></div>
+    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:3px;padding-left:4px;align-content:start;"></div>
   </div>
   <div class="hand-footer" style="display:flex;gap:8px;" id="hand-footer">
     <button class="ghost-btn" id="btn-pass-turn" onclick="passTurn()" style="flex:1;display:none;">Passer mon tour</button>
@@ -1255,7 +1256,12 @@ function renderWaiting(){
 async function startGame(){
   if(!ME.isHost)return;
   GS=migrateGS(GS);
-  // Ne pas distribuer ici — checkAllRulesRead s'en charge après lecture des règles
+  GS.players.forEach(p=>{
+    if(!p.clubHand) p.clubHand=[];
+    if(!p.qHand) p.qHand=[];
+    while(p.clubHand.length<4&&GS.clubDeck.length>0) p.clubHand.push(GS.clubDeck.pop());
+    while(p.qHand.length<2&&GS.qDeck.length>0) p.qHand.push(GS.qDeck.pop());
+  });
   GS.phase='playing';
   await saveGS(GS);
   show('mode');
@@ -1432,14 +1438,11 @@ function renderHandScreen(){
     // Piocher jusqu'à 2 questions sans doublon
     let attempts=0;
     const tmpDiscard=[];
-    const allQIds = new Set();
-    GS.players.forEach(p => { if(p.name !== me.name) (p.qHand||[]).forEach(q => allQIds.add(q.qId)); });
     while(me.qHand.length<2 && GS.qDeck && GS.qDeck.length>0 && attempts<30){
       attempts++;
       const candidate=GS.qDeck.pop();
-      if(!me.qHand.some(q=>q.qId===candidate.qId) && !allQIds.has(candidate.qId)){
+      if(!me.qHand.some(q=>q.qId===candidate.qId)){
         me.qHand.push(candidate);
-        allQIds.add(candidate.qId);
       } else {
         tmpDiscard.push(candidate); // remettre à la fin du deck
       }
@@ -1617,7 +1620,7 @@ function renderSplitCards(clubCards, questionCards){
 
   clubCards.forEach((card, cIdx)=>{
     const isBlocked = (card.type==='club' && blockedClubs.includes(card.clubId))
-      || (card.type==='double' && card.clubs && card.clubs.some(id=>blockedClubs.includes(id)));
+      || (card.type==='double' && card.clubs && card.clubs.every(id=>blockedClubs.includes(id)));
     const isDimmed = noQ && card.type!=='action';
 
     const wrap=document.createElement('div');
@@ -1755,17 +1758,15 @@ function enforceHandSize(me){
     me.clubHand.push(GS.clubDeck.pop()); changed=true;
   }
 
-  // Questions — sans doublon de qId (global tous joueurs sauf me)
+  // Questions — sans doublon de qId
   const tmp=[];
   let attempts=0;
-  const globalQIds = new Set();
-  GS.players.forEach(p => { if(p.name !== me.name) (p.qHand||[]).forEach(q => globalQIds.add(q.qId)); });
   while(me.qHand.length<2 && GS.qDeck.length>0 && attempts<GS.qDeck.length+5){
     attempts++;
     const c=GS.qDeck.pop();
-    if(!me.qHand.some(q=>q.qId===c.qId) && !globalQIds.has(c.qId)){
+    // Vérifier que ce qId n'est pas déjà dans qHand (incluant ce qu'on vient d'ajouter)
+    if(!me.qHand.some(q=>q.qId===c.qId)){
       me.qHand.push(c);
-      globalQIds.add(c.qId);
       changed=true;
     } else {
       tmp.push(c); // remettre, on cherche une autre
@@ -2034,20 +2035,8 @@ async function handleAction(card,idx){
         cb:async()=>{removeCard(cardIdx);if(!GS.players[myIdx()].clubHand)GS.players[myIdx()].clubHand=[];GS.players[myIdx()].clubHand.push(drawn[i]);await nextTurn();}
       }))});
   } else if(card.actionId==='hors_jeu'){
-    showModal({icon:'🚩',title:'Hors-Jeu',desc:"Cette carte annule la prochaine action adverse qui vous cible. Elle reste dans votre main jusqu'à utilisation. Voulez-vous la garder en réserve ou la défausser maintenant ?",
-      list:[
-        {name:'🛡️ Garder en réserve', info:'', cb:async()=>{
-          // Marquer comme "tenue en réserve" — pas retirée de la main
-          if(!me.horsJeu) me.horsJeu = true;
-          toast('🚩 Hors-Jeu en réserve — annulera la prochaine action adverse');
-          await saveGS(GS);
-        }},
-        {name:'🗑️ Défausser', info:'', cb:async()=>{
-          removeCard(cardIdx);
-          await nextTurn();
-        }}
-      ]
-    });
+    showModal({icon:'🚩',title:'Hors-Jeu',desc:'Carte conservée — annule une action adverse.',
+      confirm:'OK',onConfirm:async()=>{removeCard(cardIdx);await nextTurn();}});
   }
 }
 
@@ -2621,25 +2610,18 @@ Pour chaque joueur validé, le joueur défausse 1 jeton.<br><br>
   }
 };
 
-let _rulesOnClose = null;
-function showRules(mode, onClose){
+function showRules(mode){
   const r = RULES[mode];
   if(!r) return;
-  _rulesOnClose = onClose || null;
   document.getElementById('rules-icon').textContent = r.icon;
   document.getElementById('rules-title').textContent = r.title;
   document.getElementById('rules-body').innerHTML = r.body;
-  // Update timer info
-  const timerSec = GS?.settings?.timer || 0;
-  const timerEl = document.getElementById('rules-timer-info');
-  if(timerEl) timerEl.textContent = timerSec ? `⏱ ${timerSec}s par tour` : '';
   const el = document.getElementById('rules-overlay');
   el.style.display = 'flex';
 }
 
 function closeRules(){
   document.getElementById('rules-overlay').style.display = 'none';
-  if(_rulesOnClose){ const cb = _rulesOnClose; _rulesOnClose = null; cb(); }
 }
 
 // ═══════════════════════════════════════════
