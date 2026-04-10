@@ -393,6 +393,17 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
     <div style="font-size:10px;letter-spacing:5px;color:var(--muted);text-align:center;text-transform:uppercase;margin-bottom:32px;">Choisissez votre mode</div>
     <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px;">
 
+      <button id="mode-family-btn" onclick="selectMode('family')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid #4ADE80;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
+          <div>
+            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#4ADE80;">FAMILY</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5;">Un club est tiré. Réponds aux questions sur la ville, le stade, les légendes…</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#4ADE80;border:1px solid rgba(74,222,128,.3);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
+      </button>
+
       <button id="mode-duel-btn" onclick="selectMode('duel')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
         <div style="display:flex;align-items:center;gap:14px;">
           <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🛡️</div>
@@ -413,17 +424,6 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
           </div>
         </div>
         <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--coral);border:1px solid rgba(231,76,60,.3);display:inline-block;padding:3px 10px;border-radius:20px;">EXPERT</div>
-      </button>
-
-      <button id="mode-family-btn" onclick="selectMode('family')" type="button" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;color:var(--white);">
-        <div style="display:flex;align-items:center;gap:14px;">
-          <div style="width:48px;height:48px;border-radius:10px;border:1.5px solid #4ADE80;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏠</div>
-          <div>
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#4ADE80;">FAMILY</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5;">Un club est tiré. Réponds aux questions sur la ville, le stade, les légendes…</div>
-          </div>
-        </div>
-        <div style="margin-top:10px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#4ADE80;border:1px solid rgba(74,222,128,.3);display:inline-block;padding:3px 10px;border-radius:20px;">FAMILLE</div>
       </button>
 
     </div>
@@ -457,6 +457,34 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   <div style="position:sticky;bottom:0;left:0;width:100%;box-sizing:border-box;padding:12px 16px;display:flex;gap:8px;background:var(--bg);border-top:1px solid var(--border);z-index:10;">
     <button class="ghost-btn" onclick="passTurn()" style="flex:0 0 auto;padding:14px 16px;">Passer</button>
     <button class="confirm-btn" id="family-confirm-btn" onclick="confirmFamily()" style="flex:1;">✓ Valider le score</button>
+  </div>
+</div>
+
+<!-- FAMILY JUDGE SCREEN -->
+<div id="screen-family-judge" class="screen">
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0;">
+    <div style="font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#4ADE80;margin-bottom:3px;">🏁 TU ES L'ARBITRE — FAMILY</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:clamp(16px,4vw,24px);letter-spacing:3px;" id="fj-club-name">CLUB</div>
+    <div style="font-size:10px;color:var(--muted);" id="fj-player-name"></div>
+  </div>
+  <div style="padding:14px 16px;overflow-y:auto;flex:1;min-height:0;">
+    <!-- Questions avec réponses -->
+    <div id="fj-questions"></div>
+    <!-- Légendes cliquables -->
+    <div class="box" style="margin-top:10px;">
+      <div class="box-label">👑 Légendes — clique pour valider</div>
+      <div id="fj-legendes" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:11px;color:var(--muted);">Joueur valide non listé :</span>
+        <button class="cnt-btn" onclick="fjAddExtra(-1)">−</button>
+        <div class="cnt-val" id="fj-extra-cnt" style="font-size:24px;">0</div>
+        <button class="cnt-btn" onclick="fjAddExtra(1)">+</button>
+      </div>
+    </div>
+    <div id="fj-score" style="margin-top:12px;"></div>
+  </div>
+  <div style="position:sticky;bottom:0;left:0;width:100%;box-sizing:border-box;padding:12px 16px;display:flex;gap:8px;background:var(--bg);border-top:1px solid var(--border);z-index:10;">
+    <button class="confirm-btn" onclick="fjValidate()" style="flex:1;background:#4ADE80;color:#0D1F0D;">✓ Valider le score</button>
   </div>
 </div>
 
@@ -1052,6 +1080,8 @@ function migrateGS(gs){
   if(!gs.flippedQs) gs.flippedQs=[];
   if(!gs.selectedQuestion) gs.selectedQuestion=null;
   if(!gs.familyScores) gs.familyScores={};
+  if(!gs.pendingRules) gs.pendingRules=null;
+  if(!gs.rulesReadyNames) gs.rulesReadyNames=[];
   // Migrer joueurs
   if(gs.players){
     gs.players.forEach(p=>{
@@ -1246,6 +1276,9 @@ function renderCurrentScreen(){
     if(isMyTurn()){
       renderFamilyScreen();
       show('family');
+    } else if(GS.family && GS.family.judge===ME.name && !GS.family.judgeVerdict){
+      renderFamilyJudgeScreen();
+      show('family-judge');
     } else {
       renderSpectatorScreen();
       show('spectator');
@@ -1950,97 +1983,183 @@ function familyAddExtra(d){
 }
 
 function renderFamilyScreen(){
-  // Tirer un club si pas encore fait ce tour
+  // Initialiser le tour si nouveau joueur
   if(!GS.family || GS.family.playerName !== GS.players[GS.cur]?.name){
     const club = FAMILY_DB[Math.floor(Math.random()*FAMILY_DB.length)];
     GS.family = {
       clubId: club.id,
       clubNom: club.nom,
       playerName: GS.players[GS.cur]?.name,
+      judge: null,
       answers: {},
+      judgeVerdict: null,
     };
     _familyValidated = new Set();
     _familyExtraCnt = 0;
   }
 
-  const club = FAMILY_DB.find(c=>c.id===GS.family.clubId)||FAMILY_DB[0];
+  // Choisir l'arbitre VAR si pas encore fait
+  if(!GS.family.judge){
+    const others = GS.players.filter(p=>p.name!==ME.name);
+    if(others.length===0){
+      // Solo — joueur est son propre arbitre
+      GS.family.judge = ME.name;
+      saveGS(GS);
+      renderFamilyActiveScreen();
+    } else if(others.length===1){
+      GS.family.judge = others[0].name;
+      saveGS(GS);
+      renderFamilyActiveScreen();
+    } else {
+      showModal({icon:'🏁',title:'Arbitre VAR Family',desc:'Qui valide les réponses ?',
+        list:others.map(p=>({name:p.name,info:'',cb:async()=>{
+          GS.family.judge=p.name;
+          await saveGS(GS);
+          renderFamilyActiveScreen();
+        }}))
+      });
+    }
+    return;
+  }
+  renderFamilyActiveScreen();
+}
 
+function renderFamilyActiveScreen(){
+  const club = FAMILY_DB.find(c=>c.id===GS.family?.clubId)||FAMILY_DB[0];
   document.getElementById('family-club-name').textContent = club.nom.toUpperCase();
-  document.getElementById('family-player-name').textContent = 'Tour de ' + GS.players[GS.cur]?.name;
+  document.getElementById('family-player-name').textContent =
+    'Tour de ' + (GS.players[GS.cur]?.name||'') + ' · Arbitre: ' + (GS.family.judge||'');
 
-  // Questions non-légendes
+  // Vue joueur actif — voit les questions mais PAS les réponses
   const qList = document.getElementById('family-questions-list');
   qList.innerHTML = '';
+
+  // Afficher les 6 catégories sans les réponses
   FAMILY_QUESTIONS.filter(q=>q.id!=='legendes').forEach(q=>{
-    const answer = q.fn(club);
-    const validated = GS.family.answers[q.id];
     const div = document.createElement('div');
-    div.className = 'box';
-    div.style.marginBottom = '8px';
-    div.style.cursor = 'pointer';
-    div.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <span style="font-size:14px;">${q.icon}</span>
-          <span style="font-size:11px;font-weight:600;letter-spacing:1px;color:${validated?'#4ADE80':'var(--muted)'};margin-left:6px;">${q.label}</span>
-        </div>
-        <div style="font-size:18px;">${validated?'✅':'⬜'}</div>
-      </div>
-      ${validated?`<div style="font-size:11px;color:#4ADE80;margin-top:4px;">✓ ${answer}</div>`:''}
-    `;
-    div.onclick = ()=>{
-      if(GS.family.answers[q.id]){
-        delete GS.family.answers[q.id];
-      } else {
-        GS.family.answers[q.id] = answer;
-      }
-      renderFamilyScreen();
-    };
+    div.style.cssText='background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;';
+    div.innerHTML=`<span style="font-size:18px;">${q.icon}</span><span style="font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);">${q.label}</span>`;
     qList.appendChild(div);
   });
 
-  // Légendes cliquables
-  const legList = document.getElementById('family-legendes-list');
-  legList.innerHTML = '';
+  // Légendes — juste le label visible
+  const legEl = document.getElementById('family-legendes-list');
+  legEl.innerHTML = `<span style="font-size:11px;color:var(--muted);font-style:italic;">Annonce les joueurs que tu connais à voix haute…</span>`;
   document.getElementById('family-extra-cnt').textContent = _familyExtraCnt;
-  club.legendes.forEach(name=>{
-    const tag = document.createElement('span');
-    const ok = _familyValidated.has(name);
-    tag.className = 'var-tag clickable' + (ok?' validated':'');
-    tag.textContent = name;
-    tag.onclick = ()=>{
-      if(_familyValidated.has(name)) _familyValidated.delete(name);
-      else _familyValidated.add(name);
-      renderFamilyScreen();
+
+  // Verdict si l'arbitre a validé
+  if(GS.family.judgeVerdict){
+    const score = GS.family.judgeScore||0;
+    document.getElementById('family-score-wrap').innerHTML=`
+      <div class="verdict win">
+        <div class="verdict-title">ARBITRE A VALIDÉ ✓</div>
+        <div class="verdict-sub">${score} point${score>1?'s':''} ce tour</div>
+      </div>`;
+    document.getElementById('family-confirm-btn').disabled=false;
+    document.getElementById('family-confirm-btn').textContent='✓ Confirmer et continuer';
+  } else {
+    document.getElementById('family-score-wrap').innerHTML=`
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--muted);">En attente de l'arbitre…</div>
+        <div style="font-size:9px;color:var(--muted);margin-top:4px;">${GS.family.judge} valide tes réponses</div>
+      </div>`;
+    document.getElementById('family-confirm-btn').disabled=true;
+    document.getElementById('family-confirm-btn').textContent='✓ Valider le score';
+  }
+}
+
+let _fjValidated = new Set();
+let _fjExtraCnt = 0;
+
+function fjAddExtra(d){
+  _fjExtraCnt = Math.max(0, _fjExtraCnt+d);
+  const el = document.getElementById('fj-extra-cnt');
+  if(el) el.textContent = _fjExtraCnt;
+  updateFjScore();
+}
+
+function renderFamilyJudgeScreen(){
+  const club = FAMILY_DB.find(c=>c.id===GS.family?.clubId)||FAMILY_DB[0];
+  document.getElementById('fj-club-name').textContent = club.nom.toUpperCase();
+  document.getElementById('fj-player-name').textContent =
+    'Annonces de ' + (GS.players[GS.cur]?.name||'');
+
+  // Questions avec réponses visibles et cliquables
+  const qCont = document.getElementById('fj-questions');
+  qCont.innerHTML = '';
+  FAMILY_QUESTIONS.filter(q=>q.id!=='legendes').forEach(q=>{
+    const answer = q.fn(club);
+    const validated = GS.family.answers?.[q.id];
+    const div = document.createElement('div');
+    div.style.cssText='background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;';
+    div.innerHTML=`
+      <div>
+        <span style="font-size:12px;">${q.icon}</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-left:6px;">${q.label}</span>
+        <div style="font-size:12px;color:${validated?'#4ADE80':'rgba(255,255,255,.4)'};margin-top:3px;margin-left:2px;">${answer}</div>
+      </div>
+      <div style="font-size:20px;">${validated?'✅':'⬜'}</div>
+    `;
+    div.onclick=()=>{
+      if(!GS.family.answers) GS.family.answers={};
+      if(GS.family.answers[q.id]) delete GS.family.answers[q.id];
+      else GS.family.answers[q.id]=answer;
+      renderFamilyJudgeScreen();
     };
-    legList.appendChild(tag);
+    qCont.appendChild(div);
   });
 
-  // Score courant
-  const qScore = Object.keys(GS.family.answers).length;
-  const legScore = _familyValidated.size + _familyExtraCnt;
+  // Légendes
+  const legCont = document.getElementById('fj-legendes');
+  legCont.innerHTML='';
+  document.getElementById('fj-extra-cnt').textContent=_fjExtraCnt;
+  club.legendes.forEach(name=>{
+    const tag=document.createElement('span');
+    const ok=_fjValidated.has(name);
+    tag.className='var-tag clickable'+(ok?' validated':'');
+    tag.textContent=name;
+    tag.onclick=()=>{
+      if(_fjValidated.has(name)) _fjValidated.delete(name);
+      else _fjValidated.add(name);
+      renderFamilyJudgeScreen();
+    };
+    legCont.appendChild(tag);
+  });
+  updateFjScore();
+}
+
+function updateFjScore(){
+  const qScore = Object.keys(GS.family?.answers||{}).length;
+  const legScore = _fjValidated.size + _fjExtraCnt;
   const total = qScore + legScore;
-  document.getElementById('family-score-wrap').innerHTML = `
-    <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;">
-      <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Score ce tour</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:36px;color:var(--gold);">${total}</div>
+  const el = document.getElementById('fj-score');
+  if(el) el.innerHTML=`
+    <div style="background:var(--card2);border:1px solid #4ADE80;border-radius:var(--r);padding:14px;text-align:center;">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Score</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:40px;color:#4ADE80;">${total}</div>
       <div style="font-size:10px;color:var(--muted);">${qScore} questions + ${legScore} joueurs</div>
-    </div>
-  `;
+    </div>`;
+}
+
+async function fjValidate(){
+  const qScore = Object.keys(GS.family?.answers||{}).length;
+  const legScore = _fjValidated.size + _fjExtraCnt;
+  const total = qScore + legScore;
+  GS.family.judgeVerdict = 'done';
+  GS.family.judgeScore = total;
+  _fjValidated = new Set();
+  _fjExtraCnt = 0;
+  await saveGS(GS);
+  toast(`✓ Score soumis : ${total} point${total>1?'s':''}`);
 }
 
 async function confirmFamily(){
-  const club = FAMILY_DB.find(c=>c.id===GS.family?.clubId)||FAMILY_DB[0];
-  const qScore = Object.keys(GS.family?.answers||{}).length;
-  const legScore = _familyValidated.size + _familyExtraCnt;
-  const total = qScore + legScore;
+  const total = GS.family?.judgeScore||0;
   const me = GS.players[myIdx()];
   if(!GS.familyScores) GS.familyScores = {};
   GS.familyScores[me.name] = (GS.familyScores[me.name]||0) + total;
-  toast(`+${total} points !`);
+  toast(`+${total} point${total>1?'s':''} !`);
   animateTokens(total, 'add', me.name);
-  _familyValidated = new Set();
-  _familyExtraCnt = 0;
   GS.family = null;
   await nextTurn();
 }
