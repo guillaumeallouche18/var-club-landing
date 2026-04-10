@@ -1438,11 +1438,15 @@ function renderHandScreen(){
     // Piocher jusqu'à 2 questions sans doublon
     let attempts=0;
     const tmpDiscard=[];
+    // Evite doublons globaux — exclut me pour ne pas bloquer sa propre pioche
+    const allQIds = new Set();
+    GS.players.forEach(p => { if(p.name !== me.name) (p.qHand||[]).forEach(q => allQIds.add(q.qId)); });
     while(me.qHand.length<2 && GS.qDeck && GS.qDeck.length>0 && attempts<30){
       attempts++;
       const candidate=GS.qDeck.pop();
-      if(!me.qHand.some(q=>q.qId===candidate.qId)){
+      if(!me.qHand.some(q=>q.qId===candidate.qId) && !allQIds.has(candidate.qId)){
         me.qHand.push(candidate);
+        allQIds.add(candidate.qId);
       } else {
         tmpDiscard.push(candidate); // remettre à la fin du deck
       }
@@ -1620,7 +1624,7 @@ function renderSplitCards(clubCards, questionCards){
 
   clubCards.forEach((card, cIdx)=>{
     const isBlocked = (card.type==='club' && blockedClubs.includes(card.clubId))
-      || (card.type==='double' && card.clubs && card.clubs.every(id=>blockedClubs.includes(id)));
+      || (card.type==='double' && card.clubs && card.clubs.some(id=>blockedClubs.includes(id)));
     const isDimmed = noQ && card.type!=='action';
 
     const wrap=document.createElement('div');
@@ -1758,15 +1762,17 @@ function enforceHandSize(me){
     me.clubHand.push(GS.clubDeck.pop()); changed=true;
   }
 
-  // Questions — sans doublon de qId
+  // Questions — sans doublon de qId (global tous joueurs sauf me)
   const tmp=[];
   let attempts=0;
+  const globalQIds = new Set();
+  GS.players.forEach(p => { if(p.name !== me.name) (p.qHand||[]).forEach(q => globalQIds.add(q.qId)); });
   while(me.qHand.length<2 && GS.qDeck.length>0 && attempts<GS.qDeck.length+5){
     attempts++;
     const c=GS.qDeck.pop();
-    // Vérifier que ce qId n'est pas déjà dans qHand (incluant ce qu'on vient d'ajouter)
-    if(!me.qHand.some(q=>q.qId===c.qId)){
+    if(!me.qHand.some(q=>q.qId===c.qId) && !globalQIds.has(c.qId)){
       me.qHand.push(c);
+      globalQIds.add(c.qId);
       changed=true;
     } else {
       tmp.push(c); // remettre, on cherche une autre
