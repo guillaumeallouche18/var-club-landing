@@ -2630,9 +2630,13 @@ Un grand club est tiré au sort. À toi de montrer que tu le connais par cœur �
   }
 };
 
+// Stocker le callback globalement pour éviter les problèmes de closure
+let _rulesOnClose = null;
+
 function showRules(mode, onClose){
   const rule = MODE_RULES[mode];
-  if(!rule) { onClose(); return; }
+  if(!rule) { if(typeof onClose==='function') onClose(); return; }
+  _rulesOnClose = onClose;
   const overlay = document.getElementById('rules-overlay');
   document.getElementById('rules-icon').textContent = rule.icon;
   document.getElementById('rules-title').textContent = rule.title;
@@ -2644,17 +2648,25 @@ function showRules(mode, onClose){
   }
   overlay.style.display = 'flex';
 
-  // Créer UN SEUL bouton fermer (supprimer l'ancien s'il existe)
+  // Créer UN SEUL bouton fermer
   const existingBtn = overlay.querySelector('.rules-close-btn');
   if(existingBtn) existingBtn.remove();
-
   const innerDiv = overlay.querySelector('div');
   const btn = document.createElement('button');
   btn.className = 'rules-close-btn cta';
   btn.style.cssText = 'margin-top:20px;width:100%;max-width:320px;';
   btn.textContent = "C'est parti ! ▶";
-  btn.onclick = () => { overlay.style.display = 'none'; onClose(); };
+  btn.onclick = closeRules;
   innerDiv.appendChild(btn);
+}
+
+function closeRules(){
+  document.getElementById('rules-overlay').style.display='none';
+  if(typeof _rulesOnClose === 'function'){
+    const cb = _rulesOnClose;
+    _rulesOnClose = null;
+    cb();
+  }
 }
 
 async function selectMode(mode){
