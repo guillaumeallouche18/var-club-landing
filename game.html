@@ -777,7 +777,25 @@ console.log('VAR CLUB game.html v5-1775769181-6db883 — 1775761223 — IDs:', O
 // ═══════════════════════════════════════════
 const SUPA_URL = 'https://ojyobjndnkhyfqpwhemc.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qeW9iam5kbmtoeWZxcHdoZW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTkwOTIsImV4cCI6MjA4OTA3NTA5Mn0.fKk8v2LSI1EHWAR03vfxCRE6U3zD_5HQG91CetlUzfM';
-const supa = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+let supa = null;
+function getSupa(){
+  if(!supa){
+    if(!window.supabase){
+      // Script externe bloqué par le navigateur — afficher message
+      const existing = document.getElementById('supa-error');
+      if(!existing){
+        const div = document.createElement('div');
+        div.id = 'supa-error';
+        div.style.cssText = 'position:fixed;inset:0;background:#0D1F0D;color:#F0B429;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;padding:24px;text-align:center;font-family:sans-serif;';
+        div.innerHTML = '<div style="font-size:28px;margin-bottom:12px;">⚠️</div><div style="font-size:16px;font-weight:700;margin-bottom:8px;">Connexion bloquée</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:20px;">La librairie réseau est bloquée par votre navigateur (Tracking Prevention).<br>Essayez dans Chrome ou désactivez le blocage pour ce site.</div><button onclick="location.reload()" style="background:#F0B429;color:#0D1F0D;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Réessayer</button>';
+        document.body.appendChild(div);
+      }
+      return null;
+    }
+    supa = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+  }
+  return supa;
+}
 
 // ═══════════════════════════════════════════
 // DATA
@@ -1004,7 +1022,7 @@ async function joinGame(){
   console.log('Joining game:', code);
   let data=null,error=null;
   for(let attempt=0;attempt<3;attempt++){
-    const res=await supa.from('game_sessions').select('state').eq('id',code).single();
+    const res=await getSupa().from('game_sessions').select('state').eq('id',code).single();
     data=res.data; error=res.error;
     console.log(`Join attempt ${attempt+1}:`, data, error);
     if(data)break;
@@ -1030,7 +1048,8 @@ async function joinGame(){
 }
 
 async function saveGS(gs){
-  const {error}=await supa.from('game_sessions').upsert({id:ME.gameCode,state:gs,updated_at:new Date().toISOString()});
+  if(!getSupa()) return;
+  const {error}=await getSupa().from('game_sessions').upsert({id:ME.gameCode,state:gs,updated_at:new Date().toISOString()});
   if(error)console.error('saveGS error:', error);
   else console.log('saveGS OK:', ME.gameCode);
   GS=gs;
@@ -1041,7 +1060,7 @@ async function subscribeToGame(code){
   if(channel)clearInterval(channel);
   let lastUpdated = null;
   channel = setInterval(async()=>{
-    const {data,error}=await supa.from('game_sessions').select('state,updated_at').eq('id',code).single();
+    const {data,error}=await getSupa().from('game_sessions').select('state,updated_at').eq('id',code).single();
     if(error||!data)return;
     if(data.updated_at !== lastUpdated){
       lastUpdated = data.updated_at;
