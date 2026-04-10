@@ -1067,6 +1067,46 @@ async function saveGS(gs){
   GS=gs;
 }
 
+// ═══════════════════════════════════════════
+// ANALYTICS
+// ═══════════════════════════════════════════
+let _gameStartTime = null;
+
+function startGameTimer(){
+  _gameStartTime = Date.now();
+}
+
+async function logGame(winner){
+  if(!GS || !ME.isHost) return; // seulement l'hôte logue — évite les doublons
+  try{
+    const duration = _gameStartTime
+      ? Math.round((Date.now() - _gameStartTime) / 1000)
+      : null;
+
+    const playersTokens = GS.players.map(p=>({
+      name: p.name,
+      tokens_remaining: p.tokens
+    }));
+
+    const r = await fetch(SUPA_URL + '/rest/v1/game_analytics', {
+      method: 'POST',
+      headers: {...SUPA_HEADERS, 'Prefer': 'return=minimal'},
+      body: JSON.stringify({
+        game_code: ME.gameCode,
+        mode: GS.mode || 'unknown',
+        player_count: GS.players?.length || 0,
+        winner: winner,
+        duration_seconds: duration,
+        players_tokens: playersTokens
+      })
+    });
+    if(r.ok) console.log('✅ Game logged to analytics');
+    else console.warn('Analytics log failed:', await r.text());
+  }catch(e){
+    console.warn('Analytics log error:', e);
+  }
+}
+
 async function subscribeToGame(code){
   // Polling toutes les 1.5s — plus fiable que Realtime sans config
   if(channel)clearInterval(channel);
@@ -1263,6 +1303,7 @@ async function startGame(){
     while(p.qHand.length<2&&GS.qDeck.length>0) p.qHand.push(GS.qDeck.pop());
   });
   GS.phase='playing';
+  startGameTimer();
   await saveGS(GS);
   show('mode');
 }
@@ -1936,7 +1977,7 @@ async function confirmPlay(){
     myCount=count;
     // Stocker l'animation dans GS pour que tous la voient
     GS.lastAnim={count, type:'remove', player:ME.name, ts:Date.now()};
-    if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.play=null;GS.varOpen=false;GS.varJudge=null;await saveGS(GS);return;}
+    if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.play=null;GS.varOpen=false;GS.varJudge=null;await logGame(ME.name);await saveGS(GS);return;}
   }
   GS.play=null;GS.varOpen=false;GS.varJudge=null;
   await nextTurn();
@@ -2262,6 +2303,7 @@ async function confirmFamily(){
       GS.phase='win';
       GS.winner=ME.name;
       GS.family=null;
+      await logGame(ME.name);
       await saveGS(GS);
       return;
     }
@@ -3136,7 +3178,7 @@ async function confirmMercato(){
   if(score>0){
     me.tokens=Math.max(0,me.tokens-score);
     animateTokens(score,'remove',me.name);
-    if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.mercato=null;await saveGS(GS);return;}
+    if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.mercato=null;await logGame(ME.name);await saveGS(GS);return;}
   }
   GS.mercato=null;
   mercCount=0;mercVoteVal=null;
