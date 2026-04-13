@@ -21,6 +21,93 @@
     },
     "exclusion_rule": "null = combinaison interdite"
   },
+  "clubs": [
+    {
+      "id": "psg",
+      "name": "Paris Saint-Germain",
+      "league": "Ligue 1"
+    },
+    {
+      "id": "marseille",
+      "name": "Olympique de Marseille",
+      "league": "Ligue 1"
+    },
+    {
+      "id": "lyon",
+      "name": "Olympique Lyonnais",
+      "league": "Ligue 1"
+    },
+    {
+      "id": "real",
+      "name": "Real Madrid",
+      "league": "La Liga"
+    },
+    {
+      "id": "barca",
+      "name": "FC Barcelona",
+      "league": "La Liga"
+    },
+    {
+      "id": "atleti",
+      "name": "Atletico de Madrid",
+      "league": "La Liga"
+    },
+    {
+      "id": "liverpool",
+      "name": "Liverpool FC",
+      "league": "Premier League"
+    },
+    {
+      "id": "arsenal",
+      "name": "Arsenal FC",
+      "league": "Premier League"
+    },
+    {
+      "id": "chelsea",
+      "name": "Chelsea FC",
+      "league": "Premier League"
+    },
+    {
+      "id": "manutd",
+      "name": "Manchester United",
+      "league": "Premier League"
+    },
+    {
+      "id": "mancity",
+      "name": "Manchester City",
+      "league": "Premier League"
+    },
+    {
+      "id": "bayern",
+      "name": "Bayern Munich",
+      "league": "Bundesliga"
+    },
+    {
+      "id": "dortmund",
+      "name": "Borussia Dortmund",
+      "league": "Bundesliga"
+    },
+    {
+      "id": "milan",
+      "name": "AC Milan",
+      "league": "Serie A"
+    },
+    {
+      "id": "inter",
+      "name": "Inter Milan",
+      "league": "Serie A"
+    },
+    {
+      "id": "juve",
+      "name": "Juventus FC",
+      "league": "Serie A"
+    },
+    {
+      "id": "napoli",
+      "name": "SSC Napoli",
+      "league": "Serie A"
+    }
+  ],
   "answers": {
     "psg": {
       "1": null,
