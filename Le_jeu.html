@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAR CLUB — Le Jeu</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="description" content="VAR CLUB — La base de données vivante, les 17 clubs, les modes de jeu, la règle d'or. Tout ce qui fait de VAR CLUB le seul jeu qui ne prend jamais sa retraite.">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0d1f0d;--black2:#122012;--black3:#162816;--gold:#f0b429;--gold2:#f5c842;--gold3:#fde68a;--white:#f7fdf4;--white2:#c8dfc8;--slate:#7a9e7a}
+html{scroll-behavior:smooth}
+body{background:#0d1f0d;color:var(--white);font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:8px;height:8px;background:linear-gradient(90deg,#f0b429,#e8a200,#f0b429);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .15s ease;transform:translate(-50%,-50%)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(240,180,41,.4);border-radius:50%;pointer-events:none;z-index:9998;transition:transform .4s ease,width .3s,height .3s,border-color .3s;transform:translate(-50%,-50%)}
+body:hover .cursor-ring.hovering{width:48px;height:48px;border-color:var(--gold)}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:.4}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shimmer{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:rgba(13,31,13,.98);border-bottom:1px solid rgba(34,100,34,.2);animation:fadeIn 1s ease both}
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-link{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--slate);text-decoration:none;transition:color .2s}
+.nav-link:hover{color:var(--white)}
+.nav-link.active{color:var(--gold)}
+.lang-switch{display:flex;align-items:center;gap:6px}
+.lang-btn{background:transparent;border:1px solid rgba(240,180,41,.25);color:var(--slate);padding:3px 10px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:2px;cursor:pointer;border-radius:2px;transition:all .2s}
+.lang-btn.active,.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
+.nav-cta{background:transparent;border:1px solid rgba(240,180,41,.4);color:var(--gold);padding:10px 24px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;cursor:none;transition:all .3s;text-decoration:none}
+.nav-cta:hover{background:var(--gold);color:var(--black)}
+@media(max-width:768px){.nav-links{display:none}}
+
+/* PAGE HERO */
+.page-hero{padding:160px 48px 80px;background:#0d1f0d;position:relative;overflow:hidden}
+.page-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(240,180,41,.1) 0%,transparent 70%);pointer-events:none}
+.page-hero-inner{max-width:1100px;margin:0 auto}
+.page-eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:12px;animation:fadeUp .8s ease .1s both}
+.page-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold)}
+.page-title{font-family:'Bebas Neue',cursive;font-size:clamp(60px,10vw,120px);letter-spacing:6px;line-height:.9;color:var(--white);margin-bottom:32px;animation:fadeUp .8s ease .2s both}
+.page-title span{color:var(--gold)}
+.page-intro{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,26px);font-weight:300;font-style:italic;line-height:1.7;color:var(--white2);max-width:700px;animation:fadeUp .8s ease .3s both}
+
+/* SECTIONS */
+section{padding:100px 48px;position:relative}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-label{font-size:9px;font-weight:500;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.section-label::before{content:'';width:24px;height:1px;background:var(--gold)}
+.section-title{font-family:'Bebas Neue',cursive;font-size:clamp(36px,6vw,72px);letter-spacing:4px;line-height:1;color:var(--white);margin-bottom:20px}
+.section-title span{color:var(--gold)}
+.section-body{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;line-height:1.8;color:var(--white2);max-width:560px}
+
+/* ANTI-OBSOL */
+.obsol-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+@media(max-width:768px){.obsol-grid{grid-template-columns:1fr;gap:48px}}
+.obsol-callout{margin-top:32px;padding:24px 28px;border:1px solid rgba(240,180,41,.25);background:rgba(240,180,41,.04);position:relative}
+.obsol-callout::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold)}
+.obsol-callout p{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;letter-spacing:1px;line-height:1.8;color:var(--white2)}
+.obsol-callout strong{color:var(--gold)}
+.versus{display:flex;flex-direction:column;gap:16px}
+.versus-item{display:flex;align-items:center;gap:20px;padding:20px 24px;border:1px solid rgba(34,100,34,.2);background:#0f1e0f;transition:border-color .3s}
+.versus-item:hover{border-color:rgba(240,180,41,.2)}
+.versus-item.dead{opacity:.5}
+.versus-label{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:3px;flex:1}
+.versus-label.dead-text{color:var(--slate);text-decoration:line-through;text-decoration-color:rgba(120,150,120,.5)}
+.versus-label.alive-text{color:var(--gold)}
+.versus-status{font-size:9px;letter-spacing:3px;text-transform:uppercase;padding:4px 10px;border:1px solid}
+.versus-status.dead{color:var(--slate);border-color:rgba(120,150,120,.2)}
+.versus-status.alive{color:var(--gold);border-color:rgba(240,180,41,.4);animation:shimmer 2.5s ease infinite}
+.stats-mini{margin-top:1px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(34,100,34,.15)}
+.stat-cell{background:#0d1f0d;padding:20px 24px}
+.stat-num{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:2px;color:var(--gold);line-height:1}
+.stat-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--slate);margin-top:4px}
+
+/* BASE DONNÉES */
+.diff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;max-width:900px;margin:40px auto 0;text-align:center}
+
+/* VAR TRUTH */
+.truth-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-bottom:80px}
+@media(max-width:768px){.truth-grid{grid-template-columns:1fr;gap:40px}}
+.truth-statement{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,28px);font-weight:300;line-height:1.8;color:var(--white2)}
+.truth-statement em{color:var(--gold);font-style:normal;font-weight:400}
+.truth-box{border:1px solid rgba(240,180,41,.15);padding:32px;background:rgba(240,180,41,.02);position:relative}
+.truth-box::before{content:'LE SAVIEZ-VOUS ?';position:absolute;top:-10px;left:24px;background:#0d1f0d;font-size:8px;letter-spacing:5px;color:var(--gold);padding:0 8px}
+.truth-box-title{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;color:var(--white);margin-bottom:12px}
+.truth-box-desc{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:300;line-height:1.8;color:var(--slate);font-style:italic}
+.truth-box-desc strong{color:var(--white2);font-weight:400;font-style:normal}
+
+/* STEPS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;max-width:1100px;margin:60px auto 0;position:relative}
+@media(max-width:768px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.steps{grid-template-columns:1fr}}
+.steps::before{content:'';position:absolute;top:24px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(240,180,41,.2),rgba(240,180,41,.2),transparent)}
+.step{position:relative;padding-top:8px}
+.step-num{width:48px;height:48px;border:1px solid rgba(240,180,41,.3);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--gold);margin-bottom:24px;background:var(--black2);position:relative;z-index:1}
+.step-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--white);margin-bottom:8px}
+.step-desc{font-size:12px;line-height:1.7;color:var(--slate);font-weight:300}
+
+/* MODES (reprised) */
+.modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(34,100,34,.15);border:1px solid rgba(34,100,34,.2);margin-top:40px}
+@media(max-width:768px){.modes-grid{grid-template-columns:1fr}}
+.mode-item{background:#0d1f0d;padding:48px 40px;position:relative;overflow:hidden;transition:background .4s}
+.mode-item:hover{background:var(--black3)}
+.mode-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .4s}
+.mode-item:hover::after{opacity:1}
+.mode-num{font-family:'Cormorant Garamond',serif;font-size:11px;font-style:italic;color:var(--gold);letter-spacing:2px;margin-bottom:20px;opacity:.7}
+.mode-icon{font-size:32px;margin-bottom:16px;display:block}
+.mode-name{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;color:var(--white);margin-bottom:12px}
+.mode-desc{font-size:13px;font-weight:300;line-height:1.7;color:var(--slate)}
+.mode-tag{display:inline-block;margin-top:20px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(240,180,41,.3);padding:4px 12px}
+
+/* TICKER */
+.ticker{background:linear-gradient(90deg,#f0b429,#e8a200,#f0b429);padding:12px 0;overflow:hidden}
+.ticker-inner{display:flex;white-space:nowrap;animation:marquee 20s linear infinite}
+.ticker-item{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:4px;color:#0d1f0d;padding:0 40px;display:flex;align-items:center;gap:20px}
+.ticker-dot{width:4px;height:4px;background:var(--black);border-radius:50%;opacity:.4}
+
+/* CTA BOTTOM */
+.page-cta{background:#162816;text-align:center;padding:100px 48px}
+.btn-primary{background:linear-gradient(90deg,#f0b429,#e8a200,#f0b429);color:var(--black);padding:16px 40px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;border:none;cursor:none;transition:all .3s;text-decoration:none;display:inline-block}
+.btn-primary:hover{background:var(--gold3);transform:translateY(-2px)}
+
+/* FOOTER */
+footer{background:#0d1f0d;padding:40px 48px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(34,100,34,.2);flex-wrap:wrap;gap:16px}
+.footer-copy{font-size:10px;letter-spacing:2px;color:var(--slate)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+@media(max-width:768px){section{padding:80px 24px}.page-hero{padding:120px 24px 60px}footer{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="/index.html"><img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:32px;width:auto;"></a>
+  <div class="nav-links">
+    <a href="/le-jeu.html" class="nav-link active" data-i18n="navGame">Le Jeu</a>
+    <a href="/notre-histoire.html" class="nav-link" data-i18n="navStory">Notre Histoire</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
+      <span style="color:rgba(240,180,41,.3);font-size:10px;">|</span>
+      <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+    </div>
+    <a href="/index.html#contact" class="nav-cta" data-i18n="navJoin">Rejoindre</a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-eyebrow reveal" data-i18n="gameEyebrow">Le Jeu</div>
+    <h1 class="page-title reveal reveal-delay-1" data-i18n="gameTitle">LE SEUL JEU QUI<br><span>NE PREND JAMAIS</span><br>SA RETRAITE.</h1>
+    <p class="page-intro reveal reveal-delay-2" data-i18n="gameIntro">Un album Panini s'arrête à la fin de l'été. Un FIFA devient obsolète en septembre. VAR CLUB est vivant — synchronisé avec la réalité du marché, saison après saison.</p>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-item">PSG <span class="ticker-dot"></span></div><div class="ticker-item">REAL MADRID <span class="ticker-dot"></span></div><div class="ticker-item">FC BARCELONA <span class="ticker-dot"></span></div><div class="ticker-item">MANCHESTER CITY <span class="ticker-dot"></span></div><div class="ticker-item">LIVERPOOL <span class="ticker-dot"></span></div><div class="ticker-item">CHELSEA <span class="ticker-dot"></span></div><div class="ticker-item">BAYERN MUNICH <span class="ticker-dot"></span></div><div class="ticker-item">JUVENTUS <span class="ticker-dot"></span></div><div class="ticker-item">AC MILAN <span class="ticker-dot"></span></div><div class="ticker-item">INTER MILAN <span class="ticker-dot"></span></div><div class="ticker-item">ARSENAL <span class="ticker-dot"></span></div><div class="ticker-item">DORTMUND <span class="ticker-dot"></span></div><div class="ticker-item">ATLÉTICO <span class="ticker-dot"></span></div><div class="ticker-item">MARSEILLE <span class="ticker-dot"></span></div><div class="ticker-item">LYON <span class="ticker-dot"></span></div><div class="ticker-item">NAPOLI <span class="ticker-dot"></span></div>
+    <div class="ticker-item">PSG <span class="ticker-dot"></span></div><div class="ticker-item">REAL MADRID <span class="ticker-dot"></span></div><div class="ticker-item">FC BARCELONA <span class="ticker-dot"></span></div><div class="ticker-item">MANCHESTER CITY <span class="ticker-dot"></span></div><div class="ticker-item">LIVERPOOL <span class="ticker-dot"></span></div><div class="ticker-item">CHELSEA <span class="ticker-dot"></span></div><div class="ticker-item">BAYERN MUNICH <span class="ticker-dot"></span></div><div class="ticker-item">JUVENTUS <span class="ticker-dot"></span></div><div class="ticker-item">AC MILAN <span class="ticker-dot"></span></div><div class="ticker-item">INTER MILAN <span class="ticker-dot"></span></div><div class="ticker-item">ARSENAL <span class="ticker-dot"></span></div><div class="ticker-item">DORTMUND <span class="ticker-dot"></span></div><div class="ticker-item">ATLÉTICO <span class="ticker-dot"></span></div><div class="ticker-item">MARSEILLE <span class="ticker-dot"></span></div><div class="ticker-item">LYON <span class="ticker-dot"></span></div><div class="ticker-item">NAPOLI <span class="ticker-dot"></span></div>
+  </div>
+</div>
+
+<!-- ANTI-OBSOLESCENCE -->
+<section style="background:var(--black);">
+  <div class="section-inner">
+    <div class="obsol-grid">
+      <div>
+        <div class="section-label reveal" data-i18n="obsLabel">Ce qui change tout</div>
+        <h2 class="section-title reveal reveal-delay-1" data-i18n="obsTitle">LE SEUL JEU QUI NE<br><span>PREND JAMAIS SA RETRAITE</span></h2>
+        <p class="section-body reveal reveal-delay-2" data-i18n="obsBody1">Un album Panini s'arrête à la fin de l'été. Un FIFA devient obsolète en septembre. VAR CLUB est vivant.</p>
+        <p class="section-body reveal reveal-delay-3" style="margin-top:16px;" data-i18n="obsBody2">Nous avons tué l'obsolescence pour créer le premier jeu de cartes synchronisé avec la réalité du marché. Vous jouez avec le football d'aujourd'hui, pas avec les souvenirs de l'année dernière.</p>
+        <div class="obsol-callout reveal reveal-delay-4">
+          <p data-i18n="obsCallout">Un transfert signé à <strong>23h00</strong> le dernier jour du mercato ? Il est dans notre base à votre réveil. Le football ne s'arrête jamais de s'écrire — <strong>VAR CLUB ne s'arrête jamais de lire.</strong></p>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="versus">
+          <div class="versus-item dead"><span class="versus-label dead-text" data-i18n="versusLabel1">FIFA 24</span><span class="versus-status dead" data-i18n="versusStatus1">Expiré</span></div>
+          <div class="versus-item dead"><span class="versus-label dead-text" data-i18n="versusLabel2">Panini 2023</span><span class="versus-status dead" data-i18n="versusStatus2">Expiré</span></div>
+          <div class="versus-item dead"><span class="versus-label dead-text" data-i18n="versusLabel3">Trivia classique</span><span class="versus-status dead" data-i18n="versusStatus3">Figé</span></div>
+          <div class="versus-item" style="border-color:rgba(240,180,41,.3);background:#0f1e0f;"><span class="versus-label alive-text" data-i18n="versusLabel4">VAR CLUB</span><span class="versus-status alive" data-i18n="versusStatus4">Toujours en jeu</span></div>
+          <div class="stats-mini">
+            <div class="stat-cell"><div class="stat-num">17</div><div class="stat-lbl" data-i18n="statLabel1">Clubs majeurs</div></div>
+            <div class="stat-cell"><div class="stat-num">5</div><div class="stat-lbl" data-i18n="statLabel2">Ligues couvertes</div></div>
+            <div class="stat-cell"><div class="stat-num">3</div><div class="stat-lbl" data-i18n="statLabel3">Modes de jeu</div></div>
+            <div class="stat-cell"><div class="stat-num">∞</div><div class="stat-lbl" data-i18n="statLabel4">Saisons de jeu</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BASE DE DONNÉES -->
+<section style="background:#0f1e0f;">
+  <div class="section-inner">
+    <div class="section-label reveal" style="justify-content:center;" data-i18n="diffLabel">L'omniscience au creux de la main</div>
+    <h2 class="section-title reveal reveal-delay-1" style="text-align:center;" data-i18n="diffTitle">UNE BASE DE<br><span>DONNÉES VIVANTE</span></h2>
+    <p class="section-body reveal reveal-delay-2" style="text-align:center;margin:0 auto 48px;max-width:620px;font-size:16px;" data-i18n="diffIntro">17 clubs légendaires. Des milliers de trajectoires de vie. Des millions de points de données. Notre interface n'est pas un simple accessoire — c'est le cœur battant du jeu. Elle ne dort jamais.</p>
+    <div class="diff-grid">
+      <div class="reveal"><div style="font-size:36px;margin-bottom:12px;">🔄</div><div class="mode-name" style="font-size:20px;" data-i18n="diff1title">Mis à jour régulièrement</div><p class="mode-desc" data-i18n="diff1desc">Chaque transfert, chaque saison est intégrée. Le jeu reste précis et actuel, années après années.</p></div>
+      <div class="reveal"><div style="font-size:36px;margin-bottom:12px;">🏟️</div><div class="mode-name" style="font-size:20px;" data-i18n="diff2title">17 clubs majeurs</div><p class="mode-desc" data-i18n="diff2desc">Les plus grandes équipes d'Europe. Ligue 1, Liga, Premier League, Bundesliga, Serie A.</p></div>
+      <div class="reveal"><div style="font-size:36px;margin-bottom:12px;">📊</div><div class="mode-name" style="font-size:20px;" data-i18n="diff3title">Des milliers de joueurs</div><p class="mode-desc" data-i18n="diff3desc">Nationalités, gardiens, transferts, statistiques — une profondeur de données unique dans un jeu de cartes.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MODES -->
+<section style="background:var(--black);">
+  <div class="section-inner">
+    <div class="section-label reveal" data-i18n="modesLabel">Les Trois Modes de Jeu</div>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="modesTitle">CHOISISSEZ<br><span>VOTRE MODE</span></h2>
+    <div class="modes-grid">
+      <div class="mode-item reveal"><div class="mode-num">01</div><span class="mode-icon">🌟</span><div class="mode-name" data-i18n="mode1name">L'Identité</div><p class="mode-desc" data-i18n="mode1desc">Tire une carte club. Annonce la ville, le stade, le surnom avant la révélation. Chaque bonne réponse = jetons défaussés.</p><span class="mode-tag" data-i18n="mode1tag">Le Jeune Passionné</span></div>
+      <div class="mode-item reveal reveal-delay-1"><div class="mode-num">02</div><span class="mode-icon">🛡️</span><div class="mode-name" data-i18n="mode2name">Le Duel VAR</div><p class="mode-desc" data-i18n="mode2desc">Tire une carte Club + une carte Question. Fais ton annonce à voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.</p><span class="mode-tag" data-i18n="mode2tag">Confrontation directe</span></div>
+      <div class="mode-item reveal reveal-delay-2"><div class="mode-num">03</div><span class="mode-icon">🔥</span><div class="mode-name" data-i18n="mode3name">Le Mode Expert</div><p class="mode-desc" data-i18n="mode3desc">Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.</p><span class="mode-tag" data-i18n="mode3tag">Pour les amoureux de la data</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- VAR TRUTH -->
+<section style="background:#0d1f0d;">
+  <div class="section-inner">
+    <div class="section-label reveal" data-i18n="ruleLabel">La Règle d'or</div>
+    <h2 class="section-title reveal reveal-delay-1" style="margin-bottom:48px;" data-i18n="ruleTitle">LA <span>VAR</span> N'A PAS<br>D'AMIS. ELLE A DES FAITS.</h2>
+    <div class="truth-grid">
+      <div class="truth-statement reveal reveal-delay-1" data-i18n="ruleStatement">La VAR a toujours eu cette capacité à trancher — pas toujours du bon côté, mais <em>du côté le plus juste</em>. Dans VAR CLUB, chaque réponse est passée au crible de notre base de données. <em>Le doute n'a plus sa place à votre table.</em></div>
+      <div class="truth-box reveal reveal-delay-2">
+        <div class="truth-box-title" data-i18n="forgottenTitle">Le Soldat Oublié</div>
+        <p class="truth-box-desc" data-i18n="forgottenDesc">Que le joueur ait marqué l'histoire ou qu'il ait simplement <strong>foulé la pelouse pour un match oublié en plein hiver</strong>, la VAR s'en souvient. Crampon au pied, sur le terrain pour ce club à un moment donné — qu'on l'aime ou non. C'est ici que la VAR fait la différence : elle réhabilite l'oublié.</p>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="step-num">I</div><div class="step-title" data-i18n="step1title">Débattez librement</div><p class="step-desc" data-i18n="step1desc">L'arbitrage humain d'abord. Si tout le monde est d'accord, le point est validé sans application.</p></div>
+      <div class="step reveal reveal-delay-1"><div class="step-num">II</div><div class="step-title" data-i18n="step2title">Un doute ? VAR !</div><p class="step-desc" data-i18n="step2desc">Un adversaire crie "VAR !" — on vérifie sur l'interface. Le recours à la vidéo est facultatif.</p></div>
+      <div class="step reveal reveal-delay-2"><div class="step-num">III</div><div class="step-title" data-i18n="step3title">Verdict positif</div><p class="step-desc" data-i18n="step3desc">La VAR confirme votre analyse. Vous défaussez vos jetons. La victoire se rapproche.</p></div>
+      <div class="step reveal reveal-delay-3"><div class="step-num">IV</div><div class="step-title" data-i18n="step4title">Hors-jeu</div><p class="step-desc" data-i18n="step4desc">Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="page-cta">
+  <div class="section-label reveal" style="justify-content:center;" data-i18n="contactLabel">Accès Anticipé</div>
+  <h2 class="section-title reveal reveal-delay-1" style="font-size:clamp(40px,6vw,72px);margin-bottom:32px;" data-i18n="contactTitle">PRÊT À PASSER LA<br><span>VISITE MÉDICALE ?</span></h2>
+  <a href="/index.html#contact" class="btn-primary reveal reveal-delay-2" data-i18n="submitBtn">Signer au Club →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:40px;width:auto;opacity:.6;">
+  <div class="footer-copy" data-i18n="footerCopy">© 2026 VAR CLUB — Tous droits réservés</div>
+  <div style="font-size:12px;display:flex;gap:24px;align-items:center;">
+    <a href="/notre-histoire.html" style="color:rgba(247,253,244,.4);text-decoration:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .2s;" onmouseover="this.style.color='#F0B429'" onmouseout="this.style.color='rgba(247,253,244,.4)'" data-i18n="navStory">Notre Histoire</a>
+    <a href="/legal.html" style="color:rgba(247,253,244,.4);text-decoration:none;font-size:10px;letter-spacing:2px;transition:color .2s;" onmouseover="this.style.color='#F0B429'" onmouseout="this.style.color='rgba(247,253,244,.4)'" data-i18n="legalLink">Mentions légales</a>
+  </div>
+</footer>
+
+<script>
+const LANG={
+  fr:{
+    navGame:'Le Jeu',navStory:'Notre Histoire',navJoin:'Rejoindre',
+    gameEyebrow:'Le Jeu',gameTitle:'LE SEUL JEU QUI<br><span>NE PREND JAMAIS</span><br>SA RETRAITE.',
+    gameIntro:'Un album Panini s\'arrête à la fin de l\'été. Un FIFA devient obsolète en septembre. VAR CLUB est vivant — synchronisé avec la réalité du marché, saison après saison.',
+    obsLabel:'Ce qui change tout',obsTitle:'LE SEUL JEU QUI NE<br><span>PREND JAMAIS SA RETRAITE</span>',
+    obsBody1:'Un album Panini s\'arrête à la fin de l\'été. Un FIFA devient obsolète en septembre. VAR CLUB est vivant.',
+    obsBody2:'Nous avons tué l\'obsolescence pour créer le premier jeu de cartes synchronisé avec la réalité du marché. Vous jouez avec le football d\'aujourd\'hui, pas avec les souvenirs de l\'année dernière.',
+    obsCallout:'Un transfert signé à <strong>23h00</strong> le dernier jour du mercato ? Il est dans notre base à votre réveil. Le football ne s\'arrête jamais de s\'écrire — <strong>VAR CLUB ne s\'arrête jamais de lire.</strong>',
+    versusLabel1:'FIFA 24',versusStatus1:'Expiré',versusLabel2:'Panini 2023',versusStatus2:'Expiré',versusLabel3:'Trivia classique',versusStatus3:'Figé',versusLabel4:'VAR CLUB',versusStatus4:'Toujours en jeu',
+    statLabel1:'Clubs majeurs',statLabel2:'Ligues couvertes',statLabel3:'Modes de jeu',statLabel4:'Saisons de jeu',
+    diffLabel:'L\'omniscience au creux de la main',diffTitle:'UNE BASE DE<br><span>DONNÉES VIVANTE</span>',
+    diffIntro:'17 clubs légendaires. Des milliers de trajectoires de vie. Des millions de points de données. Notre interface n\'est pas un simple accessoire — c\'est le cœur battant du jeu. Elle ne dort jamais.',
+    diff1title:'Mis à jour régulièrement',diff1desc:'Chaque transfert, chaque saison est intégrée. Le jeu reste précis et actuel, années après années.',
+    diff2title:'17 clubs majeurs',diff2desc:'Les plus grandes équipes d\'Europe. Ligue 1, Liga, Premier League, Bundesliga, Serie A.',
+    diff3title:'Des milliers de joueurs',diff3desc:'Nationalités, gardiens, transferts, statistiques — une profondeur de données unique dans un jeu de cartes.',
+    modesLabel:'Les Trois Modes de Jeu',modesTitle:'CHOISISSEZ<br><span>VOTRE MODE</span>',
+    mode1name:'L\'Identité',mode1desc:'Tire une carte club. Annonce la ville, le stade, le surnom avant la révélation. Chaque bonne réponse = jetons défaussés.',mode1tag:'Le Jeune Passionné',
+    mode2name:'Le Duel VAR',mode2desc:'Tire une carte Club + une carte Question. Fais ton annonce à voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.',mode2tag:'Confrontation directe',
+    mode3name:'Le Mode Expert',mode3desc:'Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.',mode3tag:'Pour les amoureux de la data',
+    ruleLabel:'La Règle d\'or',ruleTitle:'LA <span>VAR</span> N\'A PAS<br>D\'AMIS. ELLE A DES FAITS.',
+    ruleStatement:'La VAR a toujours eu cette capacité à trancher — pas toujours du bon côté, mais <em>du côté le plus juste</em>. Dans VAR CLUB, chaque réponse est passée au crible de notre base de données. <em>Le doute n\'a plus sa place à votre table.</em>',
+    forgottenTitle:'Le Soldat Oublié',
+    forgottenDesc:'Que le joueur ait marqué l\'histoire ou qu\'il ait simplement <strong>foulé la pelouse pour un match oublié en plein hiver</strong>, la VAR s\'en souvient. Crampon au pied, sur le terrain pour ce club à un moment donné — qu\'on l\'aime ou non. C\'est ici que la VAR fait la différence : elle réhabilite l\'oublié.',
+    step1title:'Débattez librement',step1desc:'L\'arbitrage humain d\'abord. Si tout le monde est d\'accord, le point est validé sans application.',
+    step2title:'Un doute ? VAR !',step2desc:'Un adversaire crie "VAR !" — on vérifie sur l\'interface. Le recours à la vidéo est facultatif.',
+    step3title:'Verdict positif',step3desc:'La VAR confirme votre analyse. Vous défaussez vos jetons. La victoire se rapproche.',
+    step4title:'Hors-jeu',step4desc:'Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.',
+    contactLabel:'Accès Anticipé',contactTitle:'PRÊT À PASSER LA<br><span>VISITE MÉDICALE ?</span>',
+    submitBtn:'Signer au Club →',footerCopy:'© 2026 VAR CLUB — Tous droits réservés',legalLink:'Mentions légales',
+  },
+  en:{
+    navGame:'The Game',navStory:'Our Story',navJoin:'Join',
+    gameEyebrow:'The Game',gameTitle:'THE ONLY GAME THAT<br><span>NEVER</span><br>RETIRES.',
+    gameIntro:'A Panini album stops at the end of summer. FIFA goes stale in September. VAR CLUB is alive — synchronised with the reality of the market, season after season.',
+    obsLabel:'What changes everything',obsTitle:'THE ONLY GAME THAT<br><span>NEVER RETIRES</span>',
+    obsBody1:'A Panini album stops at the end of summer. FIFA goes stale in September. VAR CLUB is alive.',
+    obsBody2:'We killed obsolescence to create the first card game synchronised with the reality of the market. You play with today\'s football, not last year\'s memories.',
+    obsCallout:'A transfer signed at <strong>11PM</strong> on deadline day? It\'s in our database by morning. Football never stops being written — <strong>VAR CLUB never stops reading.</strong>',
+    versusLabel1:'FIFA 24',versusStatus1:'Expired',versusLabel2:'Panini 2023',versusStatus2:'Expired',versusLabel3:'Classic Trivia',versusStatus3:'Frozen',versusLabel4:'VAR CLUB',versusStatus4:'Always live',
+    statLabel1:'Major clubs',statLabel2:'Leagues covered',statLabel3:'Game modes',statLabel4:'Seasons of play',
+    diffLabel:'Omniscience in the palm of your hand',diffTitle:'A LIVING<br><span>DATABASE</span>',
+    diffIntro:'17 legendary clubs. Thousands of life trajectories. Millions of data points. Our interface is not just an accessory — it\'s the beating heart of the game. It never sleeps.',
+    diff1title:'Regularly updated',diff1desc:'Every transfer, every season is integrated. The game stays accurate and current, year after year.',
+    diff2title:'17 major clubs',diff2desc:'Europe\'s greatest teams. Ligue 1, Liga, Premier League, Bundesliga, Serie A.',
+    diff3title:'Thousands of players',diff3desc:'Nationalities, goalkeepers, transfers, stats — a depth of data unique in a card game.',
+    modesLabel:'Three Game Modes',modesTitle:'CHOOSE<br><span>YOUR MODE</span>',
+    mode1name:'The Identity',mode1desc:'Draw a club card. Name the city, the stadium, the nickname before the reveal. Each right answer = discarded tokens.',mode1tag:'The Young Fan',
+    mode2name:'VAR Duel',mode2desc:'Draw a Club card + a Question card. Make your announcement out loud. If VAR confirms, your tokens drop. Otherwise, you wait.',mode2tag:'Head-to-head clash',
+    mode3name:'Expert Mode',mode3desc:'Raw data, transfers, sharp statistics. A final sprint to empty your token stock as fast as possible. Only the pros survive.',mode3tag:'For data lovers',
+    ruleLabel:'The Golden Rule',ruleTitle:'THE <span>VAR</span> HAS NO<br>FRIENDS. ONLY FACTS.',
+    ruleStatement:'VAR has always had this ability to rule — not always on the right side, but <em>always on the most just</em>. In VAR CLUB, every answer is checked against our database. <em>Doubt has no place at your table.</em>',
+    forgottenTitle:'The Forgotten Soldier',
+    forgottenDesc:'Whether the player made history or simply <strong>stepped on the pitch for a forgotten match on a cold winter night</strong>, the VAR remembers. Boots on the ground, on the pitch for that club at some point — whether you loved them or not. This is where VAR makes the difference: it rehabilitates the forgotten.',
+    step1title:'Debate freely',step1desc:'Human judgement first. If everyone agrees, the point is validated without the app.',
+    step2title:'Any doubt? VAR!',step2desc:'An opponent calls «VAR!» — check on the interface. Using the app is optional.',
+    step3title:'Positive verdict',step3desc:'VAR confirms your answer. You discard your tokens. Victory draws closer.',
+    step4title:'Offside',step4desc:'Wrong answer. You keep your tokens and wait for the next turn. VAR is ruthless.',
+    contactLabel:'Early Access',contactTitle:'READY FOR YOUR<br><span>MEDICAL?</span>',
+    submitBtn:'Sign for the Club →',footerCopy:'© 2026 VAR CLUB — All rights reserved',legalLink:'Legal notice',
+  }
+};
+let currentLang='fr';
+window.t=function(k){return LANG[currentLang][k]||LANG.fr[k]||k};
+window.applyLang=function(){document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'),a=el.getAttribute('data-i18n-attr');if(a){el.setAttribute(a,t(k))}else{el.innerHTML=t(k)}});document.documentElement.lang=currentLang;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===currentLang))};
+window.switchLang=function(lang){currentLang=lang;localStorage.setItem('vc_lang',lang);applyLang()};
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a)})();
+document.querySelectorAll('a,button,input').forEach(el=>{el.addEventListener('mouseenter',()=>ring.classList.add('hovering'));el.addEventListener('mouseleave',()=>ring.classList.remove('hovering'))});
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+const sl=localStorage.getItem('vc_lang')||'fr';switchLang(sl);
+</script>
+</body>
+</html>

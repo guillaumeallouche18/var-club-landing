@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAR CLUB — Notre Histoire</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="description" content="VAR CLUB — De la panenka de Zidane aux statistiques du PSG. Comment une obsession entre amis est devenue un jeu de cartes.">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0d1f0d;--black2:#122012;--black3:#162816;--gold:#f0b429;--gold3:#fde68a;--white:#f7fdf4;--white2:#c8dfc8;--slate:#7a9e7a}
+html{scroll-behavior:smooth}
+body{background:#0d1f0d;color:var(--white);font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:8px;height:8px;background:linear-gradient(90deg,#f0b429,#e8a200,#f0b429);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(240,180,41,.4);border-radius:50%;pointer-events:none;z-index:9998;transition:transform .4s ease,width .3s,height .3s,border-color .3s;transform:translate(-50%,-50%)}
+body:hover .cursor-ring.hovering{width:48px;height:48px;border-color:var(--gold)}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:.4}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shimmer{0%,100%{opacity:.6}50%{opacity:1}}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:rgba(13,31,13,.98);border-bottom:1px solid rgba(34,100,34,.2);animation:fadeIn 1s ease both}
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-link{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--slate);text-decoration:none;transition:color .2s}
+.nav-link:hover{color:var(--white)}
+.nav-link.active{color:var(--gold)}
+.lang-switch{display:flex;align-items:center;gap:6px}
+.lang-btn{background:transparent;border:1px solid rgba(240,180,41,.25);color:var(--slate);padding:3px 10px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:2px;cursor:pointer;border-radius:2px;transition:all .2s}
+.lang-btn.active,.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
+.nav-cta{background:transparent;border:1px solid rgba(240,180,41,.4);color:var(--gold);padding:10px 24px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;cursor:none;transition:all .3s;text-decoration:none}
+.nav-cta:hover{background:var(--gold);color:var(--black)}
+@media(max-width:768px){.nav-links{display:none}}
+
+/* PAGE HERO */
+.page-hero{padding:160px 48px 80px;background:var(--black2);position:relative;overflow:hidden}
+.page-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(240,180,41,.08) 0%,transparent 70%);pointer-events:none}
+.page-hero::before{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(240,180,41,.3),transparent)}
+.page-hero-inner{max-width:900px;margin:0 auto}
+.page-eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:12px;animation:fadeUp .8s ease .1s both}
+.page-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold)}
+.page-title{font-family:'Bebas Neue',cursive;font-size:clamp(60px,10vw,120px);letter-spacing:6px;line-height:.9;color:var(--white);margin-bottom:32px;animation:fadeUp .8s ease .2s both}
+.page-title span{color:var(--gold)}
+.page-intro{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,28px);font-weight:300;font-style:italic;line-height:1.7;color:var(--white2);animation:fadeUp .8s ease .3s both}
+
+/* MANIFESTE */
+.manifeste{background:var(--black2);padding:100px 48px;position:relative}
+.manifeste-inner{max-width:900px;margin:0 auto}
+.manifeste-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3.5vw,40px);font-weight:300;font-style:italic;line-height:1.6;color:var(--white);position:relative;padding-left:48px;margin-bottom:48px}
+.manifeste-quote::before{content:'"';position:absolute;left:0;top:-10px;font-family:'Cormorant Garamond',serif;font-size:80px;color:var(--gold);opacity:.4;line-height:1}
+.manifeste-quote em{color:var(--gold);font-style:normal}
+.manifeste-cols{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:48px}
+@media(max-width:768px){.manifeste-cols{grid-template-columns:1fr;gap:32px}}
+.manifeste-col{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;line-height:1.9;color:var(--white2)}
+.manifeste-col strong{color:var(--white);font-weight:400}
+.manifeste-sig{margin-top:48px;padding-top:32px;border-top:1px solid rgba(240,180,41,.15);display:flex;align-items:center;gap:16px}
+.manifeste-sig-line{flex:1;height:1px;background:rgba(240,180,41,.1)}
+.manifeste-sig-text{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);opacity:.6}
+
+/* ABOUT — 3 ACTES */
+.about{padding:100px 48px}
+.about-inner{max-width:1100px;margin:0 auto}
+.about-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-bottom:80px}
+@media(max-width:768px){.about-intro{grid-template-columns:1fr;gap:40px;margin-bottom:56px}}
+.about-statement{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.8vw,32px);font-weight:300;font-style:italic;line-height:1.7;color:var(--white)}
+.about-statement em{color:var(--gold);font-style:normal}
+.about-body{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;line-height:1.9;color:var(--white2)}
+.about-body strong{color:var(--white);font-weight:400}
+
+.about-act{margin-bottom:64px}
+.about-act-label{font-size:9px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--gold);opacity:.7;margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.about-act-label::before{content:'';width:24px;height:1px;background:var(--gold);opacity:.5}
+.about-act-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+@media(max-width:768px){.about-act-grid{grid-template-columns:1fr;gap:24px}}
+.about-act-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,3vw,30px);font-weight:300;font-style:italic;line-height:1.7;color:var(--white);padding:32px 40px;border:1px solid rgba(240,180,41,.2);background:rgba(240,180,41,.03);position:relative}
+.about-act-quote::before{content:'"';position:absolute;left:16px;top:10px;font-family:'Cormorant Garamond',serif;font-size:64px;color:var(--gold);opacity:.3;line-height:1}
+
+/* PILIERS */
+.about-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(34,100,34,.15);border:1px solid rgba(34,100,34,.2)}
+@media(max-width:768px){.about-pillars{grid-template-columns:1fr}}
+.pillar{background:#0d1f0d;padding:40px 36px;position:relative;overflow:hidden;transition:background .4s}
+.pillar:hover{background:var(--black3)}
+.pillar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .4s}
+.pillar:hover::after{opacity:1}
+.pillar-num{font-family:'Cormorant Garamond',serif;font-size:11px;font-style:italic;color:var(--gold);letter-spacing:2px;margin-bottom:16px;opacity:.7}
+.pillar-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--white);margin-bottom:12px}
+.pillar-desc{font-size:13px;font-weight:300;line-height:1.7;color:var(--slate)}
+.pillar-tag{display:inline-block;margin-top:20px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(240,180,41,.3);padding:4px 12px}
+
+/* CTA BOTTOM */
+.page-cta{background:#162816;text-align:center;padding:100px 48px}
+.section-label{font-size:9px;font-weight:500;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:12px;justify-content:center}
+.section-label::before{content:'';width:24px;height:1px;background:var(--gold)}
+.section-title{font-family:'Bebas Neue',cursive;font-size:clamp(36px,6vw,72px);letter-spacing:4px;line-height:1;color:var(--white);margin-bottom:20px}
+.section-title span{color:var(--gold)}
+.btn-primary{background:linear-gradient(90deg,#f0b429,#e8a200,#f0b429);color:var(--black);padding:16px 40px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;border:none;cursor:none;transition:all .3s;text-decoration:none;display:inline-block}
+.btn-primary:hover{background:var(--gold3);transform:translateY(-2px)}
+
+footer{background:#0d1f0d;padding:40px 48px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(34,100,34,.2);flex-wrap:wrap;gap:16px}
+.footer-copy{font-size:10px;letter-spacing:2px;color:var(--slate)}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+
+@media(max-width:768px){.about,.manifeste{padding:80px 24px}.page-hero{padding:120px 24px 60px}footer{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="/index.html"><img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:32px;width:auto;"></a>
+  <div class="nav-links">
+    <a href="/le-jeu.html" class="nav-link" data-i18n="navGame">Le Jeu</a>
+    <a href="/notre-histoire.html" class="nav-link active" data-i18n="navStory">Notre Histoire</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
+      <span style="color:rgba(240,180,41,.3);font-size:10px;">|</span>
+      <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+    </div>
+    <a href="/index.html#contact" class="nav-cta" data-i18n="navJoin">Rejoindre</a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-eyebrow reveal" data-i18n="storyEyebrow">Notre Histoire</div>
+    <h1 class="page-title reveal reveal-delay-1" data-i18n="storyTitle">NÉ SUR LE<br><span>CANAPÉ.</span></h1>
+    <p class="page-intro reveal reveal-delay-2" data-i18n="storyIntro">VAR CLUB n'est pas né dans un bureau. Il est né sur un canapé, un soir de match, au moment précis où une question sans réponse est devenue une obsession.</p>
+  </div>
+</div>
+
+<!-- MANIFESTE -->
+<section class="manifeste">
+  <div class="manifeste-inner">
+    <div class="section-label reveal" data-i18n="manifesteLabel" style="justify-content:flex-start;">L'Histoire</div>
+    <h2 style="font-family:'Bebas Neue',cursive;font-size:clamp(36px,6vw,72px);letter-spacing:4px;line-height:1;color:var(--white);margin-bottom:40px;" class="reveal reveal-delay-1" data-i18n="manifesteTitle">NÉ SUR LE CANAPÉ,<br><span style="color:var(--gold);">VALIDÉ PAR LA DATA</span></h2>
+    <div class="manifeste-quote reveal reveal-delay-2" data-i18n="manifesteQuote">On a tous commencé là : à refaire le match, à se remémorer les <em>coups francs de Juninho</em> ou la <em>panenka de Zidane</em> en finale. Mais aujourd'hui, votre expertise a grandi.</div>
+    <div class="manifeste-cols">
+      <div class="manifeste-col reveal reveal-delay-2" data-i18n="manifesteCol1">Plus jeune, les discussions tournaient autour du présent — les buts qui nous marquaient, les joueurs qu'on adorait. Désormais, on parle de statistiques, plus poussées, car notre expérience nous le permet. On se teste entre amis : <strong>qui a vraiment marqué le PSG ? Combien de joueurs ont plus de 120 buts au club ? Qui a fait plus de 400 matchs ?</strong></div>
+      <div class="manifeste-col reveal reveal-delay-3" data-i18n="manifesteCol2">De ces discussions et débats est né VAR CLUB. Nous avons bâti une base de données, mise à jour régulièrement — pour non seulement garder l'histoire en tête, mais aussi capturer le football d'aujourd'hui et être prêt pour celui de demain. <strong>Désormais, chaque question bénéficie de ses réponses. Claires, nettes et précises.</strong></div>
+    </div>
+    <div class="manifeste-sig reveal reveal-delay-4">
+      <div class="manifeste-sig-line"></div>
+      <div class="manifeste-sig-text" data-i18n="manifesteSig">Les Fondateurs — VAR CLUB</div>
+      <div class="manifeste-sig-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUI SOMMES-NOUS — 3 ACTES -->
+<section class="about" style="background:#0f1e0f;">
+  <div class="about-inner">
+
+    <div class="about-intro">
+      <div>
+        <div class="section-label reveal" style="justify-content:flex-start;" data-i18n="aboutLabel">Qui sommes-nous</div>
+        <h2 style="font-family:'Bebas Neue',cursive;font-size:clamp(36px,6vw,72px);letter-spacing:4px;line-height:1;color:var(--white);margin-bottom:20px;" class="reveal reveal-delay-1" data-i18n="aboutTitle">DES PASSIONNÉS<br><span style="color:var(--gold);">PAS DES ÉDITEURS</span></h2>
+      </div>
+      <div class="about-statement reveal reveal-delay-2" data-i18n="aboutStatement">VAR CLUB n'est pas né dans un bureau. Il est né sur un canapé, un soir de match, au moment précis où <em>une question sans réponse</em> est devenue une obsession.</div>
+    </div>
+
+    <div class="about-act reveal reveal-delay-1">
+      <div class="about-act-label" data-i18n="aboutActLabel1">Acte I — Le temps des images</div>
+      <div class="about-act-grid">
+        <div class="about-body" data-i18n="aboutBody1">Comme tout bon passionné, nos discussions tournaient très généralement autour du football. Plus jeunes, on parlait du temps présent — les buts qui nous marquaient, les joueurs qu'on adorait. La <strong>panenka de Zidane</strong> en finale de Coupe du Monde. Les innombrables coups francs de <strong>Juninho</strong>, chacun plus parfait que le précédent. Des images gravées à vie, ces instants qui font qu'on devient fan pour toujours.</div>
+        <div class="about-body" data-i18n="aboutBody2">On refaisait les matchs. On argumentait. On avait tous les torts et toutes les raisons du monde en même temps. C'était ça, le football entre amis : une conversation qui ne s'arrête jamais, où personne n'a tout à fait tort, et où la vérité dépend du camp où l'on se trouve.</div>
+      </div>
+    </div>
+
+    <div class="about-act reveal reveal-delay-2">
+      <div class="about-act-label" data-i18n="aboutActLabel2">Acte II — Le temps des statistiques</div>
+      <div class="about-act-grid">
+        <div class="about-body" data-i18n="aboutBody3">Puis les années ont passé. Notre expérience et notre connaissance ont grandi. Les débats ont changé de nature. On ne se contentait plus de "il était fort, ce joueur" — on voulait <em>savoir</em>. <strong>Qui a vraiment marqué le PSG ?</strong> Combien de joueurs ont plus de 120 buts au club ? Qui a disputé plus de 400 matchs sous ces couleurs ?</div>
+        <div class="about-body" data-i18n="aboutBody4">Les questions sont devenues plus précises. Les réponses, plus difficiles à trancher. Et là, le problème est apparu clairement : <strong>il n'existait aucun outil pour arbitrer ces débats avec des données fiables, actuelles, et accessibles autour d'une table.</strong> Les jeux existants étaient figés dans le temps — un FIFA valable une saison, un Panini lié à une compétition. Rien qui vive avec le football.</div>
+      </div>
+    </div>
+
+    <div class="about-act reveal reveal-delay-3">
+      <div class="about-act-label" data-i18n="aboutActLabel3">Acte III — La naissance de VAR CLUB</div>
+      <div class="about-act-quote" data-i18n="aboutActQuote">"On a bâti la base de données qu'on aurait voulu avoir. Pour garder l'histoire en tête, capturer le football d'aujourd'hui, et être prêt pour celui de demain."</div>
+    </div>
+
+    <!-- 3 PILIERS -->
+    <div class="about-pillars">
+      <div class="pillar reveal">
+        <div class="pillar-num">01</div>
+        <div class="pillar-title" data-i18n="aboutP1title">La Science du Jeu</div>
+        <p class="pillar-desc" data-i18n="aboutP1desc">Si VAR CLUB était une personnalité du football, ce serait <strong style="color:var(--white2)">Pep Guardiola</strong> — pour sa science du jeu, sa rigueur absolue, son obsession du détail que les autres ne voient pas. On ne joue pas au hasard. On joue à la donnée.</p>
+        <span class="pillar-tag" data-i18n="aboutP1tag">L'Obsession de la Précision</span>
+      </div>
+      <div class="pillar reveal reveal-delay-1">
+        <div class="pillar-num">02</div>
+        <div class="pillar-title" data-i18n="aboutP2title">Les Précurseurs</div>
+        <p class="pillar-desc" data-i18n="aboutP2desc">Si VAR CLUB était un club, ce serait le <strong style="color:var(--white2)">FC Midtjylland</strong> — précurseur dans l'utilisation de la data dans le recrutement et la stratégie de terrain. Voir ce que les autres ne voient pas encore. Agir avant les autres.</p>
+        <span class="pillar-tag" data-i18n="aboutP2tag">Moneyball du Jeu de Cartes</span>
+      </div>
+      <div class="pillar reveal reveal-delay-2">
+        <div class="pillar-num">03</div>
+        <div class="pillar-title" data-i18n="aboutP3title">Tuer le Doute</div>
+        <p class="pillar-desc" data-i18n="aboutP3desc">La VAR est souvent décriée car elle dénature le jeu. Mais elle l'aide aussi — <strong style="color:var(--white2)">elle est intransigeante et ne laisse plus de place au doute.</strong> Nous souhaitons inculquer ce même principe. Chaque question mérite sa réponse. Claire, nette, précise.</p>
+        <span class="pillar-tag" data-i18n="aboutP3tag">Notre Philosophie</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="page-cta">
+  <div class="section-label reveal" data-i18n="contactLabel">Accès Anticipé</div>
+  <h2 class="section-title reveal reveal-delay-1" style="font-size:clamp(40px,6vw,72px);margin-bottom:32px;" data-i18n="contactTitle">PRÊT À PASSER LA<br><span>VISITE MÉDICALE ?</span></h2>
+  <a href="/index.html#contact" class="btn-primary reveal reveal-delay-2" data-i18n="submitBtn">Signer au Club →</a>
+</div>
+
+<footer>
+  <img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:40px;width:auto;opacity:.6;">
+  <div class="footer-copy" data-i18n="footerCopy">© 2026 VAR CLUB — Tous droits réservés</div>
+  <div style="font-size:12px;display:flex;gap:24px;align-items:center;">
+    <a href="/le-jeu.html" style="color:rgba(247,253,244,.4);text-decoration:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .2s;" onmouseover="this.style.color='#F0B429'" onmouseout="this.style.color='rgba(247,253,244,.4)'" data-i18n="navGame">Le Jeu</a>
+    <a href="/legal.html" style="color:rgba(247,253,244,.4);text-decoration:none;font-size:10px;letter-spacing:2px;transition:color .2s;" onmouseover="this.style.color='#F0B429'" onmouseout="this.style.color='rgba(247,253,244,.4)'" data-i18n="legalLink">Mentions légales</a>
+  </div>
+</footer>
+
+<script>
+const LANG={
+  fr:{
+    navGame:'Le Jeu',navStory:'Notre Histoire',navJoin:'Rejoindre',
+    storyEyebrow:'Notre Histoire',storyTitle:'NÉ SUR LE<br><span>CANAPÉ.</span>',
+    storyIntro:'VAR CLUB n\'est pas né dans un bureau. Il est né sur un canapé, un soir de match, au moment précis où une question sans réponse est devenue une obsession.',
+    manifesteLabel:'L\'Histoire',manifesteTitle:'NÉ SUR LE CANAPÉ,<br><span style="color:var(--gold)">VALIDÉ PAR LA DATA</span>',
+    manifesteQuote:'On a tous commencé là : à refaire le match, à se remémorer les <em>coups francs de Juninho</em> ou la <em>panenka de Zidane</em> en finale. Mais aujourd\'hui, votre expertise a grandi.',
+    manifesteCol1:'Plus jeune, les discussions tournaient autour du présent — les buts qui nous marquaient, les joueurs qu\'on adorait. Désormais, on parle de statistiques, plus poussées, car notre expérience nous le permet. On se teste entre amis : <strong>qui a vraiment marqué le PSG ? Combien de joueurs ont plus de 120 buts au club ? Qui a fait plus de 400 matchs ?</strong>',
+    manifesteCol2:'De ces discussions et débats est né VAR CLUB. Nous avons bâti une base de données, mise à jour régulièrement — pour non seulement garder l\'histoire en tête, mais aussi capturer le football d\'aujourd\'hui et être prêt pour celui de demain. <strong>Désormais, chaque question bénéficie de ses réponses. Claires, nettes et précises.</strong>',
+    manifesteSig:'Les Fondateurs — VAR CLUB',
+    aboutLabel:'Qui sommes-nous',aboutTitle:'DES PASSIONNÉS<br><span style="color:var(--gold)">PAS DES ÉDITEURS</span>',
+    aboutStatement:'VAR CLUB n\'est pas né dans un bureau. Il est né sur un canapé, un soir de match, au moment précis où <em>une question sans réponse</em> est devenue une obsession.',
+    aboutActLabel1:'Acte I — Le temps des images',
+    aboutBody1:'Comme tout bon passionné, nos discussions tournaient très généralement autour du football. Plus jeunes, on parlait du temps présent — les buts qui nous marquaient, les joueurs qu\'on adorait. La <strong>panenka de Zidane</strong> en finale de Coupe du Monde. Les innombrables coups francs de <strong>Juninho</strong>, chacun plus parfait que le précédent. Des images gravées à vie, ces instants qui font qu\'on devient fan pour toujours.',
+    aboutBody2:'On refaisait les matchs. On argumentait. On avait tous les torts et toutes les raisons du monde en même temps. C\'était ça, le football entre amis : une conversation qui ne s\'arrête jamais, où personne n\'a tout à fait tort, et où la vérité dépend du camp où l\'on se trouve.',
+    aboutActLabel2:'Acte II — Le temps des statistiques',
+    aboutBody3:'Puis les années ont passé. Notre expérience et notre connaissance ont grandi. Les débats ont changé de nature. On ne se contentait plus de "il était fort, ce joueur" — on voulait <em>savoir</em>. <strong>Qui a vraiment marqué le PSG ?</strong> Combien de joueurs ont plus de 120 buts au club ? Qui a disputé plus de 400 matchs sous ces couleurs ?',
+    aboutBody4:'Les questions sont devenues plus précises. Les réponses, plus difficiles à trancher. Et là, le problème est apparu clairement : <strong>il n\'existait aucun outil pour arbitrer ces débats avec des données fiables, actuelles, et accessibles autour d\'une table.</strong> Les jeux existants étaient figés dans le temps — un FIFA valable une saison, un Panini lié à une compétition. Rien qui vive avec le football.',
+    aboutActLabel3:'Acte III — La naissance de VAR CLUB',
+    aboutActQuote:'"On a bâti la base de données qu\'on aurait voulu avoir. Pour garder l\'histoire en tête, capturer le football d\'aujourd\'hui, et être prêt pour celui de demain."',
+    aboutP1title:'La Science du Jeu',aboutP1desc:'Si VAR CLUB était une personnalité du football, ce serait <strong style="color:var(--white2)">Pep Guardiola</strong> — pour sa science du jeu, sa rigueur absolue, son obsession du détail que les autres ne voient pas. On ne joue pas au hasard. On joue à la donnée.',aboutP1tag:'L\'Obsession de la Précision',
+    aboutP2title:'Les Précurseurs',aboutP2desc:'Si VAR CLUB était un club, ce serait le <strong style="color:var(--white2)">FC Midtjylland</strong> — précurseur dans l\'utilisation de la data dans le recrutement et la stratégie de terrain. Voir ce que les autres ne voient pas encore. Agir avant les autres.',aboutP2tag:'Moneyball du Jeu de Cartes',
+    aboutP3title:'Tuer le Doute',aboutP3desc:'La VAR est souvent décriée car elle dénature le jeu. Mais elle l\'aide aussi — <strong style="color:var(--white2)">elle est intransigeante et ne laisse plus de place au doute.</strong> Nous souhaitons inculquer ce même principe. Chaque question mérite sa réponse. Claire, nette, précise.',aboutP3tag:'Notre Philosophie',
+    contactLabel:'Accès Anticipé',contactTitle:'PRÊT À PASSER LA<br><span>VISITE MÉDICALE ?</span>',
+    submitBtn:'Signer au Club →',footerCopy:'© 2026 VAR CLUB — Tous droits réservés',legalLink:'Mentions légales',
+  },
+  en:{
+    navGame:'The Game',navStory:'Our Story',navJoin:'Join',
+    storyEyebrow:'Our Story',storyTitle:'BORN ON<br><span>THE SOFA.</span>',
+    storyIntro:'VAR CLUB wasn\'t born in an office. It was born on a sofa, on a match night, at the exact moment when one unanswered question became an obsession.',
+    manifesteLabel:'The Story',manifesteTitle:'BORN ON THE SOFA,<br><span style="color:var(--gold)">VALIDATED BY DATA</span>',
+    manifesteQuote:'We all started there: replaying the match, reminiscing about <em>Juninho\'s free kicks</em> or <em>Zidane\'s panenka</em> in the final. But today, your expertise has grown.',
+    manifesteCol1:'When we were younger, conversations were about the present — goals that left their mark, players we loved. Now we talk statistics, deeper ones, because our experience allows it. We test each other: <strong>who really made PSG? How many players scored 120+ goals? Who played 400+ matches at the club?</strong>',
+    manifesteCol2:'VAR CLUB was born from those debates. We built a database, updated regularly — not just to keep history in mind, but to capture today\'s football and be ready for tomorrow\'s. <strong>Every question now has its answer. Clear, sharp, precise.</strong>',
+    manifesteSig:'The Founders — VAR CLUB',
+    aboutLabel:'Who we are',aboutTitle:'SUPPORTERS,<br><span style="color:var(--gold)">NOT PUBLISHERS</span>',
+    aboutStatement:'VAR CLUB wasn\'t born in an office. It was born on a sofa, on a match night, at the exact moment when <em>one unanswered question</em> became an obsession.',
+    aboutActLabel1:'Act I — The age of images',
+    aboutBody1:'Like any real football fan, our conversations always revolved around the game. When we were younger, it was about the present — goals that stayed with us, players we loved. <strong>Zidane\'s panenka</strong> in the World Cup final. <strong>Juninho\'s</strong> countless free kicks, each one more perfect than the last. Images burned into memory, the moments that make you a fan for life.',
+    aboutBody2:'We replayed matches. We argued. We were all wrong and all right at the same time. That was football among friends: a conversation that never ends, where nobody is entirely wrong, and where the truth depends on which side you\'re on.',
+    aboutActLabel2:'Act II — The age of statistics',
+    aboutBody3:'Then the years passed. Our experience and knowledge grew. The debates changed. We were no longer satisfied with "he was a great player" — we wanted to <em>know</em>. <strong>Who really left their mark on PSG?</strong> How many players scored 120+ goals at the club? Who played 400+ matches in those colours?',
+    aboutBody4:'The questions became more precise. The answers, harder to settle. And there, the problem became clear: <strong>there was no tool to referee these debates with reliable, current data accessible around a table.</strong> Existing games were frozen in time — a FIFA valid for one season, a Panini tied to one competition. Nothing that lived alongside football.',
+    aboutActLabel3:'Act III — The birth of VAR CLUB',
+    aboutActQuote:'"We built the database we wished had existed. To keep history in mind, capture today\'s football, and be ready for tomorrow\'s."',
+    aboutP1title:'The Science of the Game',aboutP1desc:'If VAR CLUB were a football personality, it would be <strong style="color:var(--white2)">Pep Guardiola</strong> — for his football science, his absolute rigour, his obsession with the detail others miss. We don\'t play by chance. We play by data.',aboutP1tag:'The Obsession with Precision',
+    aboutP2title:'The Pioneers',aboutP2desc:'If VAR CLUB were a club, it would be <strong style="color:var(--white2)">FC Midtjylland</strong> — pioneers in using data for recruitment and on-pitch strategy. Seeing what others haven\'t spotted yet. Acting before everyone else.',aboutP2tag:'Moneyball of Card Games',
+    aboutP3title:'Kill the Doubt',aboutP3desc:'VAR is often criticised for changing the game. But it also helps it — <strong style="color:var(--white2)">it is uncompromising and leaves no room for doubt.</strong> That\'s the exact same principle we wanted to build into VAR CLUB. Every question deserves its answer. Clear, sharp, precise.',aboutP3tag:'Our Philosophy',
+    contactLabel:'Early Access',contactTitle:'READY FOR YOUR<br><span>MEDICAL?</span>',
+    submitBtn:'Sign for the Club →',footerCopy:'© 2026 VAR CLUB — All rights reserved',legalLink:'Legal notice',
+  }
+};
+let currentLang='fr';
+window.t=function(k){return LANG[currentLang][k]||LANG.fr[k]||k};
+window.applyLang=function(){document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'),a=el.getAttribute('data-i18n-attr');if(a){el.setAttribute(a,t(k))}else{el.innerHTML=t(k)}});document.documentElement.lang=currentLang;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===currentLang))};
+window.switchLang=function(lang){currentLang=lang;localStorage.setItem('vc_lang',lang);applyLang()};
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a)})();
+document.querySelectorAll('a,button,input').forEach(el=>{el.addEventListener('mouseenter',()=>ring.classList.add('hovering'));el.addEventListener('mouseleave',()=>ring.classList.remove('hovering'))});
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+const sl=localStorage.getItem('vc_lang')||'fr';switchLang(sl);
+</script>
+</body>
+</html>
