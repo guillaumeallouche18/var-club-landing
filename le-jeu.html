@@ -117,6 +117,31 @@ section{padding:100px 48px;position:relative}
 .ticker-item{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:4px;color:#0d1f0d;padding:0 40px;display:flex;align-items:center;gap:20px}
 .ticker-dot{width:4px;height:4px;background:var(--black);border-radius:50%;opacity:.4}
 
+/* FAQ */
+.faq{background:var(--black2);padding:100px 48px}
+.faq-inner{max-width:800px;margin:0 auto}
+.faq-list{margin-top:48px;display:flex;flex-direction:column;gap:2px}
+.faq-item{border:1px solid rgba(34,100,34,.2);background:#0d1f0d;overflow:hidden;transition:border-color .3s}
+.faq-item.open{border-color:rgba(240,180,41,.25)}
+.faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 28px;background:none;border:none;color:var(--white);font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;text-align:left;cursor:none;transition:color .2s}
+.faq-q:hover{color:var(--gold)}
+.faq-item.open .faq-q{color:var(--gold)}
+.faq-icon{width:24px;height:24px;flex-shrink:0;border:1px solid rgba(240,180,41,.3);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold);transition:transform .3s,background .3s}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:rgba(240,180,41,.1)}
+.faq-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
+.faq-item.open .faq-body{max-height:600px}
+.faq-body-inner{padding:0 28px 28px;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;line-height:1.9;color:var(--white2);border-top:1px solid rgba(34,100,34,.15)}
+.faq-body-inner p{padding-top:20px}
+.faq-body-inner p+p{margin-top:12px}
+.faq-body-inner strong{color:var(--white);font-weight:400}
+.faq-body-inner em{color:var(--gold);font-style:normal}
+.faq-body-inner ul{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.faq-body-inner ul li{padding-left:20px;position:relative;font-size:15px}
+.faq-body-inner ul li::before{content:'→';position:absolute;left:0;color:var(--gold);opacity:.7;font-style:normal;font-family:'DM Sans',sans-serif;font-size:12px;top:2px}
+.faq-ol{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:8px;counter-reset:faq-counter}
+.faq-ol li{padding-left:28px;position:relative;font-size:15px;counter-increment:faq-counter}
+.faq-ol li::before{content:counter(faq-counter)'.';position:absolute;left:0;color:var(--gold);font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;top:1px}
+
 /* CTA BOTTOM */
 .page-cta{background:#162816;text-align:center;padding:100px 48px}
 .btn-primary{background:linear-gradient(90deg,#f0b429,#e8a200,#f0b429);color:var(--black);padding:16px 40px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;border:none;cursor:none;transition:all .3s;text-decoration:none;display:inline-block}
@@ -252,6 +277,95 @@ footer{background:#0d1f0d;padding:40px 48px;display:flex;align-items:center;just
   </div>
 </section>
 
+<!-- FAQ -->
+<section class="faq">
+  <div class="faq-inner">
+    <div class="section-label reveal" data-i18n="faqLabel">FAQ</div>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="faqTitle">LES RÈGLES DU<br><span>VESTIAIRE</span></h2>
+    <div class="faq-list" id="faqList">
+
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="faq1q">Combien de joueurs peuvent entrer sur le terrain ?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <div data-lang="fr"><p>Le jeu est conçu pour <strong>2 joueurs minimum</strong>, mais l'expérience devient réellement électrique à partir de <strong>4 joueurs</strong>. Vous pouvez monter jusqu'à 10 joueurs (ou plus) en formant des équipes. C'est là que les débats deviennent les plus intenses et que la VAR prend tout son sens.</p></div>
+            <div data-lang="en" style="display:none"><p>The game is designed for a <strong>minimum of 2 players</strong>, but the experience becomes truly electric from <strong>4 players</strong> onwards. You can go up to 10 players (or more) by forming teams. That's when the debates get most intense and the VAR makes complete sense.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-1">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="faq2q">Combien de jetons par personne ?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <div data-lang="fr"><p>La règle officielle préconise <strong>15 jetons par joueur</strong> pour une partie équilibrée et compétitive. Le jeu est totalement modulaire :</p><ul><li><em>Mode Sprint</em> — Réduisez à 5 ou 10 jetons pour une partie ultra-rapide et nerveuse (parfait pour l'apéro).</li><li><em>Mode Prolongations</em> — Montez à 20 jetons pour pousser l'analyse au bout.</li></ul><p>L'objectif reste le même : <strong>soyez le premier à vider votre stock pour l'emporter.</strong></p></div>
+            <div data-lang="en" style="display:none"><p>The official rule calls for <strong>15 tokens per player</strong> for a balanced and competitive game. The game is fully modular:</p><ul><li><em>Sprint Mode</em> — Reduce to 5 or 10 tokens for an ultra-fast, nervy game (perfect as an aperitif).</li><li><em>Extra Time Mode</em> — Go up to 20 tokens to push the analysis to the limit.</li></ul><p>The goal remains the same: <strong>be the first to empty your stock to win.</strong></p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-2">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="faq4q">Le Timer est-il obligatoire ?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <div data-lang="fr"><p>C'est vous qui fixez le règlement. Vous pouvez utiliser le <strong>countdown de 10 secondes</strong> de l'application (anneau Vert → Jaune → Rouge) pour une ambiance de fin de match irrespirable, ou choisir de le désactiver pour laisser place au débat.</p><p>Sur certaines cartes, c'est même à vous de fixer le temps imparti : <em>soyez clément ou soyez impitoyable.</em></p></div>
+            <div data-lang="en" style="display:none"><p>You set the rules. You can use the app's <strong>10-second countdown</strong> (ring Green → Yellow → Red) for a nail-biting final-whistle atmosphere, or disable it to let the debate breathe.</p><p>On some cards, you even set the time limit yourself: <em>be lenient or be ruthless.</em></p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-2">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="faq5q">Comment vérifier les réponses ?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <div data-lang="fr"><p>C'est ici que VAR CLUB marque sa différence. <strong>Pas besoin de perdre 5 minutes sur Google.</strong> Notre base de données vivante est votre arbitre officiel.</p><ol class="faq-ol"><li><em>Le Consensus</em> — Si tout le monde est d'accord sur une analyse, le point est validé.</li><li><em>L'Appel à la VAR</em> — En cas de doute ou de bluff, scannez la situation sur l'interface. Le verdict tombe : clair, net, indiscutable.</li></ol></div>
+            <div data-lang="en" style="display:none"><p>This is where VAR CLUB makes its mark. <strong>No need to waste 5 minutes on Google.</strong> Our living database is your official referee.</p><ol class="faq-ol"><li><em>The Consensus</em> — If everyone agrees on an answer, the point is validated.</li><li><em>The VAR Appeal</em> — If there's doubt or bluffing, scan the situation on the interface. The verdict lands: clear, sharp, indisputable.</li></ol></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-3">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="faq6q">Peut-on bluffer la VAR ?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <div data-lang="fr"><p>Sur le terrain, peut-être. Autour de la table, c'est risqué. Si vous annoncez un joueur qui n'a jamais mis les pieds dans le club, <strong>la VAR ne vous ratera pas.</strong></p><p>Mais si personne ne demande la vidéo et que le tour passe... <em>félicitations, vous venez de marquer un but hors-jeu que personne n'a vu.</em></p></div>
+            <div data-lang="en" style="display:none"><p>On the pitch, maybe. Around the table, it's risky. If you call a player who's never set foot in the club, <strong>the VAR won't let you off.</strong></p><p>But if nobody calls the review and your turn passes... <em>congratulations, you just scored an offside goal nobody spotted.</em></p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-3">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="faq7q">Le jeu va-t-il devenir obsolète ?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <div data-lang="fr"><p><strong>Jamais.</strong> Contrairement aux jeux de cartes classiques figés dans le temps, VAR CLUB évolue avec le vrai football.</p><p>Un transfert signé à <em>23h le soir du mercato</em> ? Notre base est mise à jour pour que vous puissiez jouer avec cette donnée dès le lendemain matin.</p></div>
+            <div data-lang="en" style="display:none"><p><strong>Never.</strong> Unlike classic card games frozen in time, VAR CLUB evolves with real football.</p><p>A transfer signed at <em>11PM on transfer deadline night</em>? Our database is updated so you can play with that data the next morning.</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- CTA -->
 <div class="page-cta">
   <div class="section-label reveal" style="justify-content:center;" data-i18n="contactLabel">Accès Anticipé</div>
@@ -300,6 +414,14 @@ const LANG={
     step4title:'Hors-jeu',step4desc:'Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.',
     contactLabel:'Accès Anticipé',contactTitle:'PRÊT À PASSER LA<br><span>VISITE MÉDICALE ?</span>',
     submitBtn:'Signer au Club →',footerCopy:'© 2026 VAR CLUB — Tous droits réservés',legalLink:'Mentions légales',
+    faqLabel:'FAQ',faqTitle:'LES RÈGLES DU<br><span>VESTIAIRE</span>',
+    faq1q:'Combien de joueurs peuvent entrer sur le terrain ?',
+    faq2q:'Combien de jetons par personne ?',
+    faq3q:'C\'est quoi les "Cartes Blanches" ?',
+    faq4q:'Le Timer est-il obligatoire ?',
+    faq5q:'Comment vérifier les réponses ?',
+    faq6q:'Peut-on bluffer la VAR ?',
+    faq7q:'Le jeu va-t-il devenir obsolète ?',
   },
   en:{
     navGame:'The Game',navStory:'Our Story',navJoin:'Join',
@@ -330,12 +452,25 @@ const LANG={
     step4title:'Offside',step4desc:'Wrong answer. You keep your tokens and wait for the next turn. VAR is ruthless.',
     contactLabel:'Early Access',contactTitle:'READY FOR YOUR<br><span>MEDICAL?</span>',
     submitBtn:'Sign for the Club →',footerCopy:'© 2026 VAR CLUB — All rights reserved',legalLink:'Legal notice',
+    faqLabel:'FAQ',faqTitle:'THE RULES OF<br><span>THE DRESSING ROOM</span>',
+    faq1q:'How many players can take to the pitch?',
+    faq2q:'How many tokens per person?',
+    faq3q:'What are the "Blank Cards"?',
+    faq4q:'Is the timer compulsory?',
+    faq5q:'How do you verify answers?',
+    faq6q:'Can you bluff the VAR?',
+    faq7q:'Will the game ever go out of date?',
   }
 };
 let currentLang='fr';
 window.t=function(k){return LANG[currentLang][k]||LANG.fr[k]||k};
 window.applyLang=function(){document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'),a=el.getAttribute('data-i18n-attr');if(a){el.setAttribute(a,t(k))}else{el.innerHTML=t(k)}});document.documentElement.lang=currentLang;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===currentLang))};
-window.switchLang=function(lang){currentLang=lang;localStorage.setItem('vc_lang',lang);applyLang()};
+window.switchLang=function(lang){
+  currentLang=lang;localStorage.setItem('vc_lang',lang);applyLang();
+  document.querySelectorAll('[data-lang]').forEach(el=>{
+    el.style.display=el.getAttribute('data-lang')===lang?'':'none';
+  });
+};
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
 (function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a)})();
@@ -343,6 +478,13 @@ document.querySelectorAll('a,button,input').forEach(el=>{el.addEventListener('mo
 const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 const sl=localStorage.getItem('vc_lang')||'fr';switchLang(sl);
+
+function toggleFaq(btn){
+  const item=btn.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el=>el.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+}
 </script>
 </body>
 </html>
