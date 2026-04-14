@@ -1,2199 +1,26 @@
 <!DOCTYPE html>
-
-
-
 <html lang="fr">
-
-
-
 <head>
-
-
-
 <meta charset="UTF-8">
-
-
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
 <title>VAR CLUB — Le Jeu de Cartes Football Intemporel</title>
-
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
-
-
 <meta name="description" content="VAR CLUB — Le jeu de cartes football conçu pour durer. Base de données vivante mise à jour à chaque mercato : nouveaux transferts, nouvelles saisons, décennie après décennie. Défaussez vos jetons. La VAR a le dernier mot.">
-
-
-
 <link rel="canonical" href="https://varclub.app">
-
-
-
 <meta property="og:title" content="VAR CLUB — Le Jeu de Cartes Football Intemporel">
-
-
-
 <meta property="og:description" content="Un jeu de cartes physique alimenté par une base de données digitale vivante. Mis à jour à chaque mercato — pour des décennies de débats football.">
-
-
-
 <meta property="og:url" content="https://varclub.app">
-
-
-
 <meta property="og:type" content="website">
-
-
-
 <meta property="og:image" content="https://varclub.app/og-preview.jpg">
-
-
-
 <meta name="twitter:card" content="summary_large_image">
-
-
-
 <meta name="twitter:title" content="VAR CLUB — Le Jeu de Cartes Football Intemporel">
-
-
-
 <meta name="twitter:description" content="Un jeu de cartes physique alimenté par une base de données digitale vivante. Mis à jour à chaque mercato — pour des décennies de débats football.">
-
-
-
 <script type="application/ld+json">
-
-
-
 {"@context":"https://schema.org","@type":"WebSite","name":"VAR CLUB","url":"https://varclub.app","description":"Le jeu de cartes football stratégique avec une base de données vivante de vrais transferts.","potentialAction":{"@type":"Action","name":"Rejoindre la liste d'attente"}}
-
-
-
 </script>
-
-
-
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
-
-
-<style>
-
-
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-
-
-
-
-
-
-:root {
-
-
-
-  --black: #0d1f0d;
-
-
-
-  --black2: #122012;
-
-
-
-  --black3: #162816;
-
-
-
-  --gold: #f0b429;
-
-
-
-  --gold2: #f5c842;
-
-
-
-  --gold3: #fde68a;
-
-
-
-  --white: #f7fdf4;
-
-
-
-  --white2: #c8dfc8;
-
-
-
-  --slate: #7a9e7a;
-
-
-
-  --r: 2px;
-
-
-
-}
-
-
-
-
-
-
-
-html { scroll-behavior: smooth; }
-
-
-
-
-
-
-
-body {
-
-
-
-  background: #0d1f0d;
-
-
-
-  color: var(--white);
-
-
-
-  font-family: 'DM Sans', sans-serif;
-
-
-
-  overflow-x: hidden;
-
-
-
-  cursor: none;
-
-
-
-}
-
-
-
-
-
-
-
-/* Custom cursor */
-
-
-
-.cursor {
-
-
-
-  position: fixed;
-
-
-
-  width: 8px; height: 8px;
-
-
-
-  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
-
-
-
-  border-radius: 50%;
-
-
-
-  pointer-events: none;
-
-
-
-  z-index: 9999;
-
-
-
-  transition: transform 0.15s ease;
-
-
-
-  transform: translate(-50%, -50%);
-
-
-
-}
-
-
-
-.cursor-ring {
-
-
-
-  position: fixed;
-
-
-
-  width: 32px; height: 32px;
-
-
-
-  border: 1px solid rgba(240,180,41,0.4);
-
-
-
-  border-radius: 50%;
-
-
-
-  pointer-events: none;
-
-
-
-  z-index: 9998;
-
-
-
-  transition: transform 0.4s ease, width 0.3s, height 0.3s, border-color 0.3s;
-
-
-
-  transform: translate(-50%, -50%);
-
-
-
-}
-
-
-
-body:hover .cursor-ring.hovering {
-
-
-
-  width: 48px; height: 48px;
-
-
-
-  border-color: var(--gold);
-
-
-
-}
-
-
-
-
-
-
-
-/* Noise overlay */
-
-
-
-body::before {
-
-
-
-  content: '';
-
-
-
-  position: fixed;
-
-
-
-  inset: 0;
-
-
-
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-
-
-
-  pointer-events: none;
-
-
-
-  z-index: 1000;
-
-
-
-  opacity: 0.4;
-
-
-
-}
-
-
-
-
-
-
-
-/* ── ANIMATIONS ── */
-
-
-
-@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
-
-
-
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-
-
-
-@keyframes shimmer { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
-
-
-
-@keyframes rotate { to { transform: rotate(360deg); } }
-
-
-
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-
-
-
-@keyframes pulse-gold { 0%,100% { box-shadow: 0 0 0 0 rgba(240,180,41,0.4); } 50% { box-shadow: 0 0 0 16px rgba(240,180,41,0); } }
-
-
-
-@keyframes scanline { 0% { top: -10%; } 100% { top: 110%; } }
-
-
-
-@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-
-
-
-
-
-
-/* ── NAV ── */
-
-
-
-nav {
-
-
-
-  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-
-
-
-  display: flex; align-items: center; justify-content: space-between;
-
-
-
-  padding: 10px 24px;
-
-
-
-  background: linear-gradient(180deg, rgba(13,31,13,0.98) 0%, transparent 100%);
-
-
-
-  animation: fadeIn 1s ease both;
-
-
-
-}
-
-
-
-.nav-brand {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: 28px; letter-spacing: 6px; color: var(--white);
-
-
-
-}
-
-
-
-.nav-brand span { color: var(--gold); }
-
-
-
-.lang-switch {
-
-
-
-  display: flex;
-
-
-
-  align-items: center;
-
-
-
-  gap: 6px;
-
-
-
-}
-
-
-
-.lang-btn {
-
-
-
-  background: transparent;
-
-
-
-  border: 1px solid rgba(240,180,41,0.25);
-
-
-
-  color: var(--slate);
-
-
-
-  padding: 3px 10px;
-
-
-
-  font-family: 'DM Sans', sans-serif;
-
-
-
-  font-size: 10px;
-
-
-
-  font-weight: 500;
-
-
-
-  letter-spacing: 2px;
-
-
-
-  cursor: pointer;
-
-
-
-  border-radius: 2px;
-
-
-
-  transition: all 0.2s;
-
-
-
-}
-
-
-
-.lang-btn.active {
-
-
-
-  border-color: var(--gold);
-
-
-
-  color: var(--gold);
-
-
-
-}
-
-
-
-.lang-btn:hover { border-color: var(--gold); color: var(--gold); }
-
-
-
-.nav-cta {
-
-
-
-  background: transparent; border: 1px solid rgba(240,180,41,0.4);
-
-
-
-  color: var(--gold); padding: 10px 24px;
-
-
-
-  font-family: 'DM Sans', sans-serif; font-size: 11px;
-
-
-
-  font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
-
-
-
-  cursor: none; transition: all 0.3s;
-
-
-
-  text-decoration: none;
-
-
-
-}
-
-
-
-.nav-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
-
-
-
-
-
-
-
-/* ── HERO ── */
-
-
-
-.hero {
-
-
-
-  min-height: 100vh;
-
-
-
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-
-
-
-  position: relative; overflow: hidden; padding: 120px 48px 80px;
-
-
-
-  text-align: center;
-
-
-
-}
-
-
-
-
-
-
-
-/* Gold mesh background */
-
-
-
-.hero::after {
-
-
-
-  content: '';
-
-
-
-  position: absolute; inset: 0;
-
-
-
-  background:
-
-
-
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(240,180,41,0.12) 0%, transparent 70%),
-
-
-
-    radial-gradient(ellipse 40% 60% at 0% 100%, rgba(34,120,34,0.08) 0%, transparent 60%),
-
-
-
-    radial-gradient(ellipse 40% 40% at 100% 50%, rgba(240,180,41,0.06) 0%, transparent 60%);
-
-
-
-  pointer-events: none;
-
-
-
-}
-
-
-
-
-
-
-
-/* Scanline effect */
-
-
-
-.hero-scanline {
-
-
-
-  position: absolute; left: 0; right: 0; height: 2px;
-
-
-
-  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.4), transparent);
-
-
-
-  animation: scanline 6s linear infinite;
-
-
-
-  pointer-events: none; z-index: 2;
-
-
-
-}
-
-
-
-
-
-
-
-/* Mots révélés par le scan */
-
-
-
-.scan-word {
-
-
-
-  position: absolute;
-
-
-
-  font-family: 'DM Sans', sans-serif;
-
-
-
-  font-weight: 300;
-
-
-
-  text-transform: uppercase;
-
-
-
-  letter-spacing: 3px;
-
-
-
-  pointer-events: none;
-
-
-
-  opacity: 0;
-
-
-
-  white-space: nowrap;
-
-
-
-  z-index: 1;
-
-
-
-}
-
-
-
-.scan-word.revealed {
-
-
-
-  animation: wordReveal 6s ease forwards;
-
-
-
-}
-
-
-
-@keyframes wordReveal {
-
-
-
-  0%   { opacity: 0; }
-
-
-
-  8%   { opacity: 1; }
-
-
-
-  70%  { opacity: 1; }
-
-
-
-  100% { opacity: 0; }
-
-
-
-}
-
-
-
-@keyframes wordReveal2 {
-
-
-
-  0%   { opacity: 0; }
-
-
-
-  8%   { opacity: 0.7; }
-
-
-
-  70%  { opacity: 0.7; }
-
-
-
-  100% { opacity: 0; }
-
-
-
-}
-
-
-
-
-
-
-
-/* Decorative lines */
-
-
-
-.hero-line-left, .hero-line-right {
-
-
-
-  position: absolute; top: 50%; width: 1px; height: 200px;
-
-
-
-  background: linear-gradient(180deg, transparent, var(--gold), transparent);
-
-
-
-  opacity: 0.2;
-
-
-
-}
-
-
-
-.hero-line-left { left: 48px; transform: translateY(-50%); }
-
-
-
-.hero-line-right { right: 48px; transform: translateY(-50%); }
-
-
-
-
-
-
-
-.hero-eyebrow {
-
-
-
-  font-family: 'DM Sans', sans-serif;
-
-
-
-  font-size: 10px; font-weight: 500; letter-spacing: 6px;
-
-
-
-  text-transform: uppercase; color: var(--gold);
-
-
-
-  margin-bottom: 28px;
-
-
-
-  animation: fadeUp 0.8s ease 0.2s both;
-
-
-
-  display: flex; align-items: center; gap: 16px;
-
-
-
-}
-
-
-
-.hero-eyebrow::before, .hero-eyebrow::after {
-
-
-
-  content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5;
-
-
-
-}
-
-
-
-
-
-
-
-.hero-title {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: clamp(80px, 14vw, 180px);
-
-
-
-  letter-spacing: 12px; line-height: 0.9;
-
-
-
-  color: var(--white);
-
-
-
-  animation: fadeUp 0.8s ease 0.3s both;
-
-
-
-  position: relative; z-index: 1;
-
-
-
-}
-
-
-
-.hero-title .accent { color: var(--gold); }
-
-
-
-.hero-title .outline {
-
-
-
-  -webkit-text-stroke: 1px rgba(240,180,41,0.3);
-
-
-
-  color: transparent;
-
-
-
-}
-
-
-
-
-
-
-
-.hero-subtitle {
-
-
-
-  font-family: 'Cormorant Garamond', serif;
-
-
-
-  font-size: clamp(16px, 2vw, 22px);
-
-
-
-  font-style: italic; font-weight: 300;
-
-
-
-  color: var(--white2);
-
-
-
-  max-width: 520px; line-height: 1.7;
-
-
-
-  margin: 28px auto 48px;
-
-
-
-  animation: fadeUp 0.8s ease 0.4s both;
-
-
-
-}
-
-
-
-
-
-
-
-.hero-cta-wrap {
-
-
-
-  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-
-
-
-  animation: fadeUp 0.8s ease 0.5s both;
-
-
-
-}
-
-
-
-.btn-primary {
-
-
-
-  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
-
-
-
-  color: var(--black);
-
-
-
-  padding: 16px 40px;
-
-
-
-  font-family: 'DM Sans', sans-serif;
-
-
-
-  font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-
-
-
-  border: none; cursor: none; transition: all 0.3s;
-
-
-
-  text-decoration: none; display: inline-block;
-
-
-
-  animation: pulse-gold 3s ease infinite;
-
-
-
-}
-
-
-
-.btn-primary:hover { background: var(--gold3); transform: translateY(-2px); }
-
-
-
-.btn-secondary {
-
-
-
-  background: transparent;
-
-
-
-  color: var(--white2);
-
-
-
-  padding: 16px 40px;
-
-
-
-  font-family: 'DM Sans', sans-serif;
-
-
-
-  font-size: 11px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase;
-
-
-
-  border: 1px solid rgba(245,240,232,0.15); cursor: none; transition: all 0.3s;
-
-
-
-  text-decoration: none; display: inline-block;
-
-
-
-}
-
-
-
-.btn-secondary:hover { border-color: var(--white2); color: var(--white); }
-
-
-
-
-
-
-
-/* Scroll indicator */
-
-
-
-.scroll-ind {
-
-
-
-  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-
-
-
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-
-
-
-  animation: fadeIn 1s ease 1.2s both;
-
-
-
-}
-
-
-
-.scroll-ind-line {
-
-
-
-  width: 1px; height: 48px;
-
-
-
-  background: linear-gradient(180deg, var(--gold), transparent);
-
-
-
-  animation: shimmer 2s ease infinite;
-
-
-
-}
-
-
-
-.scroll-ind span {
-
-
-
-  font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: var(--slate);
-
-
-
-}
-
-
-
-
-
-
-
-/* ── TICKER ── */
-
-
-
-.ticker {
-
-
-
-  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
-
-
-
-  padding: 12px 0; overflow: hidden;
-
-
-
-  position: relative; z-index: 10;
-
-
-
-}
-
-
-
-.ticker-inner {
-
-
-
-  display: flex; white-space: nowrap;
-
-
-
-  animation: marquee 20s linear infinite;
-
-
-
-}
-
-
-
-.ticker-item {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: 13px; letter-spacing: 4px; color: #0d1f0d;
-
-
-
-  padding: 0 40px;
-
-
-
-  display: flex; align-items: center; gap: 20px;
-
-
-
-}
-
-
-
-.ticker-dot { width: 4px; height: 4px; background: var(--black); border-radius: 50%; opacity: 0.4; }
-
-
-
-
-
-
-
-/* ── SECTION BASE ── */
-
-
-
-section { padding: 120px 48px; position: relative; }
-
-
-
-.section-label {
-
-
-
-  font-size: 9px; font-weight: 500; letter-spacing: 6px;
-
-
-
-  text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
-
-
-
-  display: flex; align-items: center; gap: 12px;
-
-
-
-}
-
-
-
-.section-label::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
-
-
-
-.section-title {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: clamp(36px, 6vw, 72px);
-
-
-
-  letter-spacing: 4px; line-height: 1; color: var(--white);
-
-
-
-  margin-bottom: 20px;
-
-
-
-}
-
-
-
-.section-title span { color: var(--gold); }
-
-
-
-.section-body {
-
-
-
-  font-family: 'Cormorant Garamond', serif;
-
-
-
-  font-size: 18px; font-weight: 300; line-height: 1.8;
-
-
-
-  color: var(--white2); max-width: 560px;
-
-
-
-}
-
-
-
-
-
-
-
-/* ── CONCEPT SECTION ── */
-
-
-
-.concept { background: #0f1e0f; }
-
-
-
-.concept-grid {
-
-
-
-  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
-
-
-
-  align-items: center; max-width: 1100px; margin: 0 auto;
-
-
-
-}
-
-
-
-@media(max-width:768px) { .concept-grid { grid-template-columns: 1fr; gap: 48px; } }
-
-
-
-
-
-
-
-.concept-visual {
-
-
-
-  position: relative; aspect-ratio: 1;
-
-
-
-  max-width: 400px;
-
-
-
-}
-
-
-
-.concept-ring {
-
-
-
-  position: absolute; inset: 0;
-
-
-
-  border: 1px solid rgba(240,180,41,0.15);
-
-
-
-  border-radius: 50%;
-
-
-
-  animation: rotate 20s linear infinite;
-
-
-
-}
-
-
-
-.concept-ring::before {
-
-
-
-  content: ''; position: absolute;
-
-
-
-  top: -3px; left: 50%; transform: translateX(-50%);
-
-
-
-  width: 6px; height: 6px;
-
-
-
-  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429); border-radius: 50%;
-
-
-
-}
-
-
-
-.concept-ring-2 {
-
-
-
-  position: absolute; inset: 15%;
-
-
-
-  border: 1px solid rgba(240,180,41,0.1);
-
-
-
-  border-radius: 50%;
-
-
-
-  animation: rotate 12s linear infinite reverse;
-
-
-
-}
-
-
-
-.concept-center {
-
-
-
-  position: absolute; inset: 25%;
-
-
-
-  background: #162816;
-
-
-
-  border-radius: 50%;
-
-
-
-  display: flex; align-items: center; justify-content: center;
-
-
-
-  border: 1px solid rgba(240,180,41,0.2);
-
-
-
-  animation: float 4s ease-in-out infinite;
-
-
-
-}
-
-
-
-.concept-emoji { font-size: 56px; filter: grayscale(0.2); }
-
-
-
-
-
-
-
-/* ── MODES ── */
-
-
-
-.modes { background: var(--black); }
-
-
-
-.modes-grid {
-
-
-
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-
-
-
-  background: rgba(34,100,34,0.15);
-
-
-
-  max-width: 1100px; margin: 60px auto 0;
-
-
-
-  border: 1px solid rgba(34,100,34,0.2);
-
-
-
-}
-
-
-
-@media(max-width:768px) { .modes-grid { grid-template-columns: 1fr; } }
-
-
-
-
-
-
-
-.mode-item {
-
-
-
-  background: #0d1f0d;
-
-
-
-  padding: 48px 40px;
-
-
-
-  position: relative; overflow: hidden;
-
-
-
-  transition: background 0.4s;
-
-
-
-}
-
-
-
-.mode-item:hover { background: var(--black3); }
-
-
-
-.mode-item::after {
-
-
-
-  content: '';
-
-
-
-  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-
-
-
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-
-
-
-  opacity: 0; transition: opacity 0.4s;
-
-
-
-}
-
-
-
-.mode-item:hover::after { opacity: 1; }
-
-
-
-.mode-num {
-
-
-
-  font-family: 'Cormorant Garamond', serif;
-
-
-
-  font-size: 11px; font-style: italic; color: var(--gold);
-
-
-
-  letter-spacing: 2px; margin-bottom: 20px; opacity: 0.7;
-
-
-
-}
-
-
-
-.mode-icon { font-size: 32px; margin-bottom: 16px; display: block; }
-
-
-
-.mode-name {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: 28px; letter-spacing: 3px;
-
-
-
-  color: var(--white); margin-bottom: 12px;
-
-
-
-}
-
-
-
-.mode-desc {
-
-
-
-  font-size: 13px; font-weight: 300; line-height: 1.7;
-
-
-
-  color: var(--slate);
-
-
-
-}
-
-
-
-.mode-tag {
-
-
-
-  display: inline-block; margin-top: 20px;
-
-
-
-  font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
-
-
-
-  color: var(--gold); border: 1px solid rgba(240,180,41,0.3);
-
-
-
-  padding: 4px 12px;
-
-
-
-}
-
-
-
-
-
-
-
-/* ── HOW IT WORKS ── */
-
-
-
-.how { background: #0f1e0f; }
-
-
-
-.steps {
-
-
-
-  display: grid; grid-template-columns: repeat(4,1fr); gap: 40px;
-
-
-
-  max-width: 1100px; margin: 60px auto 0;
-
-
-
-  position: relative;
-
-
-
-}
-
-
-
-@media(max-width:768px) { .steps { grid-template-columns: 1fr 1fr; } }
-
-
-
-@media(max-width:480px) { .steps { grid-template-columns: 1fr; } }
-
-
-
-
-
-
-
-.steps::before {
-
-
-
-  content: '';
-
-
-
-  position: absolute; top: 24px; left: 0; right: 0; height: 1px;
-
-
-
-  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.2), rgba(240,180,41,0.2), transparent);
-
-
-
-}
-
-
-
-.step { position: relative; padding-top: 8px; }
-
-
-
-.step-num {
-
-
-
-  width: 48px; height: 48px;
-
-
-
-  border: 1px solid rgba(240,180,41,0.3);
-
-
-
-  display: flex; align-items: center; justify-content: center;
-
-
-
-  font-family: 'Cormorant Garamond', serif;
-
-
-
-  font-size: 18px; font-style: italic; color: var(--gold);
-
-
-
-  margin-bottom: 24px; background: var(--black2);
-
-
-
-  position: relative; z-index: 1;
-
-
-
-}
-
-
-
-.step-title {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: 20px; letter-spacing: 2px; color: var(--white);
-
-
-
-  margin-bottom: 8px;
-
-
-
-}
-
-
-
-.step-desc { font-size: 12px; line-height: 1.7; color: var(--slate); font-weight: 300; }
-
-
-
-
-
-
-
-/* ── CLUBS SHOWCASE ── */
-
-
-
-.clubs { background: var(--black); overflow: hidden; }
-
-
-
-.clubs-logos {
-
-
-
-  display: flex; gap: 48px; align-items: center;
-
-
-
-  animation: marquee 25s linear infinite;
-
-
-
-  white-space: nowrap; margin-top: 60px;
-
-
-
-}
-
-
-
-.club-logo-item {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: 14px; letter-spacing: 4px;
-
-
-
-  color: rgba(245,240,232,0.2);
-
-
-
-  flex-shrink: 0; transition: color 0.3s;
-
-
-
-  display: flex; align-items: center; gap: 12px;
-
-
-
-}
-
-
-
-.club-logo-item:hover { color: var(--gold); }
-
-
-
-.club-logo-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(240,180,41,0.3); flex-shrink: 0; }
-
-
-
-
-
-
-
-/* ── CONTACT ── */
-
-
-
-.contact {
-
-
-
-  background: #162816;
-
-
-
-  text-align: center;
-
-
-
-}
-
-
-
-.contact-wrap { max-width: 640px; margin: 0 auto; }
-
-
-
-.contact-subtitle {
-
-
-
-  font-family: 'Cormorant Garamond', serif;
-
-
-
-  font-size: 20px; font-style: italic; font-weight: 300;
-
-
-
-  color: var(--white2); margin-bottom: 56px; line-height: 1.6;
-
-
-
-}
-
-
-
-
-
-
-
-.form-wrap { position: relative; }
-
-
-
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-
-
-
-@media(max-width:560px) { .form-row { grid-template-columns: 1fr; } }
-
-
-
-
-
-
-
-.field-wrap { position: relative; }
-
-
-
-.field-label {
-
-
-
-  display: block; font-size: 8px; letter-spacing: 4px;
-
-
-
-  text-transform: uppercase; color: var(--gold);
-
-
-
-  margin-bottom: 8px; opacity: 0.8;
-
-
-
-}
-
-
-
-.field-input {
-
-
-
-  width: 100%;
-
-
-
-  background: rgba(255,255,255,0.04);
-
-
-
-  border: 1px solid rgba(34,120,34,0.3);
-
-
-
-  color: var(--white);
-
-
-
-  padding: 16px 20px;
-
-
-
-  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 300;
-
-
-
-  outline: none; transition: all 0.3s;
-
-
-
-}
-
-
-
-.field-input::placeholder { color: rgba(245,240,232,0.2); }
-
-
-
-.field-input:focus {
-
-
-
-  border-color: var(--gold);
-
-
-
-  background: rgba(240,180,41,0.04);
-
-
-
-}
-
-
-
-
-
-
-
-.form-submit {
-
-
-
-  width: 100%; margin-top: 8px;
-
-
-
-  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429); color: var(--black);
-
-
-
-  border: none; padding: 18px;
-
-
-
-  font-family: 'DM Sans', sans-serif;
-
-
-
-  font-size: 11px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase;
-
-
-
-  cursor: none; transition: all 0.3s;
-
-
-
-}
-
-
-
-.form-submit:hover { background: var(--gold3); }
-
-
-
-.form-submit:active { transform: scale(0.99); }
-
-
-
-
-
-
-
-.form-note {
-
-
-
-  margin-top: 16px; font-size: 10px; color: var(--slate);
-
-
-
-  letter-spacing: 1px;
-
-
-
-}
-
-
-
-
-
-
-
-.success-msg {
-
-
-
-  display: none;
-
-
-
-  padding: 24px;
-
-
-
-  border: 1px solid rgba(240,180,41,0.3);
-
-
-
-  background: rgba(240,180,41,0.05);
-
-
-
-  text-align: center;
-
-
-
-}
-
-
-
-.success-msg.show { display: block; }
-
-
-
-.success-icon { font-size: 32px; margin-bottom: 12px; }
-
-
-
-.success-title {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: 24px; letter-spacing: 4px; color: var(--gold);
-
-
-
-  margin-bottom: 8px;
-
-
-
-}
-
-
-
-.success-sub { font-size: 13px; color: var(--white2); }
-
-
-
-
-
-
-
-/* ── FOOTER ── */
-
-
-
-footer {
-
-
-
-  background: #0d1f0d;
-
-
-
-  padding: 40px 48px;
-
-
-
-  display: flex; align-items: center; justify-content: space-between;
-
-
-
-  border-top: 1px solid rgba(34,120,34,0.2);
-
-
-
-}
-
-
-
-.footer-brand {
-
-
-
-  font-family: 'Bebas Neue', cursive;
-
-
-
-  font-size: 20px; letter-spacing: 4px; color: rgba(245,240,232,0.3);
-
-
-
-}
-
-
-
-.footer-brand span { color: rgba(240,180,41,0.4); }
-
-
-
-.footer-copy { font-size: 10px; letter-spacing: 2px; color: var(--slate); }
-
-
-
-
-
-
-
-/* ── REVEAL ANIMATIONS ── */
-
-
-
-.reveal {
-
-
-
-  opacity: 0; transform: translateY(24px);
-
-
-
-  transition: opacity 0.8s ease, transform 0.8s ease;
-
-
-
-}
-
-
-
-.reveal.visible { opacity: 1; transform: translateY(0); }
-
-
-
-.reveal-delay-1 { transition-delay: 0.1s; }
-
-
-
-.reveal-delay-2 { transition-delay: 0.2s; }
-
-
-
-.reveal-delay-3 { transition-delay: 0.3s; }
-
-
-
-.reveal-delay-4 { transition-delay: 0.4s; }
-
-
-
-</style>
-
-
-
 <link rel="alternate" hreflang="fr" href="https://varclub.app/" />
 <link rel="alternate" hreflang="en" href="https://varclub.app/?lang=en" />
 <link rel="alternate" hreflang="x-default" href="https://varclub.app/" />
@@ -2209,1122 +36,1071 @@ function updateSEO(lang){
   var od=document.querySelector('meta[property="og:description"]');if(od)od.content=s.d;
 }
 </script>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #0d1f0d;
+  --black2: #122012;
+  --black3: #162816;
+  --gold: #f0b429;
+  --gold2: #f5c842;
+  --gold3: #fde68a;
+  --white: #f7fdf4;
+  --white2: #c8dfc8;
+  --slate: #7a9e7a;
+  --r: 2px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #0d1f0d;
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Custom cursor */
+.cursor {
+  position: fixed; width: 8px; height: 8px;
+  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
+  border-radius: 50%; pointer-events: none; z-index: 9999;
+  transition: transform 0.15s ease; transform: translate(-50%, -50%);
+}
+.cursor-ring {
+  position: fixed; width: 32px; height: 32px;
+  border: 1px solid rgba(240,180,41,0.4); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transition: transform 0.4s ease, width 0.3s, height 0.3s, border-color 0.3s;
+  transform: translate(-50%, -50%);
+}
+body:hover .cursor-ring.hovering { width: 48px; height: 48px; border-color: var(--gold); }
+
+/* Noise overlay */
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 1000; opacity: 0.4;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes shimmer { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+@keyframes rotate { to { transform: rotate(360deg); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes pulse-gold { 0%,100% { box-shadow: 0 0 0 0 rgba(240,180,41,0.4); } 50% { box-shadow: 0 0 0 16px rgba(240,180,41,0); } }
+@keyframes scanline { 0% { top: -10%; } 100% { top: 110%; } }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 24px;
+  background: linear-gradient(180deg, rgba(13,31,13,0.98) 0%, transparent 100%);
+  animation: fadeIn 1s ease both;
+}
+.lang-switch { display: flex; align-items: center; gap: 6px; }
+.lang-btn {
+  background: transparent; border: 1px solid rgba(240,180,41,0.25);
+  color: var(--slate); padding: 3px 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+  letter-spacing: 2px; cursor: pointer; border-radius: 2px; transition: all 0.2s;
+}
+.lang-btn.active { border-color: var(--gold); color: var(--gold); }
+.lang-btn:hover { border-color: var(--gold); color: var(--gold); }
+.nav-cta {
+  background: transparent; border: 1px solid rgba(240,180,41,0.4);
+  color: var(--gold); padding: 10px 24px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+  cursor: none; transition: all 0.3s; text-decoration: none;
+}
+.nav-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; padding: 120px 48px 80px; text-align: center;
+}
+.hero::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(240,180,41,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 0% 100%, rgba(34,120,34,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 100% 50%, rgba(240,180,41,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-scanline {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.4), transparent);
+  animation: scanline 6s linear infinite; pointer-events: none; z-index: 2;
+}
+.scan-word {
+  position: absolute; font-family: 'DM Sans', sans-serif; font-weight: 300;
+  text-transform: uppercase; letter-spacing: 3px; pointer-events: none;
+  opacity: 0; white-space: nowrap; z-index: 1;
+}
+.hero-line-left, .hero-line-right {
+  position: absolute; top: 50%; width: 1px; height: 200px;
+  background: linear-gradient(180deg, transparent, var(--gold), transparent); opacity: 0.2;
+}
+.hero-line-left { left: 48px; transform: translateY(-50%); }
+.hero-line-right { right: 48px; transform: translateY(-50%); }
+.hero-eyebrow {
+  font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+  letter-spacing: 6px; text-transform: uppercase; color: var(--gold);
+  margin-bottom: 28px; animation: fadeUp 0.8s ease 0.2s both;
+  display: flex; align-items: center; gap: 16px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
+.hero-subtitle {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(16px, 2vw, 22px);
+  font-style: italic; font-weight: 300; color: var(--white2);
+  max-width: 520px; line-height: 1.7; margin: 28px auto 48px;
+  animation: fadeUp 0.8s ease 0.4s both;
+}
+.hero-cta-wrap { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.8s ease 0.5s both; }
+.btn-primary {
+  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429); color: var(--black);
+  padding: 16px 40px; font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+  border: none; cursor: none; transition: all 0.3s; text-decoration: none; display: inline-block;
+  animation: pulse-gold 3s ease infinite;
+}
+.btn-primary:hover { background: var(--gold3); transform: translateY(-2px); }
+.btn-secondary {
+  background: transparent; color: var(--white2); padding: 16px 40px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 400;
+  letter-spacing: 3px; text-transform: uppercase; border: 1px solid rgba(245,240,232,0.15);
+  cursor: none; transition: all 0.3s; text-decoration: none; display: inline-block;
+}
+.btn-secondary:hover { border-color: var(--white2); color: var(--white); }
+.scroll-ind {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: fadeIn 1s ease 1.2s both;
+}
+.scroll-ind-line { width: 1px; height: 48px; background: linear-gradient(180deg, var(--gold), transparent); animation: shimmer 2s ease infinite; }
+.scroll-ind span { font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: var(--slate); }
+
+/* ── TICKER ── */
+.ticker {
+  background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
+  padding: 12px 0; overflow: hidden; position: relative; z-index: 10;
+}
+.ticker-inner {
+  display: flex; white-space: nowrap;
+  animation: marquee 20s linear infinite;
+}
+.ticker-item {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 13px; letter-spacing: 4px; color: #0d1f0d;
+  padding: 0 40px; display: flex; align-items: center; gap: 20px;
+}
+.ticker-dot { width: 4px; height: 4px; background: var(--black); border-radius: 50%; opacity: 0.4; }
+
+/* ── SECTION BASE ── */
+section { padding: 120px 48px; position: relative; }
+.section-label {
+  font-size: 9px; font-weight: 500; letter-spacing: 6px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+}
+.section-label::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
+.section-title {
+  font-family: 'Bebas Neue', cursive; font-size: clamp(36px, 6vw, 72px);
+  letter-spacing: 4px; line-height: 1; color: var(--white); margin-bottom: 20px;
+}
+.section-title span { color: var(--gold); }
+.section-body {
+  font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300;
+  line-height: 1.8; color: var(--white2); max-width: 560px;
+}
+
+/* ── MANIFESTE (nouvelle section) ── */
+.manifeste {
+  background: var(--black2);
+  padding: 120px 48px;
+  position: relative; overflow: hidden;
+}
+.manifeste::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.3), transparent);
+}
+.manifeste::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.3), transparent);
+}
+.manifeste-inner {
+  max-width: 900px; margin: 0 auto;
+}
+.manifeste-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 3.5vw, 40px);
+  font-weight: 300; font-style: italic;
+  line-height: 1.6; color: var(--white);
+  position: relative; padding-left: 48px;
+  margin-bottom: 48px;
+}
+.manifeste-quote::before {
+  content: '"';
+  position: absolute; left: 0; top: -10px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 80px; color: var(--gold); opacity: 0.4;
+  line-height: 1;
+}
+.manifeste-quote em { color: var(--gold); font-style: normal; }
+.manifeste-body {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+  margin-top: 48px;
+}
+@media(max-width:768px){ .manifeste-body { grid-template-columns: 1fr; gap: 32px; } }
+.manifeste-col {
+  font-family: 'Cormorant Garamond', serif; font-size: 17px;
+  font-weight: 300; line-height: 1.9; color: var(--white2);
+}
+.manifeste-col strong { color: var(--white); font-weight: 400; }
+.manifeste-signature {
+  margin-top: 48px; padding-top: 32px;
+  border-top: 1px solid rgba(240,180,41,0.15);
+  display: flex; align-items: center; gap: 16px;
+}
+.manifeste-sig-line { flex: 1; height: 1px; background: rgba(240,180,41,0.1); }
+.manifeste-sig-text {
+  font-size: 9px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gold); opacity: 0.6;
+}
+
+/* ── CONCEPT SECTION ── */
+.concept { background: #0f1e0f; }
+.concept-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: center; max-width: 1100px; margin: 0 auto;
+}
+@media(max-width:768px) { .concept-grid { grid-template-columns: 1fr; gap: 48px; } }
+.concept-visual { position: relative; aspect-ratio: 1; max-width: 400px; }
+.concept-ring {
+  position: absolute; inset: 0; border: 1px solid rgba(240,180,41,0.15);
+  border-radius: 50%; animation: rotate 20s linear infinite;
+}
+.concept-ring::before {
+  content: ''; position: absolute; top: -3px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 6px; background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429); border-radius: 50%;
+}
+.concept-ring-2 {
+  position: absolute; inset: 15%; border: 1px solid rgba(240,180,41,0.1);
+  border-radius: 50%; animation: rotate 12s linear infinite reverse;
+}
+.concept-center {
+  position: absolute; inset: 25%; background: #162816; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(240,180,41,0.2); animation: float 4s ease-in-out infinite;
+}
+.concept-emoji { font-size: 56px; filter: grayscale(0.2); }
+
+/* ── ANTI-OBSOLESCENCE (nouvelle section) ── */
+.obsolescence {
+  background: var(--black);
+  padding: 120px 48px;
+  position: relative; overflow: hidden;
+}
+.obsolescence-grid {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: center;
+}
+@media(max-width:768px){ .obsolescence-grid { grid-template-columns: 1fr; gap: 48px; } }
+.obsolescence-text .section-body { max-width: 100%; }
+.obsolescence-text .section-body + .section-body { margin-top: 20px; }
+.obsolescence-callout {
+  margin-top: 32px; padding: 24px 28px;
+  border: 1px solid rgba(240,180,41,0.25);
+  background: rgba(240,180,41,0.04);
+  position: relative;
+}
+.obsolescence-callout::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%; background: var(--gold);
+}
+.obsolescence-callout p {
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  font-weight: 400; letter-spacing: 1px; line-height: 1.8;
+  color: var(--white2);
+}
+.obsolescence-callout strong { color: var(--gold); }
+.obsolescence-versus {
+  display: flex; flex-direction: column; gap: 16px;
+}
+.versus-item {
+  display: flex; align-items: center; gap: 20px;
+  padding: 20px 24px;
+  border: 1px solid rgba(34,100,34,0.2);
+  background: #0f1e0f;
+  transition: border-color 0.3s;
+}
+.versus-item:hover { border-color: rgba(240,180,41,0.2); }
+.versus-item.dead { opacity: 0.5; }
+.versus-label {
+  font-family: 'Bebas Neue', cursive; font-size: 16px; letter-spacing: 3px;
+  flex: 1;
+}
+.versus-label.dead-text { color: var(--slate); text-decoration: line-through; text-decoration-color: rgba(120,150,120,0.5); }
+.versus-label.alive-text { color: var(--gold); }
+.versus-status {
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  padding: 4px 10px; border: 1px solid;
+}
+.versus-status.dead { color: var(--slate); border-color: rgba(120,150,120,0.2); }
+.versus-status.alive { color: var(--gold); border-color: rgba(240,180,41,0.4); animation: shimmer 2.5s ease infinite; }
+
+/* ── MODES ── */
+.modes { background: var(--black); }
+.modes-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: rgba(34,100,34,0.15); max-width: 1100px; margin: 60px auto 0;
+  border: 1px solid rgba(34,100,34,0.2);
+}
+@media(max-width:768px) { .modes-grid { grid-template-columns: 1fr; } }
+.mode-item {
+  background: #0d1f0d; padding: 48px 40px; position: relative;
+  overflow: hidden; transition: background 0.4s;
+}
+.mode-item:hover { background: var(--black3); }
+.mode-item::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0; transition: opacity 0.4s;
+}
+.mode-item:hover::after { opacity: 1; }
+.mode-num { font-family: 'Cormorant Garamond', serif; font-size: 11px; font-style: italic; color: var(--gold); letter-spacing: 2px; margin-bottom: 20px; opacity: 0.7; }
+.mode-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+.mode-name { font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 3px; color: var(--white); margin-bottom: 12px; }
+.mode-desc { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--slate); }
+.mode-tag { display: inline-block; margin-top: 20px; font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(240,180,41,0.3); padding: 4px 12px; }
+
+/* ── HOW IT WORKS ── */
+.how { background: #0f1e0f; }
+.steps {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 40px;
+  max-width: 1100px; margin: 60px auto 0; position: relative;
+}
+@media(max-width:768px) { .steps { grid-template-columns: 1fr 1fr; } }
+@media(max-width:480px) { .steps { grid-template-columns: 1fr; } }
+.steps::before {
+  content: ''; position: absolute; top: 24px; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.2), rgba(240,180,41,0.2), transparent);
+}
+.step { position: relative; padding-top: 8px; }
+.step-num {
+  width: 48px; height: 48px; border: 1px solid rgba(240,180,41,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic;
+  color: var(--gold); margin-bottom: 24px; background: var(--black2); position: relative; z-index: 1;
+}
+.step-title { font-family: 'Bebas Neue', cursive; font-size: 20px; letter-spacing: 2px; color: var(--white); margin-bottom: 8px; }
+.step-desc { font-size: 12px; line-height: 1.7; color: var(--slate); font-weight: 300; }
+
+/* ── VAR TRUTH (nouvelle section — "La Règle d'or" enrichie) ── */
+.var-truth {
+  background: #0d1f0d;
+  padding: 120px 48px;
+  position: relative; overflow: hidden;
+}
+.var-truth-inner {
+  max-width: 1100px; margin: 0 auto;
+}
+.var-truth-header {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: start; margin-bottom: 80px;
+}
+@media(max-width:768px){ .var-truth-header { grid-template-columns: 1fr; gap: 40px; } }
+.var-truth-statement {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 300; line-height: 1.8; color: var(--white2);
+}
+.var-truth-statement em { color: var(--gold); font-style: normal; font-weight: 400; }
+.var-truth-forgotten {
+  border: 1px solid rgba(240,180,41,0.15);
+  padding: 32px;
+  background: rgba(240,180,41,0.02);
+  position: relative;
+}
+.var-truth-forgotten::before {
+  content: 'LE SAVIEZ-VOUS ?';
+  position: absolute; top: -10px; left: 24px;
+  background: #0d1f0d;
+  font-size: 8px; letter-spacing: 5px; color: var(--gold);
+  padding: 0 8px;
+}
+.forgotten-title {
+  font-family: 'Bebas Neue', cursive; font-size: 18px; letter-spacing: 3px;
+  color: var(--white); margin-bottom: 12px;
+}
+.forgotten-desc {
+  font-family: 'Cormorant Garamond', serif; font-size: 15px;
+  font-weight: 300; line-height: 1.8; color: var(--slate); font-style: italic;
+}
+.forgotten-desc strong { color: var(--white2); font-weight: 400; font-style: normal; }
+
+/* ── CLUBS SHOWCASE ── */
+.clubs { background: var(--black); overflow: hidden; }
+.clubs-logos {
+  display: flex; gap: 48px; align-items: center;
+  animation: marquee 25s linear infinite; white-space: nowrap; margin-top: 60px;
+}
+.club-logo-item {
+  font-family: 'Bebas Neue', cursive; font-size: 14px; letter-spacing: 4px;
+  color: rgba(245,240,232,0.2); flex-shrink: 0; transition: color 0.3s;
+  display: flex; align-items: center; gap: 12px;
+}
+.club-logo-item:hover { color: var(--gold); }
+.club-logo-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(240,180,41,0.3); flex-shrink: 0; }
+
+/* ── CONTACT ── */
+.contact { background: #162816; text-align: center; }
+.contact-wrap { max-width: 640px; margin: 0 auto; }
+.contact-subtitle {
+  font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic;
+  font-weight: 300; color: var(--white2); margin-bottom: 56px; line-height: 1.6;
+}
+.form-wrap { position: relative; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media(max-width:560px) { .form-row { grid-template-columns: 1fr; } }
+.field-wrap { position: relative; }
+.field-label { display: block; font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; opacity: 0.8; }
+.field-input {
+  width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(34,120,34,0.3);
+  color: var(--white); padding: 16px 20px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 300; outline: none; transition: all 0.3s;
+}
+.field-input::placeholder { color: rgba(245,240,232,0.2); }
+.field-input:focus { border-color: var(--gold); background: rgba(240,180,41,0.04); }
+.form-submit {
+  width: 100%; margin-top: 8px; background: linear-gradient(90deg, #f0b429, #e8a200, #f0b429);
+  color: var(--black); border: none; padding: 18px; font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase;
+  cursor: none; transition: all 0.3s;
+}
+.form-submit:hover { background: var(--gold3); }
+.form-submit:active { transform: scale(0.99); }
+.form-note { margin-top: 16px; font-size: 10px; color: var(--slate); letter-spacing: 1px; }
+.success-msg { display: none; padding: 24px; border: 1px solid rgba(240,180,41,0.3); background: rgba(240,180,41,0.05); text-align: center; }
+.success-msg.show { display: block; }
+.success-icon { font-size: 32px; margin-bottom: 12px; }
+.success-title { font-family: 'Bebas Neue', cursive; font-size: 24px; letter-spacing: 4px; color: var(--gold); margin-bottom: 8px; }
+.success-sub { font-size: 13px; color: var(--white2); }
+
+/* ── FOOTER ── */
+footer {
+  background: #0d1f0d; padding: 40px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(34,120,34,0.2);
+}
+.footer-copy { font-size: 10px; letter-spacing: 2px; color: var(--slate); }
+
+/* ── REVEAL ANIMATIONS ── */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── QUI SOMMES-NOUS ── */
+.about {
+  background: #0f1e0f;
+  padding: 120px 48px;
+  position: relative; overflow: hidden;
+}
+.about::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.25), transparent);
+}
+.about-inner { max-width: 1100px; margin: 0 auto; }
+
+.about-intro {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: start; margin-bottom: 80px;
+}
+@media(max-width:768px){ .about-intro { grid-template-columns: 1fr; gap: 40px; margin-bottom: 56px; } }
+
+.about-statement {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 2.8vw, 32px);
+  font-weight: 300; font-style: italic;
+  line-height: 1.7; color: var(--white);
+}
+.about-statement em { color: var(--gold); font-style: normal; }
+
+.about-body {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-weight: 300; line-height: 1.9; color: var(--white2);
+}
+.about-body strong { color: var(--white); font-weight: 400; }
+.about-body + .about-body { margin-top: 20px; }
+
+/* Trois piliers — inspiré Pep / Midtjylland */
+.about-pillars {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: rgba(34,100,34,0.15);
+  border: 1px solid rgba(34,100,34,0.2);
+  margin-top: 0;
+}
+@media(max-width:768px){ .about-pillars { grid-template-columns: 1fr; } }
+
+.about-pillar {
+  background: #0d1f0d;
+  padding: 40px 36px;
+  position: relative; overflow: hidden;
+  transition: background 0.4s;
+}
+.about-pillar:hover { background: var(--black3); }
+.about-pillar::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0; transition: opacity 0.4s;
+}
+.about-pillar:hover::after { opacity: 1; }
+
+.about-pillar-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; font-style: italic; color: var(--gold);
+  letter-spacing: 2px; margin-bottom: 16px; opacity: 0.7;
+}
+.about-pillar-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22px; letter-spacing: 3px;
+  color: var(--white); margin-bottom: 12px;
+}
+.about-pillar-desc {
+  font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--slate);
+}
+.about-pillar-tag {
+  display: inline-block; margin-top: 20px;
+  font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(240,180,41,0.3); padding: 4px 12px;
+}
+
+/* Actes narratifs */
+.about-act {
+  margin-bottom: 64px;
+}
+.about-act-label {
+  font-size: 9px; font-weight: 500; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--gold); opacity: 0.7;
+  margin-bottom: 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.about-act-label::before { content: ''; width: 24px; height: 1px; background: var(--gold); opacity: 0.5; }
+.about-act-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+}
+@media(max-width:768px){ .about-act-grid { grid-template-columns: 1fr; gap: 24px; } }
+.about-act-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 300; font-style: italic;
+  line-height: 1.7; color: var(--white);
+  padding: 32px 40px;
+  border: 1px solid rgba(240,180,41,0.2);
+  background: rgba(240,180,41,0.03);
+  position: relative;
+}
+.about-act-quote::before {
+  content: '"';
+  position: absolute; left: 16px; top: 10px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px; color: var(--gold); opacity: 0.3;
+  line-height: 1;
+}
+
+@media(max-width:768px){
+  section { padding: 80px 24px; }
+  .manifeste { padding: 80px 24px; }
+  .obsolescence { padding: 80px 24px; }
+  .var-truth { padding: 80px 24px; }
+  .about { padding: 80px 24px; }
+  footer { flex-direction: column; gap: 16px; text-align: center; }
+}
+</style>
 </head>
-
-
 
 <body>
 
-
-
-
-
-
-
 <div class="cursor" id="cursor"></div>
-
-
-
 <div class="cursor-ring" id="cursorRing"></div>
 
-
-
-
-
-
-
 <!-- NAV -->
-
-
-
 <nav>
-
-
-
   <img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:32px;width:auto;">
-
-
-
   <div style="display:flex;align-items:center;gap:6px;">
-
-
-
     <div class="lang-switch">
-
-
-
       <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
-
-
-
       <span style="color:rgba(240,180,41,0.3);font-size:10px;">|</span>
-
-
-
       <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
-
-
-
     </div>
-
-
-
     <a href="#contact" class="nav-cta" data-i18n="navJoin">Rejoindre</a>
-
-
-
   </div>
-
-
-
 </nav>
 
-
-
-
-
-
-
 <!-- HERO -->
-
-
-
 <section class="hero">
-
-
-
   <div class="hero-scanline" id="scanline"></div>
-
-
-
-  <!-- Mots révélés par le scan -->
-
-
-
   <div id="scan-words-layer" style="position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;"></div>
-
-
-
   <div class="hero-line-left"></div>
-
-
-
   <div class="hero-line-right"></div>
 
-
-
-  
-
-
-
   <!-- Terrain de foot SVG en fond -->
-
-
-
   <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;">
-
-
-
     <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice"
-
-
-
          style="width:100%;height:100%;opacity:0.06;transform:translateY(-10%);">
-
-
-
-      <!-- Fond transparent — le vert vient du body -->
-
-
-
-      <!-- Bordure du terrain -->
-
-
-
       <rect x="60" y="40" width="1080" height="620" fill="none" stroke="white" stroke-width="2.5"/>
-
-
-
-      <!-- Ligne médiane -->
-
-
-
       <line x1="600" y1="40" x2="600" y2="660" stroke="white" stroke-width="2"/>
-
-
-
-      <!-- Rond central -->
-
-
-
       <circle cx="600" cy="350" r="91" fill="none" stroke="white" stroke-width="2"/>
-
-
-
-      <!-- Point central -->
-
-
-
       <circle cx="600" cy="350" r="4" fill="white"/>
-
-
-
-      <!-- Surface de réparation gauche -->
-
-
-
       <rect x="60" y="215" width="165" height="270" fill="none" stroke="white" stroke-width="2"/>
-
-
-
-      <!-- Surface de but gauche -->
-
-
-
       <rect x="60" y="290" width="55" height="120" fill="none" stroke="white" stroke-width="2"/>
-
-
-
-      <!-- Arc de cercle gauche -->
-
-
-
       <path d="M225,270 A91,91 0 0,1 225,430" fill="none" stroke="white" stroke-width="2"/>
-
-
-
-      <!-- Point de penalty gauche -->
-
-
-
       <circle cx="170" cy="350" r="4" fill="white"/>
-
-
-
-      <!-- Surface de réparation droite -->
-
-
-
       <rect x="975" y="215" width="165" height="270" fill="none" stroke="white" stroke-width="2"/>
-
-
-
-      <!-- Surface de but droite -->
-
-
-
       <rect x="1085" y="290" width="55" height="120" fill="none" stroke="white" stroke-width="2"/>
-
-
-
-      <!-- Arc de cercle droit -->
-
-
-
       <path d="M975,270 A91,91 0 0,0 975,430" fill="none" stroke="white" stroke-width="2"/>
-
-
-
-      <!-- Point de penalty droit -->
-
-
-
       <circle cx="1030" cy="350" r="4" fill="white"/>
-
-
-
-      <!-- Coins du terrain (arcs) -->
-
-
-
       <path d="M60,56 A18,18 0 0,1 76,40" fill="none" stroke="white" stroke-width="2"/>
-
-
-
       <path d="M1124,40 A18,18 0 0,1 1140,56" fill="none" stroke="white" stroke-width="2"/>
-
-
-
       <path d="M1140,644 A18,18 0 0,1 1124,660" fill="none" stroke="white" stroke-width="2"/>
-
-
-
       <path d="M76,660 A18,18 0 0,1 60,644" fill="none" stroke="white" stroke-width="2"/>
-
-
-
     </svg>
-
-
-
-    <!-- Dégradé qui noie le terrain vers les bords -->
-
-
-
     <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 50%, transparent 30%, #0d1f0d 90%);"></div>
-
-
-
-    <!-- Dégradé haut/bas pour fondre -->
-
-
-
     <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0d1f0d 0%,transparent 25%,transparent 75%,#0d1f0d 100%);"></div>
-
-
-
   </div>
 
-
-
-
-
-
-
   <div class="hero-eyebrow" style="position:relative;z-index:1;" data-i18n="heroEyebrow">Le Jeu de Cartes Football</div>
-
-
-
-
-
-
 
   <div style="position:relative;z-index:1;animation:fadeUp 0.8s ease 0.3s both;">
     <img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:clamp(120px,20vw,240px);width:auto;">
   </div>
 
-
-
-
-
-
-
   <p class="hero-subtitle" style="position:relative;z-index:1;">
-
-
-
-    <span data-i18n="heroSub">Défaussez vos jetons. Battez vos adversaires. Pour des décennies.<br>Un jeu de cartes physique alimenté par une base de données digitale vivante — mise à jour à chaque mercato.</span>
-
-
-
+    <span data-i18n="heroSub">Le football change. Votre jeu aussi.<br>Un jeu de cartes physique, une base de données vivante — mise à jour à chaque mercato.</span>
   </p>
 
-
-
-
-
-
-
   <div class="hero-cta-wrap">
-
-
-
-    <a href="#contact" class="btn-primary" data-i18n="heroCta1">Être notifié au lancement</a>
-
-
-
+    <a href="#contact" class="btn-primary" data-i18n="heroCta1">Passer la visite médicale →</a>
     <a href="#concept" class="btn-secondary" data-i18n="heroCta2">Découvrir le jeu</a>
-
-
-
   </div>
-
-
-
-
-
-
 
   <div class="scroll-ind">
-
-
-
     <div class="scroll-ind-line"></div>
-
-
-
     <span>Scroll</span>
-
-
-
   </div>
-
-
-
 </section>
-
-
-
-
-
-
 
 <!-- TICKER -->
-
-
-
 <div class="ticker">
-
-
-
   <div class="ticker-inner">
-
-
-
     <div class="ticker-item">PSG <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">REAL MADRID <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">FC BARCELONA <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">MANCHESTER CITY <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">LIVERPOOL <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">CHELSEA <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">BAYERN MUNICH <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">JUVENTUS <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">AC MILAN <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">INTER MILAN <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">ARSENAL <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">DORTMUND <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">ATLÉTICO <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">MARSEILLE <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">LYON <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">NAPOLI <span class="ticker-dot"></span></div>
-
-
-
-    <!-- Duplicate for seamless loop -->
-
-
-
     <div class="ticker-item">PSG <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">REAL MADRID <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">FC BARCELONA <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">MANCHESTER CITY <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">LIVERPOOL <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">CHELSEA <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">BAYERN MUNICH <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">JUVENTUS <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">AC MILAN <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">INTER MILAN <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">ARSENAL <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">DORTMUND <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">ATLÉTICO <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">MARSEILLE <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">LYON <span class="ticker-dot"></span></div>
-
-
-
     <div class="ticker-item">NAPOLI <span class="ticker-dot"></span></div>
-
-
-
   </div>
-
-
-
 </div>
 
+<!-- MANIFESTE — "Né sur le canapé, validé par la Data" -->
+<section class="manifeste" id="manifeste">
+  <div class="manifeste-inner">
+    <div class="section-label reveal" data-i18n="manifesteLabel">L'Histoire</div>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="manifesteTitle">NÉ SUR LE CANAPÉ,<br><span>VALIDÉ PAR LA DATA</span></h2>
 
+    <div class="manifeste-quote reveal reveal-delay-2" data-i18n="manifesteQuote">
+      On a tous commencé là : à refaire le match, à se remémorer les <em>coups francs de Juninho</em> ou la <em>panenka de Zidane</em> en finale. Mais aujourd'hui, votre expertise a grandi.
+    </div>
 
+    <div class="manifeste-body">
+      <div class="manifeste-col reveal reveal-delay-2" data-i18n="manifesteCol1">
+        Plus jeune, les discussions tournaient autour du présent — les buts qui nous marquaient, les joueurs qu'on adorait. Désormais, on parle de statistiques, plus poussées, car notre expérience nous le permet. On se teste entre amis : <strong>qui a vraiment marqué le PSG ? Combien de joueurs ont plus de 120 buts au club ? Qui a fait plus de 400 matchs ?</strong>
+      </div>
+      <div class="manifeste-col reveal reveal-delay-3" data-i18n="manifesteCol2">
+        De ces discussions et débats est né VAR CLUB. Nous avons bâti une base de données, mise à jour régulièrement — pour non seulement garder l'histoire en tête, mais aussi capturer le football d'aujourd'hui et être prêt pour celui de demain. <strong>Désormais, chaque question bénéficie de ses réponses. Claires, nettes et précises.</strong>
+      </div>
+    </div>
 
-
-
+    <div class="manifeste-signature reveal reveal-delay-4">
+      <div class="manifeste-sig-line"></div>
+      <div class="manifeste-sig-text" data-i18n="manifesteSig">Les Fondateurs — VAR CLUB</div>
+      <div class="manifeste-sig-line"></div>
+    </div>
+  </div>
+</section>
 
 <!-- CONCEPT -->
-
-
-
 <section class="concept" id="concept">
-
-
-
   <div class="concept-grid">
-
-
-
     <div>
-
-
-
       <div class="section-label reveal" data-i18n="conceptLabel">Le Concept</div>
-
-
-
       <h2 class="section-title reveal reveal-delay-1" data-i18n="conceptTitle">L'OBJECTIF :<br><span>ZÉRO JETON</span></h2>
-
-
-
       <p class="section-body reveal reveal-delay-2">
-
-
-
         <span data-i18n="conceptP1">Chaque joueur démarre avec 15 jetons. Pour gagner, vous devez tous les défausser en validant vos analyses football devant vos adversaires.</span>
-
-
-
       </p>
-
-
-
       <p class="section-body reveal reveal-delay-3" style="margin-top:16px; font-size:15px;">
-
-
-
         <span data-i18n="conceptP2">Bonne analyse ? Vous défaussez vos jetons. Erreur face à la VAR ? Vous les gardez et votre tour s'arrête. Simple. Implacable.</span>
-
-
-
       </p>
-
-
-
       <p class="section-body reveal reveal-delay-3" style="margin-top:20px; font-size:14px; border-left: 2px solid var(--gold); padding-left: 20px; opacity: 0.85;">
-
-
-
         <span data-i18n="conceptP3">La base de données est mise à jour régulièrement. Nouveaux transferts, nouvelles saisons — VAR Club ne vieillit jamais.</span>
-
-
-
       </p>
-
-
-
     </div>
-
-
-
     <div class="concept-visual reveal reveal-delay-2">
-
-
-
       <div class="concept-ring"></div>
-
-
-
       <div class="concept-ring-2"></div>
-
-
-
       <div class="concept-center">
-
-
-
         <span class="concept-emoji">⚽</span>
-
-
-
       </div>
-
-
-
     </div>
-
-
-
   </div>
-
-
-
 </section>
 
+<!-- ANTI-OBSOLESCENCE -->
+<section class="obsolescence">
+  <div class="obsolescence-grid">
+    <div class="obsolescence-text">
+      <div class="section-label reveal" data-i18n="obsLabel">Ce qui change tout</div>
+      <h2 class="section-title reveal reveal-delay-1" data-i18n="obsTitle">LE SEUL JEU QUI NE<br><span>PREND JAMAIS SA RETRAITE</span></h2>
+      <p class="section-body reveal reveal-delay-2" data-i18n="obsBody1">
+        Un album Panini s'arrête à la fin de l'été. Un FIFA devient obsolète en septembre. VAR CLUB est vivant.
+      </p>
+      <p class="section-body reveal reveal-delay-3" style="margin-top:16px;" data-i18n="obsBody2">
+        Nous avons tué l'obsolescence pour créer le premier jeu de cartes synchronisé avec la réalité du marché. Vous jouez avec le football d'aujourd'hui, pas avec les souvenirs de l'année dernière.
+      </p>
+      <div class="obsolescence-callout reveal reveal-delay-4">
+        <p data-i18n="obsCallout">Un transfert signé à <strong>23h00</strong> le dernier jour du mercato ? Il est dans notre base à votre réveil. Le football ne s'arrête jamais de s'écrire — <strong>VAR CLUB ne s'arrête jamais de lire.</strong></p>
+      </div>
+    </div>
 
-
-
-
-
+    <div class="reveal reveal-delay-2">
+      <div class="obsolescence-versus">
+        <div class="versus-item dead">
+          <span class="versus-label dead-text" data-i18n="versusLabel1">FIFA 24</span>
+          <span class="versus-status dead" data-i18n="versusStatus1">Expiré</span>
+        </div>
+        <div class="versus-item dead">
+          <span class="versus-label dead-text" data-i18n="versusLabel2">Panini 2023</span>
+          <span class="versus-status dead" data-i18n="versusStatus2">Expiré</span>
+        </div>
+        <div class="versus-item dead">
+          <span class="versus-label dead-text" data-i18n="versusLabel3">Trivia classique</span>
+          <span class="versus-status dead" data-i18n="versusStatus3">Figé</span>
+        </div>
+        <div class="versus-item" style="border-color:rgba(240,180,41,0.3);background:#0f1e0f;">
+          <span class="versus-label alive-text" data-i18n="versusLabel4">VAR CLUB</span>
+          <span class="versus-status alive" data-i18n="versusStatus4">Toujours en jeu</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- MODES -->
-
-
-
 <section class="modes" id="modes">
-
-
-
   <div style="max-width:1100px; margin:0 auto;">
-
-
-
     <div class="section-label reveal" data-i18n="modesLabel">Les Trois Modes de Jeu</div>
-
-
-
     <h2 class="section-title reveal reveal-delay-1" data-i18n="modesTitle">CHOISISSEZ<br><span>VOTRE MODE</span></h2>
-
-
-
   </div>
-
-
-
   <div class="modes-grid">
-
-
-
     <div class="mode-item reveal">
-
-
-
       <div class="mode-num">01</div>
-
-
-
       <span class="mode-icon">🌟</span>
-
-
-
       <div class="mode-name" data-i18n="mode1name">L'Identité</div>
-
-
-
       <p class="mode-desc" data-i18n="mode1desc">Tire une carte club. Annonce la ville, le stade, le surnom avant la révélation. Chaque bonne réponse = jetons défaussés.</p>
-
-
-
       <span class="mode-tag" data-i18n="mode1tag">Le Jeune Passionné</span>
-
-
-
     </div>
-
-
-
     <div class="mode-item reveal reveal-delay-1">
-
-
-
       <div class="mode-num">02</div>
-
-
-
       <span class="mode-icon">🛡️</span>
-
-
-
       <div class="mode-name" data-i18n="mode2name">Le Duel VAR</div>
-
-
-
       <p class="mode-desc" data-i18n="mode2desc">Tire une carte Club + une carte Question. Fais ton annonce à voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.</p>
-
-
-
       <span class="mode-tag" data-i18n="mode2tag">Confrontation directe</span>
-
-
-
     </div>
-
-
-
     <div class="mode-item reveal reveal-delay-2">
-
-
-
       <div class="mode-num">03</div>
-
-
-
       <span class="mode-icon">🔥</span>
-
-
-
       <div class="mode-name" data-i18n="mode3name">Le Mode Expert</div>
-
-
-
       <p class="mode-desc" data-i18n="mode3desc">Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.</p>
-
-
-
       <span class="mode-tag" data-i18n="mode3tag">Pour les amoureux de la data</span>
-
-
-
     </div>
-
-
-
   </div>
-
-
-
 </section>
 
-
-
-
-
-
-
-<!-- DIFFERENTIATEUR -->
-
-
-
+<!-- BASE DE DONNÉES VIVANTE -->
 <section style="padding:100px 48px;background:#0f1e0f;position:relative;">
-
-
-
   <div style="max-width:1100px;margin:0 auto;">
-
-
-
-    <div class="section-label reveal" style="justify-content:center;" data-i18n="diffLabel">Ce qui change tout</div>
-
-
-
+    <div class="section-label reveal" style="justify-content:center;" data-i18n="diffLabel">L'omniscience au creux de la main</div>
     <h2 class="section-title reveal reveal-delay-1" style="text-align:center;" data-i18n="diffTitle">UNE BASE DE<br><span>DONNÉES VIVANTE</span></h2>
-
-
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;max-width:900px;margin:40px auto 0;text-align:center;">
-
-
-
+    <p class="section-body reveal reveal-delay-2" style="text-align:center;margin:0 auto 48px;max-width:620px;font-size:16px;" data-i18n="diffIntro">
+      17 clubs légendaires. Des milliers de trajectoires de vie. Des millions de points de données. Notre interface n'est pas un simple accessoire — c'est le cœur battant du jeu. Elle ne dort jamais.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;max-width:900px;margin:0 auto;text-align:center;">
       <div class="reveal">
-
-
-
         <div style="font-size:36px;margin-bottom:12px;">🔄</div>
-
-
-
-        <div class="mode-title" style="font-size:20px;" data-i18n="diff1title">Mis à jour régulièrement</div>
-
-
-
+        <div class="mode-name" style="font-size:20px;" data-i18n="diff1title">Mis à jour régulièrement</div>
         <p class="mode-desc" data-i18n="diff1desc">Chaque transfert, chaque saison est intégrée. Le jeu reste précis et actuel, années après années.</p>
-
-
-
       </div>
-
-
-
       <div class="reveal">
-
-
-
         <div style="font-size:36px;margin-bottom:12px;">🏟️</div>
-
-
-
-        <div class="mode-title" style="font-size:20px;" data-i18n="diff2title">17 clubs majeurs</div>
-
-
-
+        <div class="mode-name" style="font-size:20px;" data-i18n="diff2title">17 clubs majeurs</div>
         <p class="mode-desc" data-i18n="diff2desc">Les plus grandes équipes d'Europe. Ligue 1, Liga, Premier League, Bundesliga, Serie A.</p>
-
-
-
       </div>
-
-
-
       <div class="reveal">
-
-
-
         <div style="font-size:36px;margin-bottom:12px;">📊</div>
-
-
-
-        <div class="mode-title" style="font-size:20px;" data-i18n="diff3title">Des milliers de joueurs</div>
-
-
-
+        <div class="mode-name" style="font-size:20px;" data-i18n="diff3title">Des milliers de joueurs</div>
         <p class="mode-desc" data-i18n="diff3desc">Nationalités, gardiens, transferts, statistiques — une profondeur de données unique dans un jeu de cartes.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- VAR TRUTH — La Règle d'or enrichie avec le concept "soldat oublié" -->
+<section class="var-truth">
+  <div class="var-truth-inner">
+    <div class="section-label reveal" data-i18n="ruleLabel">La Règle d'or</div>
+    <h2 class="section-title reveal reveal-delay-1" style="margin-bottom:48px;" data-i18n="ruleTitle">LA <span>VAR</span> N'A PAS<br>D'AMIS. ELLE A DES FAITS.</h2>
 
-
+    <div class="var-truth-header">
+      <div class="var-truth-statement reveal reveal-delay-1" data-i18n="ruleStatement">
+        La VAR a toujours eu cette capacité à trancher — pas toujours du bon côté, mais <em>du côté le plus juste</em>. Dans VAR CLUB, chaque réponse est passée au crible de notre base de données. <em>Le doute n'a plus sa place à votre table.</em>
       </div>
 
-
-
+      <div class="var-truth-forgotten reveal reveal-delay-2">
+        <div class="forgotten-title" data-i18n="forgottenTitle">Le Soldat Oublié</div>
+        <p class="forgotten-desc" data-i18n="forgottenDesc">
+          Que le joueur ait marqué l'histoire ou qu'il ait simplement <strong>foulé la pelouse pour un match oublié en plein hiver</strong>, la VAR s'en souvient. Crampon au pied, sur le terrain pour ce club à un moment donné — qu'on l'aime ou non. C'est ici que la VAR fait la différence : elle réhabilite l'oublié.
+        </p>
+      </div>
     </div>
 
-
-
+    <!-- Steps -->
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">I</div>
+        <div class="step-title" data-i18n="step1title">Débattez librement</div>
+        <p class="step-desc" data-i18n="step1desc">L'arbitrage humain d'abord. Si tout le monde est d'accord, le point est validé sans application.</p>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <div class="step-num">II</div>
+        <div class="step-title" data-i18n="step2title">Un doute ? VAR !</div>
+        <p class="step-desc" data-i18n="step2desc">Un adversaire crie "VAR !" — on vérifie sur l'interface. Le recours à la vidéo est facultatif.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-num">III</div>
+        <div class="step-title" data-i18n="step3title">Verdict positif</div>
+        <p class="step-desc" data-i18n="step3desc">La VAR confirme votre analyse. Vous défaussez vos jetons. La victoire se rapproche.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-num">IV</div>
+        <div class="step-title" data-i18n="step4title">Hors-jeu</div>
+        <p class="step-desc" data-i18n="step4desc">Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.</p>
+      </div>
+    </div>
   </div>
-
-
-
 </section>
 
-
-
-
-
-
-
-<section class="how">
-
-
-
-  <div style="max-width:1100px;margin:0 auto;">
-
-
-
-    <div class="section-label reveal" data-i18n="ruleLabel">La Règle d'or</div>
-
-
-
-    <h2 class="section-title reveal reveal-delay-1" data-i18n="ruleTitle">LA <span>VAR</span> A LE<br>DERNIER MOT</h2>
-
-
-
-    <p class="section-body reveal reveal-delay-2" style="margin-top:16px;" data-i18n="ruleBody">L'application est votre assistant, pas votre maître. Les vrais arbitres, c'est vous. Le foot, c'est avant tout des débats passionnés autour de la table.</p>
-
-
-
+<!-- CLUBS SHOWCASE -->
+<section class="clubs" style="padding:60px 0;">
+  <div class="clubs-logos" id="clubsLoop">
+    <div class="club-logo-item">PSG <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">REAL MADRID <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">FC BARCELONA <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">MANCHESTER CITY <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">LIVERPOOL <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">CHELSEA <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">BAYERN MUNICH <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">JUVENTUS <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">AC MILAN <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">INTER MILAN <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">ARSENAL <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">DORTMUND <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">ATLÉTICO <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">MARSEILLE <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">LYON <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">NAPOLI <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">PSG <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">REAL MADRID <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">FC BARCELONA <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">MANCHESTER CITY <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">LIVERPOOL <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">CHELSEA <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">BAYERN MUNICH <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">JUVENTUS <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">AC MILAN <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">INTER MILAN <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">ARSENAL <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">DORTMUND <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">ATLÉTICO <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">MARSEILLE <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">LYON <span class="club-logo-dot"></span></div>
+    <div class="club-logo-item">NAPOLI <span class="club-logo-dot"></span></div>
   </div>
-
-
-
-  <div class="steps">
-
-
-
-    <div class="step reveal">
-
-
-
-      <div class="step-num">I</div>
-
-
-
-      <div class="step-title" data-i18n="step1title">Débattez librement</div>
-
-
-
-      <p class="step-desc" data-i18n="step1desc">L'arbitrage humain d'abord. Si tout le monde est d'accord, le point est validé sans application.</p>
-
-
-
-    </div>
-
-
-
-    <div class="step reveal reveal-delay-1">
-
-
-
-      <div class="step-num">II</div>
-
-
-
-      <div class="step-title" data-i18n="step2title">Un doute ? VAR !</div>
-
-
-
-      <p class="step-desc" data-i18n="step2desc">Un adversaire crie "VAR !" — on vérifie sur l'interface. Le recours à la vidéo est facultatif.</p>
-
-
-
-    </div>
-
-
-
-    <div class="step reveal reveal-delay-2">
-
-
-
-      <div class="step-num">III</div>
-
-
-
-      <div class="step-title" data-i18n="step3title">Verdict positif</div>
-
-
-
-      <p class="step-desc" data-i18n="step3desc">La VAR confirme votre analyse. Vous défaussez vos jetons. La victoire se rapproche.</p>
-
-
-
-    </div>
-
-
-
-    <div class="step reveal reveal-delay-3">
-
-
-
-      <div class="step-num">IV</div>
-
-
-
-      <div class="step-title" data-i18n="step4title">Hors-jeu</div>
-
-
-
-      <p class="step-desc" data-i18n="step4desc">Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.</p>
-
-
-
-    </div>
-
-
-
-  </div>
-
-
-
 </section>
 
+<!-- QUI SOMMES-NOUS -->
+<section class="about" id="about">
+  <div class="about-inner">
 
+    <!-- Header -->
+    <div class="about-intro">
+      <div>
+        <div class="section-label reveal" data-i18n="aboutLabel">Qui sommes-nous</div>
+        <h2 class="section-title reveal reveal-delay-1" data-i18n="aboutTitle">DES PASSIONNÉS<br><span>PAS DES ÉDITEURS</span></h2>
+      </div>
+      <div>
+        <div class="about-statement reveal reveal-delay-2" data-i18n="aboutStatement">
+          VAR CLUB n'est pas né dans un bureau. Il est né sur un canapé, un soir de match, au moment précis où <em>une question sans réponse</em> est devenue une obsession.
+        </div>
+      </div>
+    </div>
 
+    <!-- Acte I — L'enfance du jeu -->
+    <div class="about-act reveal reveal-delay-1">
+      <div class="about-act-label" data-i18n="aboutActLabel1">Acte I — Le temps des images</div>
+      <div class="about-act-grid">
+        <div class="about-body" data-i18n="aboutBody1">
+          Comme tout bon passionné, nos discussions tournaient très généralement autour du football. Plus jeunes, on parlait du temps présent — les buts qui nous marquaient, les joueurs qu'on adorait. La <strong>panenka de Zidane</strong> en finale de Coupe du Monde. Les innombrables coups francs de <strong>Juninho</strong>, chacun plus parfait que le précédent. Des images gravées à vie, ces instants qui font qu'on devient fan pour toujours.
+        </div>
+        <div class="about-body" data-i18n="aboutBody2">
+          On refaisait les matchs. On argumentait. On avait tous les torts et toutes les raisons du monde en même temps. C'était ça, le football entre amis : une conversation qui ne s'arrête jamais, où personne n'a tout à fait tort, et où la vérité dépend du camp où l'on se trouve.
+        </div>
+      </div>
+    </div>
 
+    <!-- Acte II — La maturité des stats -->
+    <div class="about-act reveal reveal-delay-2">
+      <div class="about-act-label" data-i18n="aboutActLabel2">Acte II — Le temps des statistiques</div>
+      <div class="about-act-grid">
+        <div class="about-body" data-i18n="aboutBody3">
+          Puis les années ont passé. Notre expérience et notre connaissance ont grandi. Les débats ont changé de nature. On ne se contentait plus de "il était fort, ce joueur" — on voulait <em>savoir</em>. <strong>Qui a vraiment marqué le PSG ?</strong> Combien de joueurs ont plus de 120 buts au club ? Qui a disputé plus de 400 matchs sous ces couleurs ?
+        </div>
+        <div class="about-body" data-i18n="aboutBody4">
+          Les questions sont devenues plus précises. Les réponses, plus difficiles à trancher. Et là, le problème est apparu clairement : <strong>il n'existait aucun outil pour arbitrer ces débats avec des données fiables, actuelles, et accessibles autour d'une table.</strong> Les jeux existants étaient figés dans le temps — un FIFA valable une saison, un Panini lié à une compétition. Rien qui vive avec le football.
+        </div>
+      </div>
+    </div>
 
+    <!-- Acte III — La naissance -->
+    <div class="about-act reveal reveal-delay-3">
+      <div class="about-act-label" data-i18n="aboutActLabel3">Acte III — La naissance de VAR CLUB</div>
+      <div class="about-act-quote" data-i18n="aboutActQuote">
+        "On a bâti la base de données qu'on aurait voulu avoir. Pour garder l'histoire en tête, capturer le football d'aujourd'hui, et être prêt pour celui de demain."
+      </div>
+    </div>
 
+    <!-- Les trois piliers -->
+    <div class="about-pillars">
+      <div class="about-pillar reveal">
+        <div class="about-pillar-num">01</div>
+        <div class="about-pillar-title" data-i18n="aboutP1title">La Science du Jeu</div>
+        <p class="about-pillar-desc" data-i18n="aboutP1desc">Si VAR CLUB était une personnalité du football, ce serait <strong style="color:var(--white2)">Pep Guardiola</strong> — pour sa science du jeu, sa rigueur absolue, son obsession du détail que les autres ne voient pas. On ne joue pas au hasard. On joue à la donnée.</p>
+        <span class="about-pillar-tag" data-i18n="aboutP1tag">L'Obsession de la Précision</span>
+      </div>
+      <div class="about-pillar reveal reveal-delay-1">
+        <div class="about-pillar-num">02</div>
+        <div class="about-pillar-title" data-i18n="aboutP2title">Les Précurseurs</div>
+        <p class="about-pillar-desc" data-i18n="aboutP2desc">Si VAR CLUB était un club, ce serait le <strong style="color:var(--white2)">FC Midtjylland</strong> — précurseur dans l'utilisation de la data dans le recrutement et la stratégie de terrain. Voir ce que les autres ne voient pas encore. Agir avant les autres.</p>
+        <span class="about-pillar-tag" data-i18n="aboutP2tag">Moneyball du Jeu de Cartes</span>
+      </div>
+      <div class="about-pillar reveal reveal-delay-2">
+        <div class="about-pillar-num">03</div>
+        <div class="about-pillar-title" data-i18n="aboutP3title">Tuer le Doute</div>
+        <p class="about-pillar-desc" data-i18n="aboutP3desc">La VAR est souvent décriée car elle dénature le jeu. Mais elle l'aide aussi — <strong style="color:var(--white2)">elle est intransigeante et ne laisse plus de place au doute.</strong> Nous souhaitons inculquer ce même principe. Chaque question mérite sa réponse. Claire, nette, précise.</p>
+        <span class="about-pillar-tag" data-i18n="aboutP3tag">Notre Philosophie</span>
+      </div>
+    </div>
 
-<!-- CONTACT -->
+  </div>
+</section>
 
-
-
+<!-- CONTACT — "Prêt à passer la visite médicale ?" -->
 <section class="contact" id="contact">
-
-
-
   <div class="contact-wrap">
-
-
-
     <div class="section-label reveal" style="justify-content:center;" data-i18n="contactLabel">Accès Anticipé</div>
-
-
-
-    <h2 class="section-title reveal reveal-delay-1" style="font-size:clamp(40px,7vw,80px);" data-i18n="contactTitle">REJOIGNEZ<br><span>L'ÉQUIPE</span></h2>
-
-
-
+    <h2 class="section-title reveal reveal-delay-1" style="font-size:clamp(40px,7vw,80px);" data-i18n="contactTitle">PRÊT À PASSER LA<br><span>VISITE MÉDICALE ?</span></h2>
     <p class="contact-subtitle reveal reveal-delay-2">
-
-
-
-      <span data-i18n="contactSub">Soyez parmi les premiers à accéder à VAR Club.<br>Laissez vos coordonnées, on vous contacte au lancement.</span>
-
-
-
+      <span data-i18n="contactSub">Signez au club avant le coup d'envoi.<br>Laissez vos coordonnées, on vous contacte au lancement.</span>
     </p>
 
-
-
-
-
-
-
     <div class="form-wrap reveal reveal-delay-3">
-
-
-
       <form id="contactForm">
-
-
-
         <div class="form-row">
-
-
-
           <div class="field-wrap">
-
-
-
             <label class="field-label" for="fname" data-i18n="fieldFirst">Prénom</label>
-
-
-
-            <input class="field-input" type="text" id="fname" name="fname" data-i18n-attr="placeholder" data-i18n="phFirst" placeholder="Kylian" required>
-
-
-
+            <input class="field-input" type="text" id="fname" name="fname" placeholder="Kylian" required>
           </div>
-
-
-
           <div class="field-wrap">
-
-
-
             <label class="field-label" for="lname" data-i18n="fieldLast">Nom</label>
-
-
-
-            <input class="field-input" type="text" id="lname" name="lname" data-i18n-attr="placeholder" data-i18n="phLast" placeholder="Dupont" required>
-
-
-
+            <input class="field-input" type="text" id="lname" name="lname" placeholder="Dupont" required>
           </div>
-
-
-
         </div>
-
-
-
         <div class="field-wrap" style="margin-bottom:16px;">
-
-
-
           <label class="field-label" for="email" data-i18n="fieldEmail">Adresse email</label>
-
-
-
-          <input class="field-input" type="email" id="email" name="email" data-i18n-attr="placeholder" data-i18n="phEmail" placeholder="vous@email.com" required>
-
-
-
+          <input class="field-input" type="email" id="email" name="email" placeholder="vous@email.com" required>
         </div>
-
-
-
         <div class="gdpr-check" style="margin:16px 0;display:flex;align-items:flex-start;gap:10px">
           <input type="checkbox" id="gdprCheck" required style="margin-top:3px;accent-color:#F0B429;width:16px;height:16px;flex-shrink:0">
           <label for="gdprCheck" style="font-size:12px;color:rgba(247,253,244,0.6);line-height:1.5" data-i18n="gdprLabel">
             J'accepte que mes données soient utilisées pour être contacté(e) au lancement de VAR CLUB. Consulter notre <a href="/legal.html" style="color:#F0B429">Politique de confidentialité</a>.
           </label>
         </div>
-        <button type="submit" class="form-submit" data-i18n="submitBtn">Rejoindre VAR Club →</button>
-
-
-
-        <p class="form-note" data-i18n="formNote">Aucun spam. Juste une notification au lancement.</p>
-
-
-
+        <button type="submit" class="form-submit" data-i18n="submitBtn">Signer au Club →</button>
+        <p class="form-note" data-i18n="formNote">Aucun spam. Juste la feuille de match au lancement.</p>
       </form>
 
-
-
-
-
-
-
       <div class="success-msg" id="successMsg">
-
-
-
         <div class="success-icon">✦</div>
-
-
-
-        <div class="success-title" data-i18n="successTitle">Vous êtes dans l'équipe</div>
-
-
-
-        <p class="success-sub" data-i18n="successSub">On vous contacte dès le lancement. Merci de votre intérêt pour VAR Club.</p>
-
-
-
+        <div class="success-title" data-i18n="successTitle">Contrat signé</div>
+        <p class="success-sub" data-i18n="successSub">Bienvenue dans l'équipe. On vous contacte dès le coup d'envoi.</p>
       </div>
-
-
-
     </div>
-
-
-
   </div>
-
-
-
 </section>
 
-
-
-
-
-
-
 <!-- FOOTER -->
-
-
-
 <footer>
   <img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:40px;width:auto;opacity:0.6;">
   <div class="footer-copy" data-i18n="footerCopy">© 2026 VAR CLUB — Tous droits réservés</div>
@@ -3333,1360 +1109,349 @@ function updateSEO(lang){
   </div>
 </footer>
 
-
-
-
-
-
-
 <script>
-
-
-
-
-
-
-
 const LANG = {
-
-
-
   fr: {
-
-
-
     navJoin: 'Rejoindre',
-
-
-
     heroEyebrow: 'Le Jeu de Cartes Football',
-
-
-
-    heroSub: 'D\u00e9faussez vos jetons. Battez vos adversaires.<br>Une base de donn\u00e9es vivante \u2014 toujours dans l\u2019\u00e8re du temps.',
-
-
-
-    heroCta1: '\u00catre notifi\u00e9 au lancement',
-
-
-
-    heroCta2: 'D\u00e9couvrir le jeu',
-
-
-
+    heroSub: 'Le football change. Votre jeu aussi.<br>Un jeu de cartes physique, une base de données vivante — mise à jour à chaque mercato.',
+    heroCta1: 'Passer la visite médicale →',
+    heroCta2: 'Découvrir le jeu',
+    manifesteLabel: 'L\'Histoire',
+    manifesteTitle: 'NÉ SUR LE CANAPÉ,<br><span>VALIDÉ PAR LA DATA</span>',
+    manifesteQuote: 'On a tous commencé là : à refaire le match, à se remémorer les <em>coups francs de Juninho</em> ou la <em>panenka de Zidane</em> en finale. Mais aujourd\'hui, votre expertise a grandi.',
+    manifesteCol1: 'Plus jeune, les discussions tournaient autour du présent — les buts qui nous marquaient, les joueurs qu\'on adorait. Désormais, on parle de statistiques, plus poussées, car notre expérience nous le permet. On se teste entre amis : <strong>qui a vraiment marqué le PSG ? Combien de joueurs ont plus de 120 buts au club ? Qui a fait plus de 400 matchs ?</strong>',
+    manifesteCol2: 'De ces discussions et débats est né VAR CLUB. Nous avons bâti une base de données, mise à jour régulièrement — pour non seulement garder l\'histoire en tête, mais aussi capturer le football d\'aujourd\'hui et être prêt pour celui de demain. <strong>Désormais, chaque question bénéficie de ses réponses. Claires, nettes et précises.</strong>',
+    manifesteSig: 'Les Fondateurs — VAR CLUB',
     conceptLabel: 'Le Concept',
-
-
-
-    conceptTitle: 'L\u2019OBJECTIF\u00a0:<br><span>Z\u00c9RO JETON</span>',
-
-
-
-    conceptP1: 'Chaque joueur d\u00e9marre avec 15 jetons. Pour gagner, vous devez tous les d\u00e9fausser en validant vos analyses football devant vos adversaires.',
-
-
-
-    conceptP2: 'Bonne analyse\u00a0? Vous d\u00e9faussez vos jetons. Erreur face \u00e0 la VAR\u00a0? Vous les gardez et votre tour s\u2019arr\u00eate. Simple. Implacable.',
-
-
-
-    conceptP3: 'La base de donn\u00e9es est mise \u00e0 jour r\u00e9guli\u00e8rement. Nouveaux transferts, nouvelles saisons \u2014 VAR Club ne vieillit jamais.',
-
-
-
+    conceptTitle: 'L\'OBJECTIF :<br><span>ZÉRO JETON</span>',
+    conceptP1: 'Chaque joueur démarre avec 15 jetons. Pour gagner, vous devez tous les défausser en validant vos analyses football devant vos adversaires.',
+    conceptP2: 'Bonne analyse ? Vous défaussez vos jetons. Erreur face à la VAR ? Vous les gardez et votre tour s\'arrête. Simple. Implacable.',
+    conceptP3: 'La base de données est mise à jour régulièrement. Nouveaux transferts, nouvelles saisons — VAR Club ne vieillit jamais.',
+    obsLabel: 'Ce qui change tout',
+    obsTitle: 'LE SEUL JEU QUI NE<br><span>PREND JAMAIS SA RETRAITE</span>',
+    obsBody1: 'Un album Panini s\'arrête à la fin de l\'été. Un FIFA devient obsolète en septembre. VAR CLUB est vivant.',
+    obsBody2: 'Nous avons tué l\'obsolescence pour créer le premier jeu de cartes synchronisé avec la réalité du marché. Vous jouez avec le football d\'aujourd\'hui, pas avec les souvenirs de l\'année dernière.',
+    obsCallout: 'Un transfert signé à <strong>23h00</strong> le dernier jour du mercato ? Il est dans notre base à votre réveil. Le football ne s\'arrête jamais de s\'écrire — <strong>VAR CLUB ne s\'arrête jamais de lire.</strong>',
+    versusLabel1: 'FIFA 24', versusStatus1: 'Expiré',
+    versusLabel2: 'Panini 2023', versusStatus2: 'Expiré',
+    versusLabel3: 'Trivia classique', versusStatus3: 'Figé',
+    versusLabel4: 'VAR CLUB', versusStatus4: 'Toujours en jeu',
     modesLabel: 'Les Trois Modes de Jeu',
-
-
-
     modesTitle: 'CHOISISSEZ<br><span>VOTRE MODE</span>',
-
-
-
-    mode1name: 'L\u2019Identit\u00e9',
-
-
-
-    mode1desc: 'Tire une carte club. Annonce la ville, le stade, le surnom avant la r\u00e9v\u00e9lation. Chaque bonne r\u00e9ponse = jetons d\u00e9fauss\u00e9s.',
-
-
-
-    mode1tag: 'Le Jeune Passionn\u00e9',
-
-
-
+    mode1name: 'L\'Identité',
+    mode1desc: 'Tire une carte club. Annonce la ville, le stade, le surnom avant la révélation. Chaque bonne réponse = jetons défaussés.',
+    mode1tag: 'Le Jeune Passionné',
     mode2name: 'Le Duel VAR',
-
-
-
-    mode2desc: 'Tire une carte Club + une carte Question. Fais ton annonce \u00e0 voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.',
-
-
-
+    mode2desc: 'Tire une carte Club + une carte Question. Fais ton annonce à voix haute. Si la VAR confirme, tes jetons tombent. Sinon, tu attends.',
     mode2tag: 'Confrontation directe',
-
-
-
     mode3name: 'Le Mode Expert',
-
-
-
     mode3desc: 'Data brute, transferts, statistiques pointues. Un sprint final pour vider son stock de jetons le plus vite possible. Seuls les pros survivent.',
-
-
-
     mode3tag: 'Pour les amoureux de la data',
-
-
-
-    diffLabel: 'Ce qui change tout',
-
-
-
-    diffTitle: 'UNE BASE DE<br><span>DONN\u00c9ES VIVANTE</span>',
-
-
-
-    diff1title: 'Mis \u00e0 jour r\u00e9guli\u00e8rement',
-
-
-
-    diff1desc: 'Chaque transfert, chaque saison est int\u00e9gr\u00e9e. Le jeu reste pr\u00e9cis et actuel, ann\u00e9es apr\u00e8s ann\u00e9es.',
-
-
-
+    diffLabel: 'L\'omniscience au creux de la main',
+    diffTitle: 'UNE BASE DE<br><span>DONNÉES VIVANTE</span>',
+    diffIntro: '17 clubs légendaires. Des milliers de trajectoires de vie. Des millions de points de données. Notre interface n\'est pas un simple accessoire — c\'est le cœur battant du jeu. Elle ne dort jamais.',
+    diff1title: 'Mis à jour régulièrement',
+    diff1desc: 'Chaque transfert, chaque saison est intégrée. Le jeu reste précis et actuel, années après années.',
     diff2title: '17 clubs majeurs',
-
-
-
-    diff2desc: 'Les plus grandes \u00e9quipes d\u2019Europe. Ligue\u00a01, Liga, Premier League, Bundesliga, Serie\u00a0A.',
-
-
-
+    diff2desc: 'Les plus grandes équipes d\'Europe. Ligue 1, Liga, Premier League, Bundesliga, Serie A.',
     diff3title: 'Des milliers de joueurs',
-
-
-
-    diff3desc: 'Nationalit\u00e9s, gardiens, transferts, statistiques \u2014 une profondeur de donn\u00e9es unique dans un jeu de cartes.',
-
-
-
-    ruleLabel: 'La R\u00e8gle d\u2019or',
-
-
-
-    ruleTitle: 'LA <span>VAR</span> A LE<br>DERNIER MOT',
-
-
-
-    ruleBody: 'L\u2019application est votre assistant, pas votre ma\u00eetre. Les vrais arbitres, c\u2019est vous. Le foot, c\u2019est avant tout des d\u00e9bats passionn\u00e9s autour de la table.',
-
-
-
-    step1title: 'D\u00e9battez librement',
-
-
-
-    step1desc: 'L\u2019arbitrage humain d\u2019abord. Si tout le monde est d\u2019accord, le point est valid\u00e9 sans application.',
-
-
-
-    step2title: 'Un doute\u00a0? VAR\u00a0!',
-
-
-
-    step2desc: 'Un adversaire crie \u00abVAR\u00a0!\u00bb \u2014 on v\u00e9rifie sur l\u2019interface. Le recours \u00e0 la vid\u00e9o est facultatif.',
-
-
-
+    diff3desc: 'Nationalités, gardiens, transferts, statistiques — une profondeur de données unique dans un jeu de cartes.',
+    ruleLabel: 'La Règle d\'or',
+    ruleTitle: 'LA <span>VAR</span> N\'A PAS<br>D\'AMIS. ELLE A DES FAITS.',
+    ruleStatement: 'La VAR a toujours eu cette capacité à trancher — pas toujours du bon côté, mais <em>du côté le plus juste</em>. Dans VAR CLUB, chaque réponse est passée au crible de notre base de données. <em>Le doute n\'a plus sa place à votre table.</em>',
+    forgottenTitle: 'Le Soldat Oublié',
+    forgottenDesc: 'Que le joueur ait marqué l\'histoire ou qu\'il ait simplement <strong>foulé la pelouse pour un match oublié en plein hiver</strong>, la VAR s\'en souvient. Crampon au pied, sur le terrain pour ce club à un moment donné — qu\'on l\'aime ou non. C\'est ici que la VAR fait la différence : elle réhabilite l\'oublié.',
+    step1title: 'Débattez librement',
+    step1desc: 'L\'arbitrage humain d\'abord. Si tout le monde est d\'accord, le point est validé sans application.',
+    step2title: 'Un doute ? VAR !',
+    step2desc: 'Un adversaire crie "VAR !" — on vérifie sur l\'interface. Le recours à la vidéo est facultatif.',
     step3title: 'Verdict positif',
-
-
-
-    step3desc: 'La VAR confirme votre analyse. Vous d\u00e9faussez vos jetons. La victoire se rapproche.',
-
-
-
+    step3desc: 'La VAR confirme votre analyse. Vous défaussez vos jetons. La victoire se rapproche.',
     step4title: 'Hors-jeu',
-
-
-
     step4desc: 'Erreur. Vous gardez vos jetons et attendez le prochain tour. La VAR est implacable.',
-
-
-
-    contactLabel: 'Acc\u00e8s Anticip\u00e9',
-
-
-
-    contactTitle: 'REJOIGNEZ<br><span>L\u2019\u00c9QUIPE</span>',
-
-
-
-    contactSub: 'Soyez parmi les premiers \u00e0 acc\u00e9der \u00e0 VAR Club.<br>Laissez vos coordonn\u00e9es, on vous contacte au lancement.',
-
-
-
-    fieldFirst: 'Pr\u00e9nom',
-
-
-
-    fieldLast: 'Nom',
-
-
-
-    fieldEmail: 'Adresse email',
-
-
-
-    phFirst: 'Kylian',
-
-
-
-    phLast: 'Dupont',
-
-
-
-    phEmail: 'vous@email.com',
-
-
-
-    submitBtn: 'Rejoindre VAR Club \u2192',
-
-
-
-    formNote: 'Aucun spam. Juste une notification au lancement.',
+    contactLabel: 'Accès Anticipé',
+    contactTitle: 'PRÊT À PASSER LA<br><span>VISITE MÉDICALE ?</span>',
+    contactSub: 'Signez au club avant le coup d\'envoi.<br>Laissez vos coordonnées, on vous contacte au lancement.',
+    fieldFirst: 'Prénom', fieldLast: 'Nom', fieldEmail: 'Adresse email',
+    phFirst: 'Kylian', phLast: 'Dupont', phEmail: 'vous@email.com',
+    submitBtn: 'Signer au Club →',
+    formNote: 'Aucun spam. Juste la feuille de match au lancement.',
     gdprLabel: 'J\'accepte que mes données soient utilisées pour être contacté(e) au lancement de VAR CLUB. Consulter notre <a href="/legal.html" style="color:#F0B429">Politique de confidentialité</a>.',
     legalLink: 'Mentions légales &amp; Confidentialité',
     footerCopy: '© 2026 VAR CLUB — Tous droits réservés',
-
-
-
-    successTitle: 'Vous \u00eates dans l\u2019\u00e9quipe',
-
-
-
-    successSub: 'On vous contacte d\u00e8s le lancement. Merci de votre int\u00e9r\u00eat pour VAR Club.',
-
-
-
-    footerCopy: '\u00a9 2026 \u2014 Le Jeu de Cartes Football',
-
-
-
+    successTitle: 'Contrat signé',
+    successSub: 'Bienvenue dans l\'équipe. On vous contacte dès le coup d\'envoi.',
+    aboutLabel: 'Qui sommes-nous',
+    aboutTitle: 'DES PASSIONNÉS<br><span>PAS DES ÉDITEURS</span>',
+    aboutStatement: 'VAR CLUB n\'est pas né dans un bureau. Il est né sur un canapé, un soir de match, au moment précis où <em>une question sans réponse</em> est devenue une obsession.',
+    aboutActLabel1: 'Acte I — Le temps des images',
+    aboutBody1: 'Comme tout bon passionné, nos discussions tournaient très généralement autour du football. Plus jeunes, on parlait du temps présent — les buts qui nous marquaient, les joueurs qu\'on adorait. La <strong>panenka de Zidane</strong> en finale de Coupe du Monde. Les innombrables coups francs de <strong>Juninho</strong>, chacun plus parfait que le précédent. Des images gravées à vie, ces instants qui font qu\'on devient fan pour toujours.',
+    aboutBody2: 'On refaisait les matchs. On argumentait. On avait tous les torts et toutes les raisons du monde en même temps. C\'était ça, le football entre amis : une conversation qui ne s\'arrête jamais, où personne n\'a tout à fait tort, et où la vérité dépend du camp où l\'on se trouve.',
+    aboutActLabel2: 'Acte II — Le temps des statistiques',
+    aboutBody3: 'Puis les années ont passé. Notre expérience et notre connaissance ont grandi. Les débats ont changé de nature. On ne se contentait plus de "il était fort, ce joueur" — on voulait <em>savoir</em>. <strong>Qui a vraiment marqué le PSG ?</strong> Combien de joueurs ont plus de 120 buts au club ? Qui a disputé plus de 400 matchs sous ces couleurs ?',
+    aboutBody4: 'Les questions sont devenues plus précises. Les réponses, plus difficiles à trancher. Et là, le problème est apparu clairement : <strong>il n\'existait aucun outil pour arbitrer ces débats avec des données fiables, actuelles, et accessibles autour d\'une table.</strong> Les jeux existants étaient figés dans le temps — un FIFA valable une saison, un Panini lié à une compétition. Rien qui vive avec le football.',
+    aboutActLabel3: 'Acte III — La naissance de VAR CLUB',
+    aboutActQuote: '"On a bâti la base de données qu\'on aurait voulu avoir. Pour garder l\'histoire en tête, capturer le football d\'aujourd\'hui, et être prêt pour celui de demain."',
+    aboutP1title: 'La Science du Jeu',
+    aboutP1desc: 'Si VAR CLUB était une personnalité du football, ce serait <strong style="color:var(--white2)">Pep Guardiola</strong> — pour sa science du jeu, sa rigueur absolue, son obsession du détail que les autres ne voient pas. On ne joue pas au hasard. On joue à la donnée.',
+    aboutP1tag: 'L\'Obsession de la Précision',
+    aboutP2title: 'Les Précurseurs',
+    aboutP2desc: 'Si VAR CLUB était un club, ce serait le <strong style="color:var(--white2)">FC Midtjylland</strong> — précurseur dans l\'utilisation de la data dans le recrutement et la stratégie de terrain. Voir ce que les autres ne voient pas encore. Agir avant les autres.',
+    aboutP2tag: 'Moneyball du Jeu de Cartes',
+    aboutP3title: 'Tuer le Doute',
+    aboutP3desc: 'La VAR est souvent décriée car elle dénature le jeu. Mais elle l\'aide aussi — <strong style="color:var(--white2)">elle est intransigeante et ne laisse plus de place au doute.</strong> Nous souhaitons inculquer ce même principe. Chaque question mérite sa réponse. Claire, nette, précise.',
+    aboutP3tag: 'Notre Philosophie',
   },
-
-
-
   en: {
-
-
-
     navJoin: 'Join',
-
-
-
     heroEyebrow: 'The Football Card Game',
-
-
-
-    heroSub: 'Discard your tokens. Beat your opponents. For decades.<br>A physical card game powered by a living digital database \u2014 updated every transfer window.',
-
-
-
-    heroCta1: 'Get notified at launch',
-
-
-
+    heroSub: 'Football changes. Your game too.<br>A physical card game, a living database — updated every transfer window.',
+    heroCta1: 'Sign for the Club →',
     heroCta2: 'Discover the game',
-
-
-
+    manifesteLabel: 'The Story',
+    manifesteTitle: 'BORN ON THE SOFA,<br><span>VALIDATED BY DATA</span>',
+    manifesteQuote: 'We all started there: replaying the match, reminiscing about <em>Juninho\'s free kicks</em> or <em>Zidane\'s panenka</em> in the final. But today, your expertise has grown.',
+    manifesteCol1: 'When we were younger, conversations were about the present — goals that left their mark, players we loved. Now we talk statistics, deeper ones, because our experience allows it. We test each other: <strong>who really made PSG? How many players scored 120+ goals? Who played 400+ matches at the club?</strong>',
+    manifesteCol2: 'VAR CLUB was born from those debates. We built a database, updated regularly — not just to keep history in mind, but to capture today\'s football and be ready for tomorrow\'s. <strong>Every question now has its answer. Clear, sharp, precise.</strong>',
+    manifesteSig: 'The Founders — VAR CLUB',
     conceptLabel: 'The Concept',
-
-
-
     conceptTitle: 'THE GOAL:<br><span>ZERO TOKENS</span>',
-
-
-
     conceptP1: 'Each player starts with 15 tokens. To win, you must discard them all by validating your football knowledge in front of your opponents.',
-
-
-
     conceptP2: 'Good answer? Discard your tokens. Wrong answer? You keep them and your turn ends. Simple. Ruthless.',
-
-
-
-    conceptP3: 'The database is updated regularly. New transfers, new seasons \u2014 VAR Club never gets old.',
-
-
-
+    conceptP3: 'The database is updated regularly. New transfers, new seasons — VAR Club never gets old.',
+    obsLabel: 'What changes everything',
+    obsTitle: 'THE ONLY GAME THAT<br><span>NEVER RETIRES</span>',
+    obsBody1: 'A Panini album stops at the end of summer. FIFA goes stale in September. VAR CLUB is alive.',
+    obsBody2: 'We killed obsolescence to create the first card game synchronised with the reality of the market. You play with today\'s football, not last year\'s memories.',
+    obsCallout: 'A transfer signed at <strong>11PM</strong> on deadline day? It\'s in our database by morning. Football never stops being written — <strong>VAR CLUB never stops reading.</strong>',
+    versusLabel1: 'FIFA 24', versusStatus1: 'Expired',
+    versusLabel2: 'Panini 2023', versusStatus2: 'Expired',
+    versusLabel3: 'Classic Trivia', versusStatus3: 'Frozen',
+    versusLabel4: 'VAR CLUB', versusStatus4: 'Always live',
     modesLabel: 'Three Game Modes',
-
-
-
     modesTitle: 'CHOOSE<br><span>YOUR MODE</span>',
-
-
-
     mode1name: 'The Identity',
-
-
-
     mode1desc: 'Draw a club card. Name the city, the stadium, the nickname before the reveal. Each right answer = discarded tokens.',
-
-
-
     mode1tag: 'The Young Fan',
-
-
-
     mode2name: 'VAR Duel',
-
-
-
     mode2desc: 'Draw a Club card + a Question card. Make your announcement out loud. If VAR confirms, your tokens drop. Otherwise, you wait.',
-
-
-
     mode2tag: 'Head-to-head clash',
-
-
-
     mode3name: 'Expert Mode',
-
-
-
     mode3desc: 'Raw data, transfers, sharp statistics. A final sprint to empty your token stock as fast as possible. Only the pros survive.',
-
-
-
     mode3tag: 'For data lovers',
-
-
-
-    diffLabel: 'What changes everything',
-
-
-
+    diffLabel: 'Omniscience in the palm of your hand',
     diffTitle: 'A LIVING<br><span>DATABASE</span>',
-
-
-
+    diffIntro: '17 legendary clubs. Thousands of life trajectories. Millions of data points. Our interface is not just an accessory — it\'s the beating heart of the game. It never sleeps.',
     diff1title: 'Regularly updated',
-
-
-
     diff1desc: 'Every transfer, every season is integrated. The game stays accurate and current, year after year.',
-
-
-
     diff2title: '17 major clubs',
-
-
-
-    diff2desc: "Europe's greatest teams. Ligue 1, Liga, Premier League, Bundesliga, Serie A.",
-
-
-
+    diff2desc: 'Europe\'s greatest teams. Ligue 1, Liga, Premier League, Bundesliga, Serie A.',
     diff3title: 'Thousands of players',
-
-
-
-    diff3desc: 'Nationalities, goalkeepers, transfers, stats \u2014 a depth of data unique in a card game.',
-
-
-
+    diff3desc: 'Nationalities, goalkeepers, transfers, stats — a depth of data unique in a card game.',
     ruleLabel: 'The Golden Rule',
-
-
-
-    ruleTitle: 'THE <span>VAR</span> HAS<br>THE LAST WORD',
-
-
-
-    ruleBody: 'The app is your assistant, not your master. The real referees are you. Football is first and foremost passionate debates around the table.',
-
-
-
+    ruleTitle: 'THE <span>VAR</span> HAS NO<br>FRIENDS. ONLY FACTS.',
+    ruleStatement: 'VAR has always had this ability to rule — not always on the right side, but <em>always on the most just</em>. In VAR CLUB, every answer is checked against our database. <em>Doubt has no place at your table.</em>',
+    forgottenTitle: 'The Forgotten Soldier',
+    forgottenDesc: 'Whether the player made history or simply <strong>stepped on the pitch for a forgotten match on a cold winter night</strong>, the VAR remembers. Boots on the ground, on the pitch for that club at some point — whether you loved them or not. This is where VAR makes the difference: it rehabilitates the forgotten.',
     step1title: 'Debate freely',
-
-
-
     step1desc: 'Human judgement first. If everyone agrees, the point is validated without the app.',
-
-
-
     step2title: 'Any doubt? VAR!',
-
-
-
-    step2desc: 'An opponent calls \u00abVAR!\u00bb \u2014 check on the interface. Using the app is optional.',
-
-
-
+    step2desc: 'An opponent calls «VAR!» — check on the interface. Using the app is optional.',
     step3title: 'Positive verdict',
-
-
-
     step3desc: 'VAR confirms your answer. You discard your tokens. Victory draws closer.',
-
-
-
     step4title: 'Offside',
-
-
-
     step4desc: 'Wrong answer. You keep your tokens and wait for the next turn. VAR is ruthless.',
-
-
-
     contactLabel: 'Early Access',
-
-
-
-    contactTitle: 'JOIN<br><span>THE SQUAD</span>',
-
-
-
-    contactSub: 'Be among the first to access VAR Club.<br>Leave your details and we\'ll reach out at launch.',
-
-
-
-    fieldFirst: 'First name',
-
-
-
-    fieldLast: 'Last name',
-
-
-
-    fieldEmail: 'Email address',
-
-
-
-    phFirst: 'Kylian',
-
-
-
-    phLast: 'Smith',
-
-
-
-    phEmail: 'you@email.com',
-
-
-
-    submitBtn: 'Join VAR Club \u2192',
-
-
-
-    formNote: 'No spam. Just a launch notification.',
+    contactTitle: 'READY FOR YOUR<br><span>MEDICAL?</span>',
+    contactSub: 'Sign for the club before kick-off.<br>Leave your details and we\'ll be in touch at launch.',
+    fieldFirst: 'First name', fieldLast: 'Last name', fieldEmail: 'Email address',
+    phFirst: 'Kylian', phLast: 'Smith', phEmail: 'you@email.com',
+    submitBtn: 'Sign for the Club →',
+    formNote: 'No spam. Just the team sheet at launch.',
     gdprLabel: 'I agree that my data may be used to be contacted at the launch of VAR CLUB. See our <a href="/legal.html" style="color:#F0B429">Privacy Policy</a>.',
     legalLink: 'Legal Notice &amp; Privacy Policy',
     footerCopy: '© 2026 VAR CLUB — All rights reserved',
-
-
-
-    successTitle: "You're in the squad",
-
-
-
-    successSub: "We'll be in touch at launch. Thank you for your interest in VAR Club.",
-
-
-
-    footerCopy: '\u00a9 2026 \u2014 The Football Card Game',
-
-
-
+    successTitle: 'Contract signed',
+    successSub: 'Welcome to the squad. We\'ll be in touch at kick-off.',
+    aboutLabel: 'Who we are',
+    aboutTitle: 'SUPPORTERS,<br><span>NOT PUBLISHERS</span>',
+    aboutStatement: 'VAR CLUB wasn\'t born in an office. It was born on a sofa, on a match night, at the exact moment when <em>one unanswered question</em> became an obsession.',
+    aboutActLabel1: 'Act I — The age of images',
+    aboutBody1: 'Like any real football fan, our conversations always revolved around the game. When we were younger, it was about the present — goals that stayed with us, players we loved. <strong>Zidane\'s panenka</strong> in the World Cup final. <strong>Juninho\'s</strong> countless free kicks, each one more perfect than the last. Images burned into memory, the moments that make you a fan for life.',
+    aboutBody2: 'We replayed matches. We argued. We were all wrong and all right at the same time. That was football among friends: a conversation that never ends, where nobody is entirely wrong, and where the truth depends on which side you\'re on.',
+    aboutActLabel2: 'Act II — The age of statistics',
+    aboutBody3: 'Then the years passed. Our experience and knowledge grew. The debates changed. We were no longer satisfied with "he was a great player" — we wanted to <em>know</em>. <strong>Who really left their mark on PSG?</strong> How many players scored 120+ goals at the club? Who played 400+ matches in those colours?',
+    aboutBody4: 'The questions became more precise. The answers, harder to settle. And there, the problem became clear: <strong>there was no tool to referee these debates with reliable, current data accessible around a table.</strong> Existing games were frozen in time — a FIFA valid for one season, a Panini tied to one competition. Nothing that lived alongside football.',
+    aboutActLabel3: 'Act III — The birth of VAR CLUB',
+    aboutActQuote: '"We built the database we wished had existed. To keep history in mind, capture today\'s football, and be ready for tomorrow\'s."',
+    aboutP1title: 'The Science of the Game',
+    aboutP1desc: 'If VAR CLUB were a football personality, it would be <strong style="color:var(--white2)">Pep Guardiola</strong> — for his football science, his absolute rigour, his obsession with the detail others miss. We don\'t play by chance. We play by data.',
+    aboutP1tag: 'The Obsession with Precision',
+    aboutP2title: 'The Pioneers',
+    aboutP2desc: 'If VAR CLUB were a club, it would be <strong style="color:var(--white2)">FC Midtjylland</strong> — pioneers in using data for recruitment and on-pitch strategy. Seeing what others haven\'t spotted yet. Acting before everyone else.',
+    aboutP2tag: 'Moneyball of Card Games',
+    aboutP3title: 'Kill the Doubt',
+    aboutP3desc: 'VAR is often criticised for changing the game. But it also helps it — <strong style="color:var(--white2)">it is uncompromising and leaves no room for doubt.</strong> That\'s the exact same principle we wanted to build into VAR CLUB. Every question deserves its answer. Clear, sharp, precise.',
+    aboutP3tag: 'Our Philosophy',
   }
-
-
-
 };
-
-
 
 let currentLang = 'fr';
-
-
-
-
-
-
-
-window.t = function t(key) {
-
-
-
-  return LANG[currentLang][key] || LANG['fr'][key] || key;
-
-
-
-};
-
-
-
-
-
-
-
+window.t = function(key) { return LANG[currentLang][key] || LANG['fr'][key] || key; };
 window.applyLang = function() {
-
-
-
   document.querySelectorAll('[data-i18n]').forEach(el => {
-
-
-
     const key = el.getAttribute('data-i18n');
-
-
-
     const attr = el.getAttribute('data-i18n-attr');
-
-
-
-    if (attr) {
-
-
-
-      el.setAttribute(attr, t(key));
-
-
-
-    } else {
-
-
-
-      el.innerHTML = t(key);
-
-
-
-    }
-
-
-
+    if (attr) { el.setAttribute(attr, t(key)); } else { el.innerHTML = t(key); }
   });
-
-
-
   document.documentElement.lang = currentLang;
-
-
-
   document.querySelectorAll('.lang-btn').forEach(btn => {
-
-
-
     btn.classList.toggle('active', btn.dataset.lang === currentLang);
-
-
-
   });
-
-
-
 };
-
-
-
-
-
-
-
 window.switchLang = function(lang) {
-
-
-
   currentLang = lang;
-
-
-
   localStorage.setItem('vc_lang', lang);
-
-
-
   applyLang();
-
-
-
 };
 
-
-
-
-
-
-
-// Custom cursor
-
-
-
+/* Custom cursor */
 const cursor = document.getElementById('cursor');
-
-
-
 const ring = document.getElementById('cursorRing');
-
-
-
 let mx = 0, my = 0, rx = 0, ry = 0;
-
-
-
-
-
-
-
 document.addEventListener('mousemove', e => {
-
-
-
   mx = e.clientX; my = e.clientY;
-
-
-
-  cursor.style.left = mx + 'px';
-
-
-
-  cursor.style.top = my + 'px';
-
-
-
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
 });
-
-
-
-
-
-
-
 function animateRing() {
-
-
-
-  rx += (mx - rx) * 0.12;
-
-
-
-  ry += (my - ry) * 0.12;
-
-
-
-  ring.style.left = rx + 'px';
-
-
-
-  ring.style.top = ry + 'px';
-
-
-
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
   requestAnimationFrame(animateRing);
-
-
-
 }
-
-
-
 animateRing();
-
-
-
-
-
-
-
 document.querySelectorAll('a, button, input').forEach(el => {
-
-
-
   el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
-
-
-
   el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
-
-
-
 });
 
-
-
-
-
-
-
-// Scroll reveal
-
-
-
+/* Scroll reveal */
 const observer = new IntersectionObserver(entries => {
-
-
-
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-
-
-
 }, { threshold: 0.1 });
-
-
-
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-
-
-
-
-
-
-// Supabase config
-
-
-
+/* Supabase */
 const SUPABASE_URL = 'https://ojyobjndnkhyfqpwhemc.supabase.co';
-
-
-
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qeW9iam5kbmtoeWZxcHdoZW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTkwOTIsImV4cCI6MjA4OTA3NTA5Mn0.fKk8v2LSI1EHWAR03vfxCRE6U3zD_5HQG91CetlUzfM';
 
-
-
-
-
-
-
-// Form
-
-
-
 document.getElementById('contactForm').addEventListener('submit', async function(e) {
-
-
-
   e.preventDefault();
-
-
-
   const btn = this.querySelector('.form-submit');
-
-
-
   const prenom = document.getElementById('fname').value.trim();
-
-
-
   const nom = document.getElementById('lname').value.trim();
-
-
-
   const email = document.getElementById('email').value.trim();
-
-
-
-
-
-
-
-  btn.textContent = 'Enregistrement…';
-
-
-
-  btn.disabled = true;
-
-
-
-
-
-
-
+  btn.textContent = 'Enregistrement…'; btn.disabled = true;
   try {
-
-
-
     const res = await fetch(`${SUPABASE_URL}/rest/v1/contacts`, {
-
-
-
       method: 'POST',
-
-
-
-      headers: {
-
-
-
-        'Content-Type': 'application/json',
-
-
-
-        'apikey': SUPABASE_KEY,
-
-
-
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-
-
-
-        'Prefer': 'return=minimal'
-
-
-
-      },
-
-
-
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
       body: JSON.stringify({ prenom, nom, email })
-
-
-
     });
-
-
-
-
-
-
-
     if (!res.ok) throw new Error('Erreur réseau');
-
-
-
-
-
-
-
     this.style.display = 'none';
-
-
-
     document.getElementById('successMsg').classList.add('show');
-
-
-
-
-
-
-
   } catch (err) {
-
-
-
-    btn.textContent = 'Réessayer →';
-
-
-
-    btn.disabled = false;
-
-
-
-    btn.style.background = '#c0392b';
-
-
-
-    btn.style.color = '#fff';
-
-
-
+    btn.textContent = 'Réessayer →'; btn.disabled = false;
+    btn.style.background = '#c0392b'; btn.style.color = '#fff';
     console.error(err);
-
-
-
   }
-
-
-
 });
-
-
-
 </script>
-
-
-
-
-
-
-
-
-
-
 
 <script>
-
-
-
 (function(){
-
-
-
   const players = [
-
-
-
     "Zidane","Ronaldo","Mbappé","Messi","Neymar","Benzema","Ibrahimovic",
-
-
-
     "Henry","Bergkamp","Platini","Cantona","Trezeguet","Vieira","Barthez",
-
-
-
     "Thuram","Desailly","Klose","Müller","Lahm","Neuer","Ribéry","Robben",
-
-
-
     "Lewandowski","Haaland","Van Dijk","Gerrard","Torres","Suarez","Salah",
-
-
-
     "Drogba","Lampard","Terry","Fabregas","Pires","Maldini","Baresi",
-
-
-
     "Del Piero","Totti","Buffon","Pirlo","Shevchenko","Ronaldinho","Xavi",
-
-
-
     "Iniesta","Puyol","Raul","Casillas","Ramos","Modric","Kroos","Griezmann",
-
-
-
-    "Oblak","Zanetti","Sneijder","Milito","Nedved","Maradona","Vieri"
-
-
-
+    "Oblak","Zanetti","Sneijder","Milito","Nedved","Maradona","Vieri","Juninho"
   ];
-
-
-
   const questions = [
-
-
-
     "Joueurs Français","Joueurs Espagnols","Joueurs Allemands",
-
-
-
     "Joueurs Italiens","Joueurs Anglais","Brésiliens / Argentins",
-
-
-
     "Joueurs Algériens","Joueurs Marocains","Gardiens de but",
-
-
-
-    "Recrutés libres","Prêtés puis achetés","+120 buts","Transferts >50M€"
-
-
-
+    "Recrutés libres","Prêtés puis achetés","+120 buts","Transferts >50M€",
+    "+400 matchs au club"
   ];
-
-
-
-  // Positions générées aléatoirement à chaque cycle
-
-
-
-  // Zones autorisées : gauche (x 2-22%) et droite (x 72-92%)
-
-
-
-  // Y réparti sur toute la hauteur, espacé pour éviter les doublons
-
-
 
   function generatePositions(){
-
-
-
-    const pos = [];
-
-
-
-    const usedY = [];
-
-
-
-    const COUNT = 14;
-
-
-
+    const pos = []; const usedY = []; const COUNT = 14;
     for(let i = 0; i < COUNT; i++){
-
-
-
       let y, attempts = 0;
-
-
-
-      do {
-
-
-
-        y = 5 + Math.random() * 90;
-
-
-
-        attempts++;
-
-
-
-      } while(usedY.some(uy => Math.abs(uy - y) < 7) && attempts < 20);
-
-
-
+      do { y = 5 + Math.random() * 90; attempts++; }
+      while(usedY.some(uy => Math.abs(uy - y) < 7) && attempts < 20);
       usedY.push(y);
-
-
-
-      const side = Math.random() > 0.5; // gauche ou droite
-
-
-
+      const side = Math.random() > 0.5;
       pos.push({
-
-
-
         x: side ? (2 + Math.random() * 18) : (72 + Math.random() * 18),
-
-
-
-        y: y,
-
-
-
-        type: Math.random() > 0.55 ? 'p' : 'q',
-
-
-
-        size: 7 + Math.round(Math.random()),
-
-
-
-        gold: Math.random() > 0.45,
-
-
-
+        y: y, type: Math.random() > 0.55 ? 'p' : 'q',
+        size: 7 + Math.round(Math.random()), gold: Math.random() > 0.45,
       });
-
-
-
     }
-
-
-
     return pos;
-
-
-
   }
-
-
-
-
-
-
 
   const layer = document.getElementById('scan-words-layer');
-
-
-
   const scanEl = document.getElementById('scanline');
-
-
-
   if(!layer || !scanEl) return;
-
-
-
-
-
-
-
   const hero = scanEl.closest('section');
-
-
-
-  let wordEls = [];
-
-
-
-  let lastCycle = -1;
-
-
-
-  const DURATION = 6000;
-
-
-
-
-
-
-
+  let wordEls = []; let lastCycle = -1; const DURATION = 6000;
   function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-
-
-
-
-
-
   function buildWords(){
-
-
-
-    layer.innerHTML = '';
-
-
-
-    wordEls = [];
-
-
-
+    layer.innerHTML = ''; wordEls = [];
     generatePositions().forEach(pos => {
-
-
-
       const el = document.createElement('div');
-
-
-
       el.className = 'scan-word';
-
-
-
       el.textContent = pos.type === 'p' ? rand(players) : rand(questions);
-
-
-
       el.style.cssText = [
-
-
-
-        'position:absolute',
-
-
-
-        'font-family:"Bebas Neue",cursive',
-
-
-
-        'text-transform:uppercase',
-
-
-
-        'white-space:nowrap',
-
-
-
-        'pointer-events:none',
-
-
-
-        'opacity:0',
-
-
-
-        'transition:opacity 0.25s ease',
-
-
-
-        'left:' + pos.x + '%',
-
-
-
-        'top:' + pos.y + '%',
-
-
-
+        'position:absolute','font-family:"Bebas Neue",cursive',
+        'text-transform:uppercase','white-space:nowrap',
+        'pointer-events:none','opacity:0','transition:opacity 0.25s ease',
+        'left:' + pos.x + '%','top:' + pos.y + '%',
         'font-size:' + pos.size + 'px',
-
-
-
         'letter-spacing:' + (pos.type==='q' ? '5px' : '4px'),
-
-
-
         'font-weight:400',
-
-
-
         'color:' + (pos.gold ? 'rgba(240,180,41,0.4)' : 'rgba(200,223,200,0.22)'),
-
-
-
       ].join(';');
-
-
-
-      layer.appendChild(el);
-
-
-
-      wordEls.push({el, posY: pos.y});
-
-
-
+      layer.appendChild(el); wordEls.push({el, posY: pos.y});
     });
-
-
-
   }
-
-
-
-
-
-
 
   function tick(){
-
-
-
     const heroRect = hero.getBoundingClientRect();
-
-
-
     const scanRect = scanEl.getBoundingClientRect();
-
-
-
-    // Position du scan en % de la hauteur du hero
-
-
-
     const scanPct = ((scanRect.top - heroRect.top) / heroRect.height) * 100;
-
-
-
-
-
-
-
     wordEls.forEach(({el, posY}) => {
-
-
-
       const dist = scanPct - posY;
-
-
-
-      if(dist >= -4 && dist <= 4){
-
-
-
-        // Scan sur le mot — allumer
-
-
-
-        el.style.opacity = (1 - Math.abs(dist)/4).toFixed(2);
-
-
-
-      } else if(dist > 4 && dist < 40){
-
-
-
-        // Scan passé — fade progressif
-
-
-
-        el.style.opacity = Math.max(0, 1 - (dist-4)/36).toFixed(2);
-
-
-
-      } else {
-
-
-
-        el.style.opacity = '0';
-
-
-
-      }
-
-
-
+      if(dist >= -4 && dist <= 4){ el.style.opacity = (1 - Math.abs(dist)/4).toFixed(2); }
+      else if(dist > 4 && dist < 40){ el.style.opacity = Math.max(0, 1 - (dist-4)/36).toFixed(2); }
+      else { el.style.opacity = '0'; }
     });
-
-
-
-
-
-
-
     const cycle = Math.floor(performance.now() / DURATION);
-
-
-
-    if(cycle !== lastCycle){
-
-
-
-      lastCycle = cycle;
-
-
-
-      buildWords();
-
-
-
-    }
-
-
-
+    if(cycle !== lastCycle){ lastCycle = cycle; buildWords(); }
     requestAnimationFrame(tick);
-
-
-
   }
-
-
-
-
-
-
-
-  buildWords();
-
-
-
-  requestAnimationFrame(tick);
-
-
-
+  buildWords(); requestAnimationFrame(tick);
 })();
 
-
-
-
-
-
-
-  // Init langue
-
-
-
-  const savedLang = localStorage.getItem('vc_lang') || 'fr';
-
-
-
-  switchLang(savedLang);
-
-
-
+const savedLang = localStorage.getItem('vc_lang') || 'fr';
+switchLang(savedLang);
 </script>
-
-
-
 </body>
-
-
-
 </html>
