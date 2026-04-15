@@ -294,47 +294,156 @@ html,body{
 .card-back,.card-front{
   position:absolute;inset:0;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  border-radius:var(--r);overflow:hidden;
+  border-radius:10px;overflow:hidden;
 }
-
-/* Card backs — solid, no gradient */
-.card-back{
-  background:#0D1F0D;
-  border:1px solid rgba(240,180,41,.2);
-  display:flex;align-items:center;justify-content:center;
-}
-.card-back.question-back{
-  background:var(--gold);
-  border:1px solid rgba(0,0,0,.1);
-}
-.card-back-logo{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:rgba(240,180,41,.3);}
-.card-back.question-back .card-back-logo{color:rgba(13,31,13,.3);}
 .card-front{transform:rotateY(180deg);}
 
-/* Club card front — white, no gradient */
+/* ══════════════════════════════════════
+   PHYSICAL CARD STYLES
+   Club: dark green back / white face with stripes + crest area
+   Question: gold back / white face with stripes + label
+══════════════════════════════════════ */
+
+/* --- CARD BACKS --- */
+.card-back{
+  background:#1A3A1A;
+  border:2px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  overflow:hidden;position:relative;
+}
+/* Green pitch stripes on club back */
+.card-back::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    180deg,
+    rgba(255,255,255,.03) 0px,
+    rgba(255,255,255,.03) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  pointer-events:none;
+}
+.card-back.question-back{
+  background:#F0B429;
+  border:2px solid rgba(255,255,255,.15);
+}
+/* Gold stripes on question back */
+.card-back.question-back::before{
+  background:repeating-linear-gradient(
+    180deg,
+    rgba(255,255,255,.12) 0px,
+    rgba(255,255,255,.12) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+
+/* --- CLUB CARD FRONT --- */
 .cf-club{
   width:100%;height:100%;
-  background:#ffffff;
-  border:1px solid #e8ece8;
-  display:flex;flex-direction:column;border-radius:var(--r);overflow:hidden;
+  background:#f7f9f7;
+  border:2px solid #e0e8e0;
+  border-radius:10px;
+  display:flex;flex-direction:column;
+  overflow:hidden;
 }
-.cf-club-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;gap:4px;overflow:hidden;}
-.cf-club-name{font-family:'Bebas Neue',cursive;font-size:clamp(9px,2.2vw,13px);letter-spacing:1px;color:#0D1F0D;text-align:center;line-height:1.2;word-break:break-word;}
-.cf-footer{background:#f5f5f5;padding:4px 8px;border-top:1px solid #e0e4e0;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+/* Horizontal jersey stripes (subtle) */
+.cf-club-stripes{
+  position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(
+    180deg,
+    rgba(34,80,34,.04) 0px,
+    rgba(34,80,34,.04) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+.cf-club-inner{position:relative;width:100%;height:100%;display:flex;flex-direction:column;}
+.cf-club-top{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:6px 6px 4px;gap:4px;position:relative;overflow:hidden;
+}
+.cf-club-crest{
+  width:52%;max-width:44px;aspect-ratio:1;
+  object-fit:contain;display:block;flex-shrink:0;
+}
+.cf-club-name{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(8px,2.2vw,12px);
+  letter-spacing:1px;color:#1A3A1A;
+  text-align:center;line-height:1.1;
+  word-break:break-word;padding:0 4px;
+}
+.cf-club-footer{
+  background:#1A3A1A;
+  padding:4px 6px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.cf-club-footer-logo{
+  font-family:'Bebas Neue',cursive;
+  font-size:7px;letter-spacing:2px;color:rgba(255,255,255,.5);
+}
 
-/* Action card */
-.cf-action{width:100%;height:100%;display:flex;flex-direction:column;border-radius:var(--r);overflow:hidden;}
-.cf-action.clr-gold{background:#F0B429;border:1px solid rgba(0,0,0,.08);}
-.cf-action.clr-red{background:#C0392B;border:1px solid rgba(255,255,255,.15);}
-.cf-action.clr-green{background:#F5C84A;border:1px solid rgba(0,0,0,.1);}
-.cf-action.clr-orange{background:#E8A020;border:1px solid rgba(0,0,0,.1);}
+/* --- QUESTION CARD FRONT --- */
+.cf-question{
+  width:100%;height:100%;
+  background:#f9f8f4;
+  border:2px solid #e8e0c0;
+  border-radius:10px;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.cf-question-inner{position:relative;width:100%;height:100%;display:flex;flex-direction:column;}
+.cf-question-stripes{
+  position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(
+    180deg,
+    rgba(200,150,0,.05) 0px,
+    rgba(200,150,0,.05) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+.cf-question-body{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:6px 6px 4px;gap:5px;position:relative;overflow:hidden;
+}
+.cf-question-text{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(8px,2.2vw,12px);
+  letter-spacing:.5px;color:#1A3A1A;
+  text-align:center;line-height:1.25;
+  padding:0 2px;
+}
+.cf-question-flag{font-size:clamp(14px,4vw,20px);line-height:1;flex-shrink:0;}
+.cf-question-footer{
+  background:#F0B429;
+  padding:4px 6px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.cf-question-footer-logo{
+  font-family:'Bebas Neue',cursive;
+  font-size:7px;letter-spacing:2px;color:rgba(13,31,13,.45);
+}
+
+/* --- ACTION CARD (kept simple) --- */
+.cf-action{width:100%;height:100%;display:flex;flex-direction:column;border-radius:10px;overflow:hidden;}
+.cf-action.clr-gold{background:#F0B429;border:2px solid rgba(0,0,0,.08);}
+.cf-action.clr-red{background:#C0392B;border:2px solid rgba(255,255,255,.15);}
+.cf-action.clr-orange{background:#E8A020;border:2px solid rgba(0,0,0,.1);}
 .cf-action-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;gap:4px;overflow:hidden;}
 .cf-action-icon{font-size:clamp(16px,5vw,22px);line-height:1;}
 .cf-action-name{font-family:'Bebas Neue',cursive;font-size:clamp(11px,3vw,14px);letter-spacing:1px;text-align:center;line-height:1;}
-.clr-gold .cf-action-name,.clr-green .cf-action-name,.clr-orange .cf-action-name{color:#2A1600;}
+.clr-gold .cf-action-name,.clr-orange .cf-action-name{color:#2A1600;}
 .clr-red .cf-action-name{color:#fff;}
 .cf-action-desc{font-size:clamp(7px,1.8vw,9px);text-align:center;line-height:1.3;}
-.clr-gold .cf-action-desc,.clr-green .cf-action-desc,.clr-orange .cf-action-desc{color:rgba(42,22,0,.55);}
+.clr-gold .cf-action-desc,.clr-orange .cf-action-desc{color:rgba(42,22,0,.55);}
 .clr-red .cf-action-desc{color:rgba(255,255,255,.5);}
 .cf-footer-action{background:rgba(0,0,0,.12);padding:4px 8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
@@ -1589,19 +1698,66 @@ function renderHandScreen(){
   renderSplitCards(me.clubHand,me.qHand);
 }
 
+// Nationality flag emoji map
+const Q_FLAGS={
+  1:'🇫🇷',2:'🇪🇸',3:'🇩🇪',4:'🇮🇹',5:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',6:'🇧🇷',7:'🇦🇷',8:'🇩🇿',9:'🇲🇦',
+  10:'🇵🇹',11:'🇧🇪',12:'🇳🇱',13:'🇸🇳',14:'🇨🇲',15:'🌍',
+};
+
 function buildCardFront(card){
   const el=document.createElement('div');
   el.style.width='100%';el.style.height='100%';
+
   if(card.type==='question'){
-    el.className='cf-action clr-gold';
-    el.innerHTML=`<div class="cf-action-body" style="gap:8px;"><div style="font-family:'Bebas Neue',cursive;font-size:clamp(8px,2vw,11px);letter-spacing:2px;color:rgba(13,31,13,.6);">Q${card.qId}</div><div style="font-family:'Bebas Neue',cursive;font-size:clamp(9px,2.5vw,13px);letter-spacing:.5px;color:#0D1F0D;text-align:center;line-height:1.2;padding:0 2px;">${card.qLabel}</div></div><div class="cf-footer-action"><span style="font-family:'Bebas Neue',cursive;font-size:8px;letter-spacing:2px;color:rgba(13,31,13,.3);">VAR CLUB</span></div>`;
+    // Question card — gold footer, white body, stripes, text + flag
+    const flag=Q_FLAGS[card.qId]||'';
+    el.className='cf-question';
+    el.innerHTML=`
+      <div class="cf-question-inner">
+        <div class="cf-question-stripes"></div>
+        <div class="cf-question-body">
+          ${flag?`<div class="cf-question-flag">${flag}</div>`:''}
+          <div class="cf-question-text">${card.qLabel||''}</div>
+        </div>
+        <div class="cf-question-footer">
+          <span class="cf-question-footer-logo">VAR CLUB</span>
+        </div>
+      </div>`;
+
   }else if(card.type==='club'){
+    // Club card — green footer, white body, stripes, crest + name
+    const club=CLUBS.find(c=>c.id===card.clubId)||{};
+    const crestUrl=`/crests/${card.clubId||''}.png`;
     el.className='cf-club';
-    el.innerHTML=`<div class="cf-club-body"><div class="cf-club-name">${card.clubName||''}</div></div><div class="cf-footer"><span style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:rgba(13,31,13,.3);">VAR CLUB</span></div>`;
+    el.innerHTML=`
+      <div class="cf-club-inner">
+        <div class="cf-club-stripes"></div>
+        <div class="cf-club-top">
+          <img class="cf-club-crest" src="${crestUrl}" onerror="this.style.display='none'">
+          <div class="cf-club-name">${card.clubName||''}</div>
+        </div>
+        <div class="cf-club-footer">
+          <span class="cf-club-footer-logo">VAR CLUB</span>
+        </div>
+      </div>`;
+
   }else if(card.type==='double'){
-    const c1=CLUBS.find(c=>c.id===card.clubs?.[0]);const c2=CLUBS.find(c=>c.id===card.clubs?.[1]);
+    const c1=CLUBS.find(c=>c.id===card.clubs?.[0]);
+    const c2=CLUBS.find(c=>c.id===card.clubs?.[1]);
     el.className='cf-club';
-    el.innerHTML=`<div class="cf-club-body" style="justify-content:center;gap:6px;text-align:center;"><div class="cf-club-name" style="font-size:clamp(8px,2vw,11px);">${c1?.name||''}</div><div style="font-size:8px;color:rgba(13,31,13,.4);letter-spacing:2px;">OU</div><div class="cf-club-name" style="font-size:clamp(8px,2vw,11px);">${c2?.name||''}</div></div><div class="cf-footer"><span style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:rgba(13,31,13,.3);">VAR CLUB</span></div>`;
+    el.innerHTML=`
+      <div class="cf-club-inner">
+        <div class="cf-club-stripes"></div>
+        <div class="cf-club-top" style="gap:3px;">
+          <div class="cf-club-name" style="font-size:clamp(7px,1.8vw,10px);">${c1?.name||''}</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:8px;color:rgba(26,58,26,.4);letter-spacing:2px;">OU</div>
+          <div class="cf-club-name" style="font-size:clamp(7px,1.8vw,10px);">${c2?.name||''}</div>
+        </div>
+        <div class="cf-club-footer">
+          <span class="cf-club-footer-logo">VAR CLUB</span>
+        </div>
+      </div>`;
+
   }else if(card.type==='action'){
     el.className=`cf-action clr-${card.clr||'orange'}`;
     el.innerHTML=`<div class="cf-action-body"><div class="cf-action-icon">${card.icon||''}</div><div class="cf-action-name">${card.name||''}</div><div class="cf-action-desc">${card.desc||''}</div></div><div class="cf-footer-action"><span style="font-family:'Bebas Neue',cursive;font-size:8px;letter-spacing:2px;color:rgba(13,31,13,.25);">VAR CLUB</span></div>`;
@@ -1646,7 +1802,7 @@ function renderSplitCards(clubCards,questionCards){
 
     const inner=document.createElement('div');inner.className='card-inner';
     const back=document.createElement('div');back.className='card-back question-back';
-    back.innerHTML='<span style="font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:2px;color:rgba(13,31,13,.35);">VAR</span>';
+    back.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;z-index:1;"><span style="font-family:'Bebas Neue',cursive;font-size:clamp(12px,4vw,18px);letter-spacing:3px;color:rgba(13,31,13,.7);line-height:1;">VAR</span><span style="font-family:'Bebas Neue',cursive;font-size:clamp(12px,4vw,18px);letter-spacing:3px;color:rgba(13,31,13,.7);line-height:1;">CLUB</span></div>`;
     const front=document.createElement('div');front.className='card-front';front.appendChild(buildCardFront(card));
     inner.appendChild(back);inner.appendChild(front);wrap.appendChild(inner);
     slot.appendChild(wrap);
@@ -1712,7 +1868,7 @@ function renderSplitCards(clubCards,questionCards){
 
     const inner=document.createElement('div');inner.className='card-inner';
     const back=document.createElement('div');back.className='card-back';
-    back.innerHTML='<span style="font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:2px;color:rgba(240,180,41,.25);">VAR</span>';
+    back.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;z-index:1;"><span style="font-family:'Bebas Neue',cursive;font-size:clamp(12px,4vw,18px);letter-spacing:3px;color:rgba(240,180,41,.65);line-height:1;">VAR</span><span style="font-family:'Bebas Neue',cursive;font-size:clamp(12px,4vw,18px);letter-spacing:3px;color:rgba(240,180,41,.65);line-height:1;">CLUB</span></div>`;
     const front=document.createElement('div');front.className='card-front';front.appendChild(buildCardFront(card));
 
     // "JOUER" button revealed after flip
@@ -2460,24 +2616,6 @@ function renderMercatoSpectator(){
   renderSboard('spec-sboard');const btn=document.getElementById('var-spectator-btn');btn.disabled=false;
 }
 
-async function confirmMercato(){
-  const me=GS.players[myIdx()];const score=GS.mercato?.judgeScore||0;
-  if(score>0){
-    me.tokens=Math.max(0,me.tokens-score);animateTokens(score,'remove',me.name);
-    if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.mercato=null;await logGame(ME.name);await saveGS(GS);return;}
-  }
-  GS.mercato=null;mercCount=0;_mjValidated=new Set();_mjExtra=0;
-  await nextTurn();
-}
-  const m=GS.mercato;if(!m){toast('Données en cours de chargement…');return;}
-  document.getElementById('var-merc-c1').textContent=m.club1.name;
-  document.getElementById('var-merc-c2').textContent=m.club2.name;
-  const common=m.common||[];document.getElementById('var-merc-count').textContent=common.length;
-  const cont=document.getElementById('var-merc-players');
-  if(!common.length){cont.innerHTML='<span class="var-none">Aucun joueur commun trouvé</span>';return;}
-  cont.innerHTML=common.map(p=>`<span class="var-tag">${p.photo?`<img src="${p.photo}" onerror="this.style.display='none'">`:''}${p.name}</span>`).join('');
-  show('var-mercato');
-}
 function openMercVarSpectator(){
   const m=GS.mercato;if(!m){toast('Données en cours de chargement…');return;}
   document.getElementById('var-merc-c1').textContent=m.club1.name;
@@ -2498,12 +2636,12 @@ async function mjValidate(){
 }
 
 async function confirmMercato(){
-  const me=GS.players[myIdx()];const score=GS.mercato?.judgeScore||mercCount;
+  const me=GS.players[myIdx()];const score=GS.mercato?.judgeScore||0;
   if(score>0){
     me.tokens=Math.max(0,me.tokens-score);animateTokens(score,'remove',me.name);
     if(me.tokens<=0){GS.phase='win';GS.winner=ME.name;GS.mercato=null;await logGame(ME.name);await saveGS(GS);return;}
   }
-  GS.mercato=null;mercCount=0;mercVoteVal=null;_mjValidated=new Set();_mjExtra=0;
+  GS.mercato=null;mercCount=0;_mjValidated=new Set();_mjExtra=0;
   await nextTurn();
 }
 </script>
