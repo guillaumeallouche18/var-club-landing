@@ -267,10 +267,8 @@ html,body{
 /* Individual card in strip — fixed size */
 .strip-card{
   flex-shrink:0;
-  width:calc(42vw);
-  max-width:160px;
-  height:calc(42vw * 1.45);
-  max-height:232px;
+  width:100px;
+  height:145px;
   position:relative;
   scroll-snap-align:start;
 }
@@ -288,7 +286,7 @@ html,body{
   position:absolute;inset:0;
   transform-style:preserve-3d;
   transition:transform .45s ease;
-  border-radius:var(--r);
+  border-radius:10px;
 }
 .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
 .card-back,.card-front{
@@ -1802,7 +1800,7 @@ function renderSplitCards(clubCards,questionCards){
 
     const inner=document.createElement('div');inner.className='card-inner';
     const back=document.createElement('div');back.className='card-back question-back';
-    back.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;z-index:1;"><span style="font-family:'Bebas Neue',cursive;font-size:clamp(12px,4vw,18px);letter-spacing:3px;color:rgba(13,31,13,.7);line-height:1;">VAR</span><span style="font-family:'Bebas Neue',cursive;font-size:clamp(12px,4vw,18px);letter-spacing:3px;color:rgba(13,31,13,.7);line-height:1;">CLUB</span></div>`;
+    back.innerHTML=`<img src="/VAR_CLUB_TRANSPARENT_2.svg" style="width:60%;max-width:52px;opacity:.55;position:relative;z-index:1;filter:brightness(0) saturate(100%);" alt="VAR CLUB">`;
     const front=document.createElement('div');front.className='card-front';front.appendChild(buildCardFront(card));
     inner.appendChild(back);inner.appendChild(front);wrap.appendChild(inner);
     slot.appendChild(wrap);
@@ -1868,7 +1866,7 @@ function renderSplitCards(clubCards,questionCards){
 
     const inner=document.createElement('div');inner.className='card-inner';
     const back=document.createElement('div');back.className='card-back';
-    back.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;z-index:1;"><span style="font-family:'Bebas Neue',cursive;font-size:clamp(12px,4vw,18px);letter-spacing:3px;color:rgba(240,180,41,.65);line-height:1;">VAR</span><span style="font-family:'Bebas Neue',cursive;font-size:clamp(12px,4vw,18px);letter-spacing:3px;color:rgba(240,180,41,.65);line-height:1;">CLUB</span></div>`;
+    back.innerHTML=`<img src="/VAR_CLUB_TRANSPARENT_2.svg" style="width:60%;max-width:52px;opacity:.5;position:relative;z-index:1;" alt="VAR CLUB">`;
     const front=document.createElement('div');front.className='card-front';front.appendChild(buildCardFront(card));
 
     // "JOUER" button revealed after flip
