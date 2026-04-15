@@ -237,7 +237,7 @@ html,body{
 /* Row label */
 .hand-row-label{
   display:flex;align-items:center;gap:8px;
-  padding:8px 14px 4px;
+  padding:6px 14px 3px;
   flex-shrink:0;
 }
 .hand-row-label-text{
@@ -254,7 +254,7 @@ html,body{
   display:flex;
   flex-direction:row;
   gap:10px;
-  padding:4px 14px 10px;
+  padding:4px 14px 8px;
   overflow-x:auto;
   overflow-y:hidden;
   flex-shrink:0;
@@ -264,11 +264,11 @@ html,body{
 }
 .cards-strip::-webkit-scrollbar{display:none;}
 
-/* Individual card in strip — fixed size, portrait ratio */
+/* Individual card in strip — responsive portrait ratio */
 .strip-card{
   flex-shrink:0;
-  width:110px;
-  height:160px;
+  width:min(38vw, 140px);
+  height:min(55vw, 200px);
   position:relative;
   scroll-snap-align:start;
 }
@@ -975,7 +975,7 @@ html,body{
 </div>
 
 <!-- HAND -->
-<div id="screen-hand" class="screen" style="flex-direction:column;overflow-y:auto;">
+<div id="screen-hand" class="screen" style="flex-direction:column;height:100vh;overflow:hidden;">
 
   <!-- Scorebug -->
   <div class="scorebug" id="hand-scorebug" style="flex-shrink:0;">
@@ -990,10 +990,10 @@ html,body{
   </div>
 
   <!-- Scoreboard compact -->
-  <div class="sboard" id="hand-sboard" style="margin:8px 14px 0;flex-shrink:0;"></div>
+  <div class="sboard" id="hand-sboard" style="margin:6px 14px 0;flex-shrink:0;"></div>
 
   <!-- ── QUESTIONS ROW ── -->
-  <div class="hand-row-label" style="margin-top:16px;">
+  <div class="hand-row-label" style="margin-top:12px;">
     <div class="hand-row-label-text gold">① Questions</div>
     <div class="hand-row-count" id="q-count"></div>
   </div>
@@ -1009,11 +1009,11 @@ html,body{
   </div>
   <div class="cards-strip" id="clubs-grid"></div>
 
-  <!-- Spacer so footer doesn't overlap last card -->
-  <div style="height:70px;flex-shrink:0;"></div>
+  <!-- Spacer flexible — pousse le footer en bas -->
+  <div style="flex:1;min-height:8px;"></div>
 
   <!-- Footer sticky -->
-  <div class="hand-footer" id="hand-footer" style="position:sticky;bottom:0;">
+  <div class="hand-footer" id="hand-footer" style="flex-shrink:0;">
     <button class="ghost-btn" id="btn-pass-turn" onclick="passTurn()" style="flex:1;display:none;">Passer mon tour</button>
     <button class="ghost-btn" id="btn-discard" onclick="discardHand()" style="flex:1;display:none;border-color:var(--coral);color:var(--coral);">🔄 Défausser</button>
   </div>
