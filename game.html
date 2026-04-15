@@ -14,14 +14,9 @@
   --bg:#0D1F0D;--bg2:#0a1a0a;--card:#1C3A22;--card2:#142e18;
   --border:#243828;--gold:#F0B429;--gold2:#F5C842;
   --white:#F7FDF4;--muted:#8AB88A;--coral:#E74C3C;--r:12px;
-  --stripe-light:rgba(255,255,255,.025);--stripe-dark:rgba(0,0,0,.06);
 }
 
-/* ── SCANLINES overlay ── */
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
-  background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
-}
+
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -56,23 +51,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .screen{display:none;min-height:100vh;flex-direction:column;animation:fadeIn .25s ease;}
 .screen.active{display:flex;}
 
-/* ══════════════════════════════
-   STRIPES MIXIN — appliqué aux cartes
-══════════════════════════════ */
-.striped{
-  background-image:repeating-linear-gradient(
-    180deg,
-    var(--stripe-light) 0px,var(--stripe-light) 1px,
-    transparent 1px,transparent 20px
-  );
-}
-.striped-gold{
-  background-image:repeating-linear-gradient(
-    180deg,
-    rgba(240,180,41,.06) 0px,rgba(240,180,41,.06) 1px,
-    transparent 1px,transparent 18px
-  );
-}
+
 
 /* ══════════════════════════════
    SCOREBUG — header premium
@@ -86,11 +65,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   position:relative;
   overflow:hidden;
 }
-.scorebug::before{
-  content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(240,180,41,.02) 40px,rgba(240,180,41,.02) 41px);
-  pointer-events:none;
-}
+
 .scorebug-title{
   font-family:'Bebas Neue',cursive;
   font-size:clamp(18px,4vw,24px);
@@ -135,7 +110,6 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 }
 .lobby-section::before{
   content:'';position:absolute;inset:0;
-  background-image:repeating-linear-gradient(180deg,var(--stripe-light) 0,var(--stripe-light) 1px,transparent 1px,transparent 22px);
   pointer-events:none;
 }
 .lobby-section-title{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;}
@@ -225,9 +199,19 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 }
 
 /* CARD FLIP */
-.card-wrap{width:100%;height:0;padding-bottom:min(110%,34vw);position:relative;cursor:pointer;}
+.card-wrap{width:100%;position:relative;cursor:pointer;}
+/* En mode hand (grille plein écran), les cartes s'étirent */
+#questions-grid .card-wrap,
+#clubs-grid .card-wrap{
+  height:100%;min-height:0;
+}
+/* Le padding-bottom trick pour ratio fixe — utilisé hors grille hand */
+.card-wrap.ratio-mode{height:0;padding-bottom:min(110%,34vw);}
 .card-wrap.flipped{cursor:default;}
 .card-inner{position:absolute;top:0;left:0;right:0;bottom:0;transform-style:preserve-3d;transition:transform .5s ease;border-radius:var(--r);}
+/* Pour le stretch mode (grille hand), card-inner remplit le parent */
+#questions-grid .card-inner,
+#clubs-grid .card-inner{position:absolute;inset:0;}
 .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
 .card-back,.card-front{position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r);overflow:hidden;}
 
@@ -312,7 +296,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .play-body{padding:14px 16px;}
 
 .box{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;position:relative;overflow:hidden;}
-.box::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(180deg,var(--stripe-light) 0,var(--stripe-light) 1px,transparent 1px,transparent 22px);pointer-events:none;}
+
 .box-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;position:relative;}
 .box-label span{color:var(--gold);}
 .announce-text{font-size:13px;color:rgba(255,255,255,.5);font-style:italic;line-height:1.5;min-height:32px;position:relative;}
@@ -334,7 +318,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   overflow:hidden;
 }
 .dial-wrap::before{content:'COMMAND DIAL';position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:5px;text-transform:uppercase;color:rgba(240,180,41,.3);}
-.dial-wrap::after{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(180deg,rgba(240,180,41,.03) 0,rgba(240,180,41,.03) 1px,transparent 1px,transparent 18px);pointer-events:none;}
+
 .dial-number{font-family:'Bebas Neue',cursive;font-size:80px;color:var(--gold);text-align:center;line-height:1;margin:8px 0;text-shadow:0 0 30px rgba(240,180,41,.3);animation:dialPop .15s ease;}
 .dial-controls{display:flex;align-items:center;justify-content:center;gap:24px;position:relative;}
 .dial-btn{
@@ -356,7 +340,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 .vote-status{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;min-height:16px;}
 
 .verdict{padding:14px;border-radius:var(--r);text-align:center;margin-bottom:12px;animation:fadeUp .3s ease;position:relative;overflow:hidden;}
-.verdict::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(135deg,transparent,transparent 8px,rgba(255,255,255,.02) 8px,rgba(255,255,255,.02) 9px);pointer-events:none;}
+
 .verdict.win{background:rgba(138,184,138,.1);border:1px solid rgba(138,184,138,.3);}
 .verdict.lose{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);}
 .verdict-title{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:3px;margin-bottom:4px;}
@@ -414,7 +398,6 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   border-radius:6px;font-size:12px;color:var(--muted);
   display:inline-flex;align-items:center;gap:6px;
   transition:all .15s;
-  background-image:repeating-linear-gradient(180deg,var(--stripe-light) 0,var(--stripe-light) 1px,transparent 1px,transparent 16px);
 }
 .var-tag img{width:24px;height:24px;border-radius:50%;object-fit:cover;border:1px solid var(--border);}
 .var-tag.clickable{cursor:pointer;user-select:none;}
@@ -471,7 +454,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   text-align:center;animation:fadeUp .3s ease;
   position:relative;overflow:hidden;
 }
-.modal::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(180deg,var(--stripe-light) 0,var(--stripe-light) 1px,transparent 1px,transparent 22px);pointer-events:none;}
+
 .modal-icon{font-size:44px;margin-bottom:12px;position:relative;}
 .modal-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;color:var(--gold);margin-bottom:8px;position:relative;}
 .modal-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;position:relative;white-space:pre-wrap;}
@@ -504,8 +487,21 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
   width:100%;text-align:left;color:var(--white);
   position:relative;overflow:hidden;
 }
-.mode-btn::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(180deg,var(--stripe-light) 0,var(--stripe-light) 1px,transparent 1px,transparent 20px);pointer-events:none;}
+
 .mode-btn:hover{border-color:rgba(240,180,41,.3);background:rgba(240,180,41,.04);}
+
+/* En mode hand, les grilles questions et clubs ont des rows qui s'étirent */
+#questions-grid,
+#clubs-grid {
+  grid-template-rows: repeat(2, 1fr) !important;
+  align-items: stretch;
+}
+#questions-grid .card-wrap,
+#clubs-grid .card-wrap {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
 
 /* Util */
 .cnt-btn{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .2s;}
@@ -517,7 +513,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 <!-- LOBBY -->
 <div id="screen-lobby" class="screen active" style="align-items:center;justify-content:center;padding:24px 20px;">
   <div class="lobby-wrap">
-    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIyMiIgaGVpZ2h0PSI4MDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjE1ODkiIHk9IjgzMyIgd2lkdGg9IjEyMjIiIGhlaWdodD0iODA5Ii8+PC9jbGlwUGF0aD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwKSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE1ODkgLTgzMykiPjxwYXRoIGQ9Ik0xNzE0LjMgMTIxOCAxODAxLjcgMTIxOEMxODA1LjE3IDEyMTggMTgwOC4yNCAxMjE1Ljc1IDE4MDkuMjggMTIxMi40NUwxOTI2LjgxIDgzOS4zMDNDMTkyNy42NCA4MzYuNjc1IDE5MjUuNjcgODM0IDE5MjIuOTEgODM0TDE4MzIuNDYgODM0QzE4MzAuNjMgODM0IDE4MjkuMDMgODM1LjIxMiAxODI4LjUzIDgzNi45NjdMMTc1OS4xIDEwODEuMTlDMTc1OC43OCAxMDgyLjI5IDE3NTcuMjIgMTA4Mi4yOSAxNzU2LjkxIDEwODEuMTlMMTY4Ny40NyA4MzYuOTY3QzE2ODYuOTggODM1LjIxMiAxNjg1LjM3IDgzNCAxNjgzLjU0IDgzNEwxNTkzLjEgODM0QzE1OTAuMzMgODM0IDE1ODguMzYgODM2LjY3NSAxNTg5LjE5IDgzOS4zMDNMMTcwNi43MiAxMjEyLjQ1QzE3MDcuNzYgMTIxNS43NSAxNzEwLjgzIDEyMTggMTcxNC4zIDEyMThaIiBmaWxsPSIjRjdGREY0IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNMjA3My41NCA4MzkuNTQ5QzIwNzIuNDggODM2LjI0NyAyMDY5LjM3IDgzNCAyMDY1Ljg0IDgzNEwxOTc3LjE2IDgzNEMxOTczLjYzIDgzNCAxOTcwLjUyIDgzNi4yNDcgMTk2OS40NiA4MzkuNTQ5TDE4NTAuMTkgMTIxMi43QzE4NDkuMzUgMTIxNS4zMyAxODUxLjM1IDEyMTggMTg1NC4xNSAxMjE4TDE5NDMuODcgMTIxOEMxOTQ1LjczIDEyMTggMTk0Ny4zNiAxMjE2Ljc5IDE5NDcuODcgMTIxNS4wM0wxOTY3LjM5IDExNDcuMDggMjA3NS42MSAxMTQ3LjA4IDIwOTUuMTMgMTIxNS4wM0MyMDk1LjY0IDEyMTYuNzkgMjA5Ny4yNyAxMjE4IDIwOTkuMTMgMTIxOEwyMTg4Ljg1IDEyMThDMjE5MS42NSAxMjE4IDIxOTMuNjUgMTIxNS4zMyAyMTkyLjgxIDEyMTIuN0wyMDczLjU0IDgzOS41NDlaTTE5ODguNTIgMTA3My41MiAyMDIwLjM5IDk2NC42MzlDMjAyMC43MSA5NjMuNTM4IDIwMjIuMjkgOTYzLjUzOCAyMDIyLjYxIDk2NC42MzlMMjA1NC40OCAxMDczLjUyIDE5ODguNTIgMTA3My41MloiIGZpbGw9IiNGN0ZERjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik0yNDEzLjczIDEwNzAuODFDMjQzOC4zNyAxMDYzLjEgMjQ5MS4xOSAxMDM5LjI1IDI0OTEuMTkgOTUwLjg5MyAyNDkxLjE5IDg2Mi41MzMgMjQwOC44IDgzNCAyMzUyLjQ3IDgzNEwyMjExLjE3IDgzNEMyMjA4LjMxIDgzNCAyMjA2IDgzNi4zMDUgMjIwNiA4MzkuMTVMMjIwNiAxMjE1Ljg1QzIyMDYgMTIxOC43IDIyMDguMzEgMTIyMSAyMjExLjE3IDEyMjFMMjI5MC4yNiAxMjIxQzIyOTMuMTEgMTIyMSAyMjk1LjQzIDEyMTguNyAyMjk1LjQzIDEyMTUuODVMMjI5NS40MyAxMDg0LjEzIDIzMTUuODUgMTA4NC4xMyAyMzkwLjU3IDEyMTMuNjlDMjM5Mi4yNiAxMjE2LjYyIDIzOTUuNCAxMjE4LjQyIDIzOTguNzkgMTIxOC40MkwyNDg2LjY0IDEyMTguNDJDMjQ5MS41IDEyMTguNDIgMjQ5NC41NiAxMjEzLjIxIDI0OTIuMTcgMTIwOC45OUwyNDEzLjczIDEwNzAuODFaTTIzOTYuMTMgOTY0LjkxOUMyMzk2LjEzIDk4Ny4zODMgMjM3Ny44NCAxMDA1LjU5IDIzNTUuMjggMTAwNS41OUwyMjk1LjQzIDEwMDUuNTkgMjI5NS40MyA5MjQuMjQ3IDIzNTUuMjggOTI0LjI0N0MyMzc3Ljg0IDkyNC4yNDcgMjM5Ni4xMyA5NDIuNDU3IDIzOTYuMTMgOTY0LjkyMUwyMzk2LjEzIDk2NC45MjFaIiBmaWxsPSIjRjdGREY0IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNMjQ4NC40NSAxMjU3IDI0MDMuOTEgMTI1N0MyNDAxLjM5IDEyNTcgMjM5OS4zNiAxMjU5LjA0IDIzOTkuMzYgMTI2MS41NkwyMzk5LjM2IDE0OTYuNTZDMjM5OS4zNiAxNTI1Ljk1IDIzNzUuMzQgMTU1MC43MiAyMzQ1Ljk5IDE1NTAuMTYgMjMxNy41NCAxNTQ5LjYyIDIyOTQuNjUgMTUyNi4zNiAyMjk0LjY1IDE0OTcuNzRMMjI5NC42NSAxMjYxLjU2QzIyOTQuNjUgMTI1OS4wNCAyMjkyLjYxIDEyNTcgMjI5MC4xIDEyNTdMMjIwOS41NSAxMjU3QzIyMDcuMDQgMTI1NyAyMjA1IDEyNTkuMDQgMjIwNSAxMjYxLjU2TDIyMDUgMTUwMy45MkMyMjA1IDE1OTguNTYgMjI2OC41OCAxNjQyIDIzNDcgMTY0MkwyMzQ3IDE2NDJDMjQyNS40MiAxNjQyIDI0ODkgMTU5My42NSAyNDg5IDE1MDMuOTJMMjQ4OSAxMjYxLjU2QzI0ODkgMTI1OS4wNCAyNDg2Ljk2IDEyNTcgMjQ4NC40NSAxMjU3WiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTIxNzQuNDggMTU0NC41MyAyMDM0Ljg0IDE1NDQuNTNDMjAzMS41NCAxNTQ0LjUzIDIwMjguODYgMTU0MS44NiAyMDI4Ljg2IDE1MzguNTdMMjAyOC44NiAxMjYwLjUxQzIwMjguODYgMTI1OC41NyAyMDI3LjI5IDEyNTcgMjAyNS4zNCAxMjU3TDE5MzkuNTIgMTI1N0MxOTM3LjU3IDEyNTcgMTkzNiAxMjU4LjU3IDE5MzYgMTI2MC41MUwxOTM2IDE2MzEuNDlDMTkzNiAxNjMzLjQzIDE5MzcuNTcgMTYzNSAxOTM5LjUyIDE2MzVMMjE3NC40OCAxNjM1QzIxNzYuNDMgMTYzNSAyMTc4IDE2MzMuNDMgMjE3OCAxNjMxLjQ5TDIxNzggMTU0OC4wNEMyMTc4IDE1NDYuMSAyMTc2LjQzIDE1NDQuNTMgMjE3NC40OCAxNTQ0LjUzWiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTE3NTkuNSAxMjUzIDE3NTkuNSAxMjUzQzE2NzUuODMgMTI1MyAxNjA4IDEzMTIuNTMgMTYwOCAxMzkxLjA0TDE2MDggMTUwMy45NkMxNjA4IDE1OTguNTcgMTY3NS44MyAxNjQyIDE3NTkuNSAxNjQyTDE3NTkuNSAxNjQyQzE4NDMuMTcgMTY0MiAxOTExIDE1OTMuNjcgMTkxMSAxNTAzLjk2TDE5MTEgMTQ4OC40OUMxOTExIDE0ODUuNCAxOTA4LjQ4IDE0ODIuODkgMTkwNS4zOCAxNDgyLjg5TDE4MjQuMjYgMTQ4Mi44OUMxODIxLjI2IDE0ODIuODkgMTgxOC43OSAxNDg1LjI0IDE4MTguNjUgMTQ4OC4yMiAxODE2Ljc0IDE1MjkuOTcgMTgwMi4xMyAxNTUyLjM0IDE3NTkuNSAxNTUyLjM0TDE3NTkuNSAxNTUyLjM0QzE3MjEuMTMgMTU1Mi4zNCAxNzAwLjEyIDE1MjguOTMgMTcwMC4xMiAxNDc3LjkzTDE3MDAuMTIgMTQxNy4wNkMxNzAwLjEyIDEzNzQuNzQgMTcxNS41IDEzNDIuNjYgMTc1OS41IDEzNDIuNjZMMTc1OS41IDEzNDIuNjZDMTgwMi4yNyAxMzQyLjY2IDE4MTUuOTEgMTM2OCAxODE4LjQyIDE0MDMuMzQgMTgxOC42MyAxNDA2LjI4IDE4MjEuMDcgMTQwOC41NiAxODI0LjAyIDE0MDguNTZMMTkwNS4zNyAxNDA4LjU2QzE5MDguNDggMTQwOC41NiAxOTExIDE0MDYuMDUgMTkxMSAxNDAyLjk2TDE5MTEgMTM5MS4wNEMxOTExIDEzMTIuNTMgMTg0My4xNyAxMjUzIDE3NTkuNSAxMjUzWiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTI3NjIuOTIgMTQzOS4xM0MyNzYxLjM1IDE0MzguMTQgMjc2MS4yIDE0MzUuOTYgMjc2Mi41NSAxNDM0LjY5IDI3OTQuNjcgMTQwNC42NiAyODAzLjQ3IDEzNjIuMzEgMjc4NS43MiAxMzE3LjMxIDI3NjcuNDcgMTI3MS4wMyAyNzIyLjUzIDEyNTcgMjY3NC4wNyAxMjU3TDI1MjQuODYgMTI1N0MyNTIyLjczIDEyNTcgMjUyMSAxMjU4LjczIDI1MjEgMTI2MC44NkwyNTIxIDE2MzEuMTRDMjUyMSAxNjMzLjI3IDI1MjIuNzMgMTYzNSAyNTI0Ljg2IDE2MzVMMjY4My45IDE2MzVDMjc3Mi4zOCAxNjM1IDI4MTEgMTU4MSAyODExIDE1MjIuNzkgMjgxMSAxNDczLjQgMjc3NC4xIDE0NDYuMjMgMjc2Mi45MiAxNDM5LjEzWk0yNjExLjU4IDEzNDcuNDdDMjYxMS41OCAxMzQ1LjUzIDI2MTMuMTUgMTM0My45NiAyNjE1LjA5IDEzNDMuOTZMMjY3MS45NyAxMzQzLjk2QzI2OTAgMTM0My45NiAyNzA0LjYyIDEzNTguNTYgMjcwNC42MiAxMzc2LjU3IDI3MDQuNjIgMTM5NC41OCAyNjkwIDE0MDkuMTggMjY3MS45NyAxNDA5LjE4TDI2MTUuMDkgMTQwOS4xOEMyNjEzLjE1IDE0MDkuMTggMjYxMS41OCAxNDA3LjYxIDI2MTEuNTggMTQwNS42OEwyNjExLjU4IDEzNDcuNDdaTTI3MTYuMjEgMTUxNi44M0MyNzE2LjIxIDE1MzQuMDcgMjcwMi4yMiAxNTQ4LjA0IDI2ODQuOTYgMTU0OC4wNEwyNjE1LjA5IDE1NDguMDRDMjYxMy4xNSAxNTQ4LjA0IDI2MTEuNTggMTU0Ni40NyAyNjExLjU4IDE1NDQuNTNMMjYxMS41OCAxNDg5LjEzQzI2MTEuNTggMTQ4Ny4xOSAyNjEzLjE1IDE0ODUuNjIgMjYxNS4wOSAxNDg1LjYyTDI2ODQuOTYgMTQ4NS42MkMyNzAyLjIyIDE0ODUuNjIgMjcxNi4yMSAxNDk5LjYgMjcxNi4yMSAxNTE2LjgzTDI3MTYuMjEgMTUxNi44M1oiIGZpbGw9IiNGN0ZERjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik0yNzcyLjc1IDgzMyAyNTMxLjI1IDgzM0MyNTI2LjY5IDgzMyAyNTIzIDgzNi42ODkgMjUyMyA4NDEuMjM5TDI1MjMgMTIxMC43NkMyNTIzIDEyMTUuMzEgMjUyNi42OSAxMjE5IDI1MzEuMjUgMTIxOUwyNzcyLjc1IDEyMTlDMjc3Ny4zMSAxMjE5IDI3ODEgMTIxNS4zMSAyNzgxIDEyMTAuNzZMMjc4MSA4NDEuMjM5QzI3ODEgODM2LjY4OSAyNzc3LjMxIDgzMyAyNzcyLjc1IDgzM1oiIGZpbGw9IiNGMEI0MjkiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=" style="height:clamp(60px,14vw,90px);width:auto;margin-bottom:4px;display:block;margin-left:auto;margin-right:auto;">
+    <img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:clamp(60px,14vw,90px);width:auto;margin-bottom:4px;display:block;margin-left:auto;margin-right:auto;">
     <div class="big-sub">Multijoueur</div>
     <div class="lobby-section">
       <div class="lobby-section-title">Votre nom</div>
@@ -548,7 +544,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 <!-- RÈGLES -->
 <div id="rules-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;padding:20px;">
   <div style="background:var(--card2);border:1px solid rgba(240,180,41,.2);border-radius:16px;max-width:400px;width:100%;padding:28px 24px;max-height:85vh;overflow-y:auto;position:relative;">
-    <div style="position:absolute;inset:0;border-radius:16px;background-image:repeating-linear-gradient(180deg,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) 1px,transparent 1px,transparent 20px);pointer-events:none;"></div>
+    
     <div style="font-size:32px;text-align:center;margin-bottom:8px;position:relative;" id="rules-icon">⚽</div>
     <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;text-align:center;color:var(--gold);margin-bottom:16px;position:relative;" id="rules-title">DUEL VAR</div>
     <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;overflow-y:auto;max-height:60vh;position:relative;" id="rules-body"></div>
@@ -578,7 +574,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 <!-- MODE SELECTION -->
 <div id="screen-mode" class="screen" style="overflow-y:auto;">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:16px;gap:0;">
-    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIyMiIgaGVpZ2h0PSI4MDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjE1ODkiIHk9IjgzMyIgd2lkdGg9IjEyMjIiIGhlaWdodD0iODA5Ii8+PC9jbGlwUGF0aD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwKSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE1ODkgLTgzMykiPjxwYXRoIGQ9Ik0xNzE0LjMgMTIxOCAxODAxLjcgMTIxOEMxODA1LjE3IDEyMTggMTgwOC4yNCAxMjE1Ljc1IDE4MDkuMjggMTIxMi40NUwxOTI2LjgxIDgzOS4zMDNDMTkyNy42NCA4MzYuNjc1IDE5MjUuNjcgODM0IDE5MjIuOTEgODM0TDE4MzIuNDYgODM0QzE4MzAuNjMgODM0IDE4MjkuMDMgODM1LjIxMiAxODI4LjUzIDgzNi45NjdMMTc1OS4xIDEwODEuMTlDMTc1OC43OCAxMDgyLjI5IDE3NTcuMjIgMTA4Mi4yOSAxNzU2LjkxIDEwODEuMTlMMTY4Ny40NyA4MzYuOTY3QzE2ODYuOTggODM1LjIxMiAxNjg1LjM3IDgzNCAxNjgzLjU0IDgzNEwxNTkzLjEgODM0QzE1OTAuMzMgODM0IDE1ODguMzYgODM2LjY3NSAxNTg5LjE5IDgzOS4zMDNMMTcwNi43MiAxMjEyLjQ1QzE3MDcuNzYgMTIxNS43NSAxNzEwLjgzIDEyMTggMTcxNC4zIDEyMThaIiBmaWxsPSIjRjdGREY0IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNMjA3My41NCA4MzkuNTQ5QzIwNzIuNDggODM2LjI0NyAyMDY5LjM3IDgzNCAyMDY1Ljg0IDgzNEwxOTc3LjE2IDgzNEMxOTczLjYzIDgzNCAxOTcwLjUyIDgzNi4yNDcgMTk2OS40NiA4MzkuNTQ5TDE4NTAuMTkgMTIxMi43QzE4NDkuMzUgMTIxNS4zMyAxODUxLjM1IDEyMTggMTg1NC4xNSAxMjE4TDE5NDMuODcgMTIxOEMxOTQ1LjczIDEyMTggMTk0Ny4zNiAxMjE2Ljc5IDE5NDcuODcgMTIxNS4wM0wxOTY3LjM5IDExNDcuMDggMjA3NS42MSAxMTQ3LjA4IDIwOTUuMTMgMTIxNS4wM0MyMDk1LjY0IDEyMTYuNzkgMjA5Ny4yNyAxMjE4IDIwOTkuMTMgMTIxOEwyMTg4Ljg1IDEyMThDMjE5MS42NSAxMjE4IDIxOTMuNjUgMTIxNS4zMyAyMTkyLjgxIDEyMTIuN0wyMDczLjU0IDgzOS41NDlaTTE5ODguNTIgMTA3My41MiAyMDIwLjM5IDk2NC42MzlDMjAyMC43MSA5NjMuNTM4IDIwMjIuMjkgOTYzLjUzOCAyMDIyLjYxIDk2NC42MzlMMjA1NC40OCAxMDczLjUyIDE5ODguNTIgMTA3My41MloiIGZpbGw9IiNGN0ZERjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik0yNDEzLjczIDEwNzAuODFDMjQzOC4zNyAxMDYzLjEgMjQ5MS4xOSAxMDM5LjI1IDI0OTEuMTkgOTUwLjg5MyAyNDkxLjE5IDg2Mi41MzMgMjQwOC44IDgzNCAyMzUyLjQ3IDgzNEwyMjExLjE3IDgzNEMyMjA4LjMxIDgzNCAyMjA2IDgzNi4zMDUgMjIwNiA4MzkuMTVMMjIwNiAxMjE1Ljg1QzIyMDYgMTIxOC43IDIyMDguMzEgMTIyMSAyMjExLjE3IDEyMjFMMjI5MC4yNiAxMjIxQzIyOTMuMTEgMTIyMSAyMjk1LjQzIDEyMTguNyAyMjk1LjQzIDEyMTUuODVMMjI5NS40MyAxMDg0LjEzIDIzMTUuODUgMTA4NC4xMyAyMzkwLjU3IDEyMTMuNjlDMjM5Mi4yNiAxMjE2LjYyIDIzOTUuNCAxMjE4LjQyIDIzOTguNzkgMTIxOC40MkwyNDg2LjY0IDEyMTguNDJDMjQ5MS41IDEyMTguNDIgMjQ5NC41NiAxMjEzLjIxIDI0OTIuMTcgMTIwOC45OUwyNDEzLjczIDEwNzAuODFaTTIzOTYuMTMgOTY0LjkxOUMyMzk2LjEzIDk4Ny4zODMgMjM3Ny44NCAxMDA1LjU5IDIzNTUuMjggMTAwNS41OUwyMjk1LjQzIDEwMDUuNTkgMjI5NS40MyA5MjQuMjQ3IDIzNTUuMjggOTI0LjI0N0MyMzc3Ljg0IDkyNC4yNDcgMjM5Ni4xMyA5NDIuNDU3IDIzOTYuMTMgOTY0LjkyMUwyMzk2LjEzIDk2NC45MjFaIiBmaWxsPSIjRjdGREY0IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJNMjQ4NC40NSAxMjU3IDI0MDMuOTEgMTI1N0MyNDAxLjM5IDEyNTcgMjM5OS4zNiAxMjU5LjA0IDIzOTkuMzYgMTI2MS41NkwyMzk5LjM2IDE0OTYuNTZDMjM5OS4zNiAxNTI1Ljk1IDIzNzUuMzQgMTU1MC43MiAyMzQ1Ljk5IDE1NTAuMTYgMjMxNy41NCAxNTQ5LjYyIDIyOTQuNjUgMTUyNi4zNiAyMjk0LjY1IDE0OTcuNzRMMjI5NC42NSAxMjYxLjU2QzIyOTQuNjUgMTI1OS4wNCAyMjkyLjYxIDEyNTcgMjI5MC4xIDEyNTdMMjIwOS41NSAxMjU3QzIyMDcuMDQgMTI1NyAyMjA1IDEyNTkuMDQgMjIwNSAxMjYxLjU2TDIyMDUgMTUwMy45MkMyMjA1IDE1OTguNTYgMjI2OC41OCAxNjQyIDIzNDcgMTY0MkwyMzQ3IDE2NDJDMjQyNS40MiAxNjQyIDI0ODkgMTU5My42NSAyNDg5IDE1MDMuOTJMMjQ4OSAxMjYxLjU2QzI0ODkgMTI1OS4wNCAyNDg2Ljk2IDEyNTcgMjQ4NC40NSAxMjU3WiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTIxNzQuNDggMTU0NC41MyAyMDM0Ljg0IDE1NDQuNTNDMjAzMS41NCAxNTQ0LjUzIDIwMjguODYgMTU0MS44NiAyMDI4Ljg2IDE1MzguNTdMMjAyOC44NiAxMjYwLjUxQzIwMjguODYgMTI1OC41NyAyMDI3LjI5IDEyNTcgMjAyNS4zNCAxMjU3TDE5MzkuNTIgMTI1N0MxOTM3LjU3IDEyNTcgMTkzNiAxMjU4LjU3IDE5MzYgMTI2MC41MUwxOTM2IDE2MzEuNDlDMTkzNiAxNjMzLjQzIDE5MzcuNTcgMTYzNSAxOTM5LjUyIDE2MzVMMjE3NC40OCAxNjM1QzIxNzYuNDMgMTYzNSAyMTc4IDE2MzMuNDMgMjE3OCAxNjMxLjQ5TDIxNzggMTU0OC4wNEMyMTc4IDE1NDYuMSAyMTc2LjQzIDE1NDQuNTMgMjE3NC40OCAxNTQ0LjUzWiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTE3NTkuNSAxMjUzIDE3NTkuNSAxMjUzQzE2NzUuODMgMTI1MyAxNjA4IDEzMTIuNTMgMTYwOCAxMzkxLjA0TDE2MDggMTUwMy45NkMxNjA4IDE1OTguNTcgMTY3NS44MyAxNjQyIDE3NTkuNSAxNjQyTDE3NTkuNSAxNjQyQzE4NDMuMTcgMTY0MiAxOTExIDE1OTMuNjcgMTkxMSAxNTAzLjk2TDE5MTEgMTQ4OC40OUMxOTExIDE0ODUuNCAxOTA4LjQ4IDE0ODIuODkgMTkwNS4zOCAxNDgyLjg5TDE4MjQuMjYgMTQ4Mi44OUMxODIxLjI2IDE0ODIuODkgMTgxOC43OSAxNDg1LjI0IDE4MTguNjUgMTQ4OC4yMiAxODE2Ljc0IDE1MjkuOTcgMTgwMi4xMyAxNTUyLjM0IDE3NTkuNSAxNTUyLjM0TDE3NTkuNSAxNTUyLjM0QzE3MjEuMTMgMTU1Mi4zNCAxNzAwLjEyIDE1MjguOTMgMTcwMC4xMiAxNDc3LjkzTDE3MDAuMTIgMTQxNy4wNkMxNzAwLjEyIDEzNzQuNzQgMTcxNS41IDEzNDIuNjYgMTc1OS41IDEzNDIuNjZMMTc1OS41IDEzNDIuNjZDMTgwMi4yNyAxMzQyLjY2IDE4MTUuOTEgMTM2OCAxODE4LjQyIDE0MDMuMzQgMTgxOC42MyAxNDA2LjI4IDE4MjEuMDcgMTQwOC41NiAxODI0LjAyIDE0MDguNTZMMTkwNS4zNyAxNDA4LjU2QzE5MDguNDggMTQwOC41NiAxOTExIDE0MDYuMDUgMTkxMSAxNDAyLjk2TDE5MTEgMTM5MS4wNEMxOTExIDEzMTIuNTMgMTg0My4xNyAxMjUzIDE3NTkuNSAxMjUzWiIgZmlsbD0iI0Y3RkRGNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PHBhdGggZD0iTTI3NjIuOTIgMTQzOS4xM0MyNzYxLjM1IDE0MzguMTQgMjc2MS4yIDE0MzUuOTYgMjc2Mi41NSAxNDM0LjY5IDI3OTQuNjcgMTQwNC42NiAyODAzLjQ3IDEzNjIuMzEgMjc4NS43MiAxMzE3LjMxIDI3NjcuNDcgMTI3MS4wMyAyNzIyLjUzIDEyNTcgMjY3NC4wNyAxMjU3TDI1MjQuODYgMTI1N0MyNTIyLjczIDEyNTcgMjUyMSAxMjU4LjczIDI1MjEgMTI2MC44NkwyNTIxIDE2MzEuMTRDMjUyMSAxNjMzLjI3IDI1MjIuNzMgMTYzNSAyNTI0Ljg2IDE2MzVMMjY4My45IDE2MzVDMjc3Mi4zOCAxNjM1IDI4MTEgMTU4MSAyODExIDE1MjIuNzkgMjgxMSAxNDczLjQgMjc3NC4xIDE0NDYuMjMgMjc2Mi45MiAxNDM5LjEzWk0yNjExLjU4IDEzNDcuNDdDMjYxMS41OCAxMzQ1LjUzIDI2MTMuMTUgMTM0My45NiAyNjE1LjA5IDEzNDMuOTZMMjY3MS45NyAxMzQzLjk2QzI2OTAgMTM0My45NiAyNzA0LjYyIDEzNTguNTYgMjcwNC42MiAxMzc2LjU3IDI3MDQuNjIgMTM5NC41OCAyNjkwIDE0MDkuMTggMjY3MS45NyAxNDA5LjE4TDI2MTUuMDkgMTQwOS4xOEMyNjEzLjE1IDE0MDkuMTggMjYxMS41OCAxNDA3LjYxIDI2MTEuNTggMTQwNS42OEwyNjExLjU4IDEzNDcuNDdaTTI3MTYuMjEgMTUxNi44M0MyNzE2LjIxIDE1MzQuMDcgMjcwMi4yMiAxNTQ4LjA0IDI2ODQuOTYgMTU0OC4wNEwyNjE1LjA5IDE1NDguMDRDMjYxMy4xNSAxNTQ4LjA0IDI2MTEuNTggMTU0Ni40NyAyNjExLjU4IDE1NDQuNTNMMjYxMS41OCAxNDg5LjEzQzI2MTEuNTggMTQ4Ny4xOSAyNjEzLjE1IDE0ODUuNjIgMjYxNS4wOSAxNDg1LjYyTDI2ODQuOTYgMTQ4NS42MkMyNzAyLjIyIDE0ODUuNjIgMjcxNi4yMSAxNDk5LjYgMjcxNi4yMSAxNTE2LjgzTDI3MTYuMjEgMTUxNi44M1oiIGZpbGw9IiNGN0ZERjQiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Ik0yNzcyLjc1IDgzMyAyNTMxLjI1IDgzM0MyNTI2LjY5IDgzMyAyNTIzIDgzNi42ODkgMjUyMyA4NDEuMjM5TDI1MjMgMTIxMC43NkMyNTIzIDEyMTUuMzEgMjUyNi42OSAxMjE5IDI1MzEuMjUgMTIxOUwyNzcyLjc1IDEyMTlDMjc3Ny4zMSAxMjE5IDI3ODEgMTIxNS4zMSAyNzgxIDEyMTAuNzZMMjc4MSA4NDEuMjM5QzI3ODEgODM2LjY4OSAyNzc3LjMxIDgzMyAyNzcyLjc1IDgzM1pNMjYwOS43NSA4NDkuNDc4IDI2OTQuMjYgODQ5LjQ3OCAyNjk0LjI2IDg4Mi4wNCAyNjA5Ljc1IDg4Mi4wNCAyNjA5Ljc1IDg0OS40NzhaTTI1OTcuMzcgODQ5LjQ3OCAyNTk3LjM3IDg4OC4yMTlDMjU5Ny4zNyA4OTEuNjMyIDI2MDAuMTQgODk0LjM5OCAyNjAzLjU2IDg5NC4zOThMMjcwMC40NCA4OTQuMzk4QzI3MDMuODYgODk0LjM5OCAyNzA2LjYzIDg5MS42MzIgMjcwNi42MyA4ODguMjE5TDI3MDYuNjMgODQ5LjQ3OCAyNzY0LjUgODQ5LjQ3OCAyNzY0LjUgMTAxOS44MiAyNzI4LjI1IDEwMTkuODJDMjcyNS4xIDk4MC41MDMgMjY5Mi4xOCA5NDkuNTcyIDI2NTIgOTQ5LjU3MiAyNjExLjgyIDk0OS41NzIgMjU3OC45IDk4MC41MDMgMjU3NS43NSAxMDE5LjgyTDI1MzkuNSAxMDE5LjgyIDI1MzkuNSA4NDkuNDc4IDI1OTcuMzcgODQ5LjQ3OFoiIGZpbGw9IiNGMEI0MjkiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=" style="height:clamp(40px,10vw,56px);width:auto;margin-bottom:4px;display:block;">
+    <img src="/VAR_CLUB_TRANSPARENT_2.svg" alt="VAR CLUB" style="height:clamp(40px,10vw,56px);width:auto;margin-bottom:4px;display:block;margin-left:auto;margin-right:auto;">
     <div style="font-size:10px;letter-spacing:5px;color:var(--muted);text-align:center;text-transform:uppercase;margin-bottom:16px;">Choisissez votre mode</div>
     <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;">
       <button id="mode-family-btn" onclick="selectMode('family')" type="button" class="mode-btn">
@@ -800,28 +796,41 @@ html,body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-ser
 </div>
 
 <!-- HAND -->
-<div id="screen-hand" class="screen">
+<div id="screen-hand" class="screen" style="flex-direction:column;height:100vh;overflow:hidden;">
+  <!-- Header compact -->
   <div class="scorebug" id="hand-scorebug">
-    <div class="hand-hdr-left">
+    <div>
       <div class="scorebug-title" id="hand-name">MOI</div>
-      <div class="scorebug-sub" id="hand-sub">1. Flip a question  →  2. Flip a club</div>
+      <div class="scorebug-sub" id="hand-sub" style="font-size:8px;">① Question → ② Club</div>
     </div>
     <div style="text-align:right;">
       <div class="scorebug-tokens" id="hand-tokens">15</div>
       <div class="scorebug-tokens-lbl">jetons</div>
     </div>
   </div>
-  <div class="sboard" id="hand-sboard"></div>
-  <div style="padding:4px 10px 2px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">1. Questions</div>
-    <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);" id="step2-label">2. Clubs</div>
+
+  <!-- Scoreboard compact -->
+  <div class="sboard" id="hand-sboard" style="margin:3px 8px;flex-shrink:0;"></div>
+
+  <!-- Labels colonnes -->
+  <div style="padding:3px 8px;display:flex;align-items:center;gap:0;flex-shrink:0;">
+    <div style="flex:1;text-align:center;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">① QUESTIONS</div>
+    <div style="width:1px;background:var(--border);height:12px;"></div>
+    <div style="flex:1;text-align:center;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);" id="step2-label">② CLUBS</div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;padding:0 4px 4px;flex:1;min-height:0;">
-    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-right:6px;align-content:start;"></div>
-    <div style="background:var(--border);margin:0 4px;"></div>
-    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-left:6px;align-content:start;"></div>
+
+  <!-- GRILLE PLEIN ÉCRAN — 4 colonnes, hauteur auto sur cartes -->
+  <div style="display:grid;grid-template-columns:1fr 1px 1fr;flex:1;min-height:0;padding:4px;gap:0;overflow:hidden;">
+    <!-- Questions: 2 col -->
+    <div id="questions-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 4px 0 0;align-content:stretch;"></div>
+    <!-- Séparateur -->
+    <div style="background:var(--border);"></div>
+    <!-- Clubs: 2 col -->
+    <div id="clubs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 0 0 4px;align-content:stretch;"></div>
   </div>
-  <div class="hand-footer" id="hand-footer">
+
+  <!-- Footer -->
+  <div class="hand-footer" id="hand-footer" style="flex-shrink:0;">
     <button class="ghost-btn" id="btn-pass-turn" onclick="passTurn()" style="flex:1;display:none;">Passer mon tour</button>
     <button class="ghost-btn" id="btn-discard" onclick="discardHand()" style="flex:1;display:none;border-color:var(--coral);color:var(--coral);">🔄 Défausser la main</button>
   </div>
