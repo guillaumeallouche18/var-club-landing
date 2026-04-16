@@ -291,10 +291,15 @@ html,body{
 .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
 .card-back,.card-front{
   position:absolute;inset:0;
-  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
   border-radius:10px;overflow:hidden;
+  -webkit-transform-style:preserve-3d;
 }
-.card-front{transform:rotateY(180deg);}
+.card-front{
+  transform:rotateY(180deg);
+  -webkit-transform:rotateY(180deg);
+}
 
 /* ══════════════════════════════════════
    PHYSICAL CARD STYLES
@@ -377,6 +382,14 @@ html,body{
 .cf-club-crest{
   width:52%;max-width:44px;aspect-ratio:1;
   object-fit:contain;display:block;flex-shrink:0;
+}
+.cf-club-initials{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(20px,6vw,32px);
+  letter-spacing:2px;
+  color:#1A3A1A;
+  line-height:1;
+  flex-shrink:0;
 }
 .cf-club-name{
   font-family:'Bebas Neue',cursive;
@@ -1717,7 +1730,6 @@ function buildCardFront(card){
   el.style.width='100%';el.style.height='100%';
 
   if(card.type==='question'){
-    // Question card — gold footer, white body, stripes, text + flag
     const flag=Q_FLAGS[card.qId]||'';
     el.className='cf-question';
     el.innerHTML=`
@@ -1733,15 +1745,13 @@ function buildCardFront(card){
       </div>`;
 
   }else if(card.type==='club'){
-    // Club card — green footer, white body, stripes, crest + name
-    const club=CLUBS.find(c=>c.id===card.clubId)||{};
-    const crestUrl=`/crests/${card.clubId||''}.png`;
+    const initials=(card.clubName||'?').split(' ').map(w=>w[0]).join('').substring(0,3).toUpperCase();
     el.className='cf-club';
     el.innerHTML=`
       <div class="cf-club-inner">
         <div class="cf-club-stripes"></div>
         <div class="cf-club-top">
-          <img class="cf-club-crest" src="${crestUrl}" onerror="this.style.display='none'">
+          <div class="cf-club-initials">${initials}</div>
           <div class="cf-club-name">${card.clubName||''}</div>
         </div>
         <div class="cf-club-footer">
@@ -1810,7 +1820,7 @@ function renderSplitCards(clubCards,questionCards){
 
     const inner=document.createElement('div');inner.className='card-inner';
     const back=document.createElement('div');back.className='card-back question-back';
-    back.innerHTML=`<img src="/VAR_CLUB_TRANSPARENT_2.svg" style="width:60%;max-width:52px;opacity:.55;position:relative;z-index:1;filter:brightness(0) saturate(100%);" alt="VAR CLUB">`;
+    back.innerHTML=`<span style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:rgba(13,31,13,.5);line-height:1;position:relative;z-index:1;">VAR<br>CLUB</span>`;
     const front=document.createElement('div');front.className='card-front';front.appendChild(buildCardFront(card));
     inner.appendChild(back);inner.appendChild(front);wrap.appendChild(inner);
     slot.appendChild(wrap);
@@ -1876,7 +1886,7 @@ function renderSplitCards(clubCards,questionCards){
 
     const inner=document.createElement('div');inner.className='card-inner';
     const back=document.createElement('div');back.className='card-back';
-    back.innerHTML=`<img src="/VAR_CLUB_TRANSPARENT_2.svg" style="width:60%;max-width:52px;opacity:.5;position:relative;z-index:1;" alt="VAR CLUB">`;
+    back.innerHTML=`<span style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:rgba(240,180,41,.6);line-height:1;position:relative;z-index:1;text-align:center;">VAR<br>CLUB</span>`;
     const front=document.createElement('div');front.className='card-front';front.appendChild(buildCardFront(card));
 
     // "JOUER" button revealed after flip
