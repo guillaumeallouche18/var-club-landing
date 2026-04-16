@@ -393,10 +393,10 @@ html,body{
 }
 .cf-club-name{
   font-family:'Bebas Neue',cursive;
-  font-size:clamp(8px,2.2vw,12px);
+  font-size:clamp(10px,2.8vw,15px);
   letter-spacing:1px;color:#1A3A1A;
-  text-align:center;line-height:1.1;
-  word-break:break-word;padding:0 4px;
+  text-align:center;line-height:1.2;
+  word-break:break-word;padding:0 6px;
 }
 .cf-club-footer{
   background:#1A3A1A;
@@ -1719,10 +1719,10 @@ function renderHandScreen(){
   renderSplitCards(me.clubHand,me.qHand);
 }
 
-// Nationality flag emoji map
+// Nationality flag emoji map — only for nationality-based questions
 const Q_FLAGS={
   1:'🇫🇷',2:'🇪🇸',3:'🇩🇪',4:'🇮🇹',5:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',6:'🇧🇷',7:'🇦🇷',8:'🇩🇿',9:'🇲🇦',
-  10:'🇵🇹',11:'🇧🇪',12:'🇳🇱',13:'🇸🇳',14:'🇨🇲',15:'🌍',
+  // 10, 12, 13, 14, 15 = no flag (stats-based)
 };
 
 function buildCardFront(card){
@@ -1745,13 +1745,11 @@ function buildCardFront(card){
       </div>`;
 
   }else if(card.type==='club'){
-    const initials=(card.clubName||'?').split(' ').map(w=>w[0]).join('').substring(0,3).toUpperCase();
     el.className='cf-club';
     el.innerHTML=`
       <div class="cf-club-inner">
         <div class="cf-club-stripes"></div>
         <div class="cf-club-top">
-          <div class="cf-club-initials">${initials}</div>
           <div class="cf-club-name">${card.clubName||''}</div>
         </div>
         <div class="cf-club-footer">
